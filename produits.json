@@ -1,0 +1,92 @@
+[
+    {
+        "nom": "Samsung Galaxy Z Nova",
+        "catégorie": "Smartphone",
+        "prix": 1299.99,
+        "disponibilité": "En stock",
+        "description": "Smartphone pliable avec écran AMOLED 7.2 pouces et triple caméra.",
+        "nombre de produit vendu": "",
+        "objectifs": 4
+    },
+    {
+        "nom": "Samsung QLED Vision 8K",
+        "catégorie": "Téléviseur",
+        "prix": 4999.99,
+        "disponibilité": "En stock",
+        "description": "Téléviseur QLED 8K de 75 pouces avec technologie Quantum HDR.",
+        "nombre de produit vendu": "",
+        "objectifs": 4
+    },
+    {
+        "nom": "Samsung Galaxy Tab Ultra S",
+        "catégorie": "Tablette",
+        "prix": 899.99,
+        "disponibilité": "En rupture de stock",
+        "description": "Tablette Android avec écran Super AMOLED 12.4 pouces et stylet S Pen.",
+        "nombre de produit vendu": "",
+        "objectifs": 3
+    },
+    {
+        "nom": "Samsung GearFit Pro",
+        "catégorie": "Montre connectée",
+        "prix": 249.99,
+        "disponibilité": "En stock",
+        "description": "Montre connectée avec suivi de santé, GPS intégré et autonomie de 7 jours.",
+        "nombre de produit vendu": "",
+        "objectifs": 4
+    },
+    {
+        "nom": "Samsung AirCool Max",
+        "catégorie": "Climatiseur",
+        "prix": 699.99,
+        "disponibilité": "En stock",
+        "description": "Climatiseur intelligent avec contrôle Wi-Fi et mode éco.",
+        "nombre de produit vendu": "",
+        "objectifs": 3
+    },
+    {
+        "nom": "Samsung SoundBar X500",
+        "catégorie": "Audio",
+        "prix": 349.99,
+        "disponibilité": "En stock",
+        "description": "Barre de son avec Dolby Atmos et caisson de basses sans fil.",
+        "nombre de produit vendu": "",
+        "objectifs": 3
+    },
+    {
+        "nom": "Samsung Galaxy Book Flex",
+        "catégorie": "Ordinateur portable",
+        "prix": 1599.99,
+        "disponibilité": "En stock",
+        "description": "Ordinateur portable convertible avec écran tactile QLED et processeur Intel i7.",
+        "nombre de produit vendu": "",
+        "objectifs": 5
+    },
+    {
+        "nom": "Samsung EcoWash 9000",
+        "catégorie": "Lave-linge",
+        "prix": 799.99,
+        "disponibilité": "En stock",
+        "description": "Lave-linge connecté avec technologie EcoBubble et tambour 10 kg.",
+        "nombre de produit vendu": "",
+        "objectifs": 4
+    },
+    {
+        "nom": "Samsung SmartFridge Elite",
+        "catégorie": "Réfrigérateur",
+        "prix": 1899.99,
+        "disponibilité": "En rupture de stock",
+        "description": "Réfrigérateur connecté avec écran tactile et gestion des aliments.",
+        "nombre de produit vendu": "",
+        "objectifs": 5
+    },
+    {
+        "nom": "Samsung LaserJet Pro M500",
+        "catégorie": "Imprimante",
+        "prix": 299.99,
+        "disponibilité": "En stock",
+        "description": "Imprimante laser couleur avec Wi-Fi et impression recto-verso automatique.",
+        "nombre de produit vendu": "",
+        "objectifs": 1
+    }
+]
