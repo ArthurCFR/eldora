@@ -1,0 +1,36 @@
+# LiveKit Self-Hosted Configuration
+# Pour développement local avec Docker
+
+port: 7880
+bind_addresses:
+  - "0.0.0.0"
+
+rtc:
+  # Plage de ports pour WebRTC
+  port_range_start: 50000
+  port_range_end: 50100
+  use_external_ip: false  # Désactivé pour développement local
+  node_ip: 172.28.191.115  # WSL IP accessible from Windows
+
+# Clés API fournies via LIVEKIT_KEYS environment variable
+
+# Configuration des rooms
+room:
+  auto_create: true
+  empty_timeout: 300  # 5 minutes
+  max_participants: 10
+
+# Logging
+logging:
+  level: info
+  # Pour debug: level: debug
+
+# Pour production avec Redis (scalabilité)
+# redis:
+#   address: localhost:6379
+#   db: 0
+
+# Métriques Prometheus (optionnel)
+# prometheus:
+#   enabled: true
+#   port: 6789

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # LiveKit Server (Self-hosted)
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit-server
+    command: --config /livekit.yaml
+    network_mode: host  # Use host network for local development
+    volumes:
+      - ./livekit.yaml:/livekit.yaml
+    environment:
+      LIVEKIT_KEYS: "devkey: secret"
+      NODE_IP: "172.28.191.115"  # WSL IP accessible from Windows
+    restart: unless-stopped
+
+  # Redis (optionnel - pour scalabilité)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: livekit-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - voyaltis
+
+networks:
+  voyaltis:
+    driver: bridge
+
+# volumes:
+#   redis-data:

@@ -36,3 +36,25 @@ yarn-error.log
 
 # TypeScript
 *.tsbuildinfo
+
+# Python
+agent/venv/
+agent/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Backup and temporary files
+*.save
+*_old.*
+*_backup.*
+*_fixed.*
+*_simple.*
+*:Zone.Identifier
+
+# Previous/Legacy code
+**/Previous*/
+**/PreviousApp/
+**/PreviousService/
+**/PreviousConstant/

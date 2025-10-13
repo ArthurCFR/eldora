@@ -1,350 +1,716 @@
 /**
  * Écran vendeur Samsung - Rapport de journée salon
+ * V2: Utilise LiveKit pour conversation en temps réel
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
   SafeAreaView,
-  Alert,
   Text,
-  KeyboardAvoidingView,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+  Alert,
   Platform,
+  Image,
 } from 'react-native';
-import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 
 import SalesSummary from '../components/SalesSummary';
-import VoiceButton from '../components/VoiceButton';
+import LiveKitVoiceButton from '../components/LiveKitVoiceButton';
 import SamsungSalesTable from '../components/SamsungSalesTable';
+import ReportTable from '../components/ReportTable';
+import Header from '../components/Header';
 
 import { MOCK_SAMSUNG_SALES } from '../constants/samsungMockData';
-import { colors } from '../constants/theme';
-import { transcribeAudio } from '../services/whisper';
-import { askQuestion } from '../services/speech';
-import { WebAudioRecorder } from '../services/audioRecorder.web';
-import { analyzeSamsungSales } from '../services/samsungSalesAnalyzer';
-import { Modal, TouchableOpacity } from 'react-native';
+import { colors, spacing, borderRadius, shadows } from '../constants/theme';
+import productsData from '../produits.json';
+import {
+  DailyReport,
+  loadTodayReport,
+  createReport,
+  updateReport,
+  sendReport,
+  deleteTodayReport,
+} from '../services/dailyReportService';
 
 export default function SamsungSales() {
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const webRecorderRef = useRef<WebAudioRecorder | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [allTranscripts, setAllTranscripts] = useState<string[]>([]);
+  const [dailyReport, setDailyReport] = useState<DailyReport | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [sales, setSales] = useState<{ [productName: string]: number }>({});
   const [timeSpent, setTimeSpent] = useState<string | null>(null);
   const [customerFeedback, setCustomerFeedback] = useState<string | null>(null);
   const [showReport, setShowReport] = useState(false);
-  const [conversationStep, setConversationStep] = useState(0);
-  const [isPreparingQuestion, setIsPreparingQuestion] = useState(false);
+  const [transcription, setTranscription] = useState('');
+  const [reportText, setReportText] = useState('');
 
-  // Demander les permissions audio au démarrage
-  useEffect(() => {
-    (async () => {
-      try {
-        const { status } = await Audio.requestPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert(
-            'Permission requise',
-            'Cette application a besoin d\'accéder au microphone pour enregistrer vos rapports de vente.'
-          );
-        }
+  const handleTranscription = (text: string, isFinal: boolean) => {
+    // Afficher la transcription en temps réel
+    setTranscription(text);
+  };
 
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-      } catch (error) {
-        console.error('Error requesting audio permissions:', error);
-      }
-    })();
+  const [reportData, setReportData] = useState<any>(null);
+
+  // Charger le rapport du jour au montage
+  React.useEffect(() => {
+    loadDailyReport();
   }, []);
 
-  const startRecording = async (question?: string) => {
-    try {
-      console.log('Starting recording, step:', conversationStep);
-      setIsRecording(true);
-
-      // Poser la question appropriée
-      if (question) {
-        await askQuestion(question);
-      } else if (conversationStep === 0) {
-        const greetingText = `Bonjour ${MOCK_SAMSUNG_SALES.salesRepName} ! Quels produits Samsung avez-vous vendus aujourd'hui au ${MOCK_SAMSUNG_SALES.eventName} ?`;
-        await askQuestion(greetingText);
-      }
-
-      console.log('Question asked, creating recording...');
-
-      if (Platform.OS === 'web') {
-        // Use web-specific recorder
-        const recorder = new WebAudioRecorder();
-        await recorder.start();
-        webRecorderRef.current = recorder;
-        console.log('Web recorder started and stored in ref');
-      } else {
-        // Use expo-av for mobile
-        const { recording: newRecording } = await Audio.Recording.createAsync(
-          Audio.RecordingOptionsPresets.HIGH_QUALITY
-        );
-        console.log('Recording created:', newRecording);
-        setRecording(newRecording);
-      }
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-      setIsRecording(false);
-      Alert.alert(
-        'Erreur',
-        'Impossible de démarrer l\'enregistrement. Vérifiez les permissions.'
-      );
-    }
-  };
-
-  const stopRecording = async () => {
-    console.log('stopRecording called, recording:', recording, 'webRecorder:', webRecorderRef.current);
-
-    if (!recording && !webRecorderRef.current) {
-      console.log('No recording object, exiting early');
-      return;
-    }
-
-    try {
-      setIsRecording(false);
-      setIsProcessing(true);
-
-      let audioData: string | Blob;
-
-      if (Platform.OS === 'web' && webRecorderRef.current) {
-        // Stop web recording and get blob
-        const audioBlob = await webRecorderRef.current.stop();
-        audioData = audioBlob;
-        console.log('Web recording stopped, blob size:', audioBlob.size);
-        webRecorderRef.current = null;
-      } else if (recording) {
-        // Stop mobile recording and get URI
-        await recording.stopAndUnloadAsync();
-        const uri = recording.getURI();
-
-        if (!uri) {
-          throw new Error('No audio URI');
-        }
-        audioData = uri;
-      } else {
-        throw new Error('No recording available');
-      }
-
-      // Transcription avec Whisper
-      const transcribedText = await transcribeAudio(audioData);
-      console.log('Transcription result:', transcribedText);
-      setTranscript(transcribedText);
-      setAllTranscripts([...allTranscripts, transcribedText]);
-
-      // Analyser la transcription pour identifier les ventes produit par produit
-      const analysis = await analyzeSamsungSales(
-        transcribedText,
-        sales,
-        timeSpent,
-        customerFeedback
-      );
-      console.log('Samsung analysis:', analysis);
-
-      // Mettre à jour les ventes et les infos
-      setSales(analysis.sales);
-      if (analysis.timeSpent) setTimeSpent(analysis.timeSpent);
-      if (analysis.customerFeedback) setCustomerFeedback(analysis.customerFeedback);
-
-      if (!analysis.isComplete && analysis.nextQuestion) {
-        // Il manque des informations, poser la question suivante
-        console.log('Missing info, asking next question:', analysis.nextQuestion);
-        setIsProcessing(false);
-        setIsPreparingQuestion(true);
-        setConversationStep(conversationStep + 1);
-
-        // Attendre un peu avant de poser la prochaine question
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Démarrer le nouvel enregistrement
-        await startRecording(analysis.nextQuestion);
-        setIsPreparingQuestion(false);
-      } else {
-        // Toutes les informations sont collectées, afficher le rapport
-        console.log('All info collected, showing report');
-        setIsProcessing(false);
-        setShowReport(true);
-      }
-    } catch (error) {
-      console.error('Error processing recording:', error);
-      setIsProcessing(false);
-      setIsPreparingQuestion(false);
-      Alert.alert(
-        'Erreur',
-        error instanceof Error ? error.message : 'Une erreur est survenue lors du traitement.'
-      );
-    } finally {
-      setRecording(null);
-      // Ne pas nettoyer webRecorderRef ici car il a été réutilisé pour la question suivante
-    }
-  };
-
-  const handleVoiceButtonPress = () => {
-    if (isRecording) {
-      stopRecording();
+  const loadDailyReport = async () => {
+    const report = await loadTodayReport(MOCK_SAMSUNG_SALES.salesRepName);
+    if (report) {
+      console.log('📄 Found existing report for today');
+      setDailyReport(report);
+      setIsEditMode(true);
+      // Afficher le rapport existant
+      setSales(report.sales);
+      setCustomerFeedback(report.customerFeedback);
+      const comment = generateCommentSection({
+        key_insights: report.keyInsights,
+        emotional_context: report.emotionalContext,
+      }, report.customerFeedback);
+      setReportText(comment);
     } else {
-      startRecording();
+      console.log('📄 No report found for today, will create new one');
+      setIsEditMode(false);
     }
+  };
+
+  const handleConversationComplete = async (data: any) => {
+    // Quand la conversation est terminée, créer ou mettre à jour le rapport
+    console.log('Samsung conversation complete, data:', data);
+
+    // Parser les données de l'agent
+    const parsedSales = data.sales || {};
+    const parsedTimeSpent = data.time_spent || null;
+    const parsedFeedback = data.customer_feedback || null;
+    const parsedInsights = data.key_insights || [];
+    const parsedEmotionalContext = data.emotional_context || null;
+
+    try {
+      let updatedReport: DailyReport;
+
+      if (dailyReport) {
+        // MODE ÉDITION : Mettre à jour le rapport existant
+        console.log('📝 Updating existing report');
+        updatedReport = await updateReport(dailyReport, {
+          sales: parsedSales,
+          customerFeedback: parsedFeedback,
+          keyInsights: parsedInsights,
+          emotionalContext: parsedEmotionalContext,
+        });
+      } else {
+        // MODE CRÉATION : Créer un nouveau rapport
+        console.log('📝 Creating new report');
+        updatedReport = await createReport(
+          MOCK_SAMSUNG_SALES.salesRepName,
+          MOCK_SAMSUNG_SALES.eventName,
+          {
+            sales: parsedSales,
+            customerFeedback: parsedFeedback || '',
+            keyInsights: parsedInsights,
+            emotionalContext: parsedEmotionalContext,
+          }
+        );
+      }
+
+      // Mettre à jour l'état avec le rapport mis à jour
+      setDailyReport(updatedReport);
+      setIsEditMode(true);
+      setSales(updatedReport.sales);
+      setCustomerFeedback(updatedReport.customerFeedback);
+      setTimeSpent(parsedTimeSpent);
+
+      // Store full data for the report
+      setReportData(data);
+
+      // Generate comment section
+      const comment = generateCommentSection({
+        key_insights: updatedReport.keyInsights,
+        emotional_context: updatedReport.emotionalContext,
+      }, updatedReport.customerFeedback);
+      setReportText(comment);
+      setShowReport(true);
+    } catch (error) {
+      console.error('Error saving report:', error);
+      Alert.alert('Erreur', 'Impossible de sauvegarder le rapport');
+    }
+  };
+
+  const generateCommentSection = (
+    data: any,
+    feedbackData: string | null
+  ): string => {
+    // Build comment section (feedback + insights)
+    let commentSection = '';
+    if (feedbackData) {
+      commentSection += feedbackData;
+    }
+    if (data.key_insights && data.key_insights.length > 0) {
+      if (commentSection) commentSection += '\n\n';
+      // Add line breaks between insights for better readability
+      commentSection += data.key_insights.map((insight: string) => `• ${insight}`).join('\n');
+    }
+    if (!commentSection) {
+      commentSection = 'Aucun commentaire spécifique.';
+    }
+    return commentSection;
   };
 
   const handleCloseReport = () => {
     setShowReport(false);
-    // Reset all state for a new visit
-    setTranscript('');
-    setAllTranscripts([]);
     setSales({});
     setTimeSpent(null);
     setCustomerFeedback(null);
-    setConversationStep(0);
-    setIsPreparingQuestion(false);
-    webRecorderRef.current = null;
+    setTranscription('');
+    setReportText('');
+    setReportData(null);
   };
 
-  const handleSendReport = () => {
-    Alert.alert('Rapport envoyé', 'Votre rapport de vente a été envoyé avec succès !');
-    handleCloseReport();
+  const handleSendReport = async () => {
+    if (!dailyReport) {
+      Alert.alert('Erreur', 'Aucun rapport à envoyer');
+      return;
+    }
+
+    Alert.alert(
+      'Envoyer le rapport',
+      'Êtes-vous sûr de vouloir envoyer ce rapport ? Il ne pourra plus être modifié.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Envoyer',
+          style: 'default',
+          onPress: async () => {
+            try {
+              await sendReport(dailyReport);
+              Alert.alert('Succès', 'Votre rapport a été envoyé avec succès !');
+              // Réinitialiser l'interface
+              setDailyReport(null);
+              setIsEditMode(false);
+              setSales({});
+              setCustomerFeedback(null);
+              setReportText('');
+              setShowReport(false);
+            } catch (error) {
+              Alert.alert('Erreur', 'Impossible d\'envoyer le rapport');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteReport = () => {
+    console.log('🗑️ handleDeleteReport called - START');
+    console.log('🗑️ dailyReport exists:', !!dailyReport);
+
+    if (Platform.OS === 'web') {
+      // Sur web, utiliser confirm natif
+      const confirmed = (window as any).confirm('Supprimer le rapport du jour pour recommencer les tests ?');
+      if (confirmed) {
+        console.log('🗑️ User confirmed deletion');
+        performDelete();
+      }
+    } else {
+      // Sur mobile, utiliser Alert
+      Alert.alert(
+        'Supprimer le rapport',
+        'Supprimer le rapport du jour pour recommencer les tests ?',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          {
+            text: 'Supprimer',
+            style: 'destructive',
+            onPress: () => performDelete(),
+          },
+        ]
+      );
+    }
+  };
+
+  const performDelete = async () => {
+    console.log('🗑️ performDelete called');
+    try {
+      const success = await deleteTodayReport(MOCK_SAMSUNG_SALES.salesRepName);
+      console.log('🗑️ deleteTodayReport result:', success);
+
+      if (success) {
+        // Réinitialiser l'interface
+        setDailyReport(null);
+        setIsEditMode(false);
+        setSales({});
+        setCustomerFeedback(null);
+        setReportText('');
+        setReportData(null);
+        setShowReport(false);
+        setTranscription('');
+
+        console.log('✅ Interface reset complete');
+
+        if (Platform.OS === 'web') {
+          (window as any).alert('✅ Rapport supprimé. Vous pouvez recommencer comme une nouvelle journée.');
+        } else {
+          Alert.alert('Succès', 'Rapport supprimé. Vous pouvez recommencer comme une nouvelle journée.');
+        }
+      } else {
+        console.error('❌ Failed to delete report');
+        if (Platform.OS === 'web') {
+          (window as any).alert('Erreur: Impossible de supprimer le rapport');
+        } else {
+          Alert.alert('Erreur', 'Impossible de supprimer le rapport');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Exception during delete:', error);
+      if (Platform.OS === 'web') {
+        (window as any).alert('Erreur: ' + error);
+      } else {
+        Alert.alert('Erreur', 'Impossible de supprimer le rapport');
+      }
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        style={styles.content}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <SalesSummary sales={MOCK_SAMSUNG_SALES} />
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="dark" />
+        <Header />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <SalesSummary sales={MOCK_SAMSUNG_SALES} />
 
-        <View style={styles.centerContent}>
-          <VoiceButton
-            isRecording={isRecording}
-            isProcessing={isProcessing || isPreparingQuestion}
-            onPress={handleVoiceButtonPress}
-          />
+          <View style={styles.centerContent}>
+            {/* Indicateur de rapport en cours */}
+            {dailyReport && (
+              <View style={styles.reportStatusBanner}>
+                <Text style={styles.reportStatusText}>
+                  Rapport en cours • Dernière modification : {new Date(dailyReport.lastModifiedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                </Text>
+              </View>
+            )}
 
-          {isPreparingQuestion && (
-            <Text style={styles.processingText}>
-              Préparation de la question suivante...
-            </Text>
-          )}
+            <LiveKitVoiceButton
+              userName={MOCK_SAMSUNG_SALES.salesRepName}
+              eventName={MOCK_SAMSUNG_SALES.eventName}
+              existingReport={dailyReport}
+              onTranscription={handleTranscription}
+              onConversationComplete={handleConversationComplete}
+            />
 
-          {isRecording && !isPreparingQuestion && (
-            <Text style={styles.recordingText}>
-              {conversationStep === 0
-                ? 'Enregistrement en cours...'
-                : `Question ${conversationStep} - Parlez maintenant !`}
-            </Text>
-          )}
+            {transcription && (
+              <View style={styles.transcriptionBox}>
+                <Text style={styles.transcriptionLabel}>Transcription:</Text>
+                <Text style={styles.transcriptionText}>{transcription}</Text>
+              </View>
+            )}
 
-          {isProcessing && !isPreparingQuestion && (
-            <Text style={styles.processingText}>
-              {conversationStep === 0
-                ? 'Analyse de votre réponse...'
-                : 'Analyse en cours...'}
-            </Text>
-          )}
-
-          {!isRecording && !isProcessing && !isPreparingQuestion && (
             <Text style={styles.instructionText}>
-              {conversationStep === 0
-                ? 'Appuyez sur le bouton pour commencer'
-                : 'Écoutez la question, puis cliquez pour répondre'}
+              {isEditMode ? 'Ajoutez ou modifiez des informations' : 'Appuyez pour raconter votre journée de salon'}
             </Text>
-          )}
-        </View>
 
+            {/* Boutons d'action si un rapport existe */}
+            {dailyReport && (
+              <View style={styles.actionButtonsContainer}>
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity
+                    style={styles.viewReportButton}
+                    onPress={() => {
+                      // Ensure reportText and sales are up to date from dailyReport
+                      const comment = generateCommentSection({
+                        key_insights: dailyReport.keyInsights,
+                        emotional_context: dailyReport.emotionalContext,
+                      }, dailyReport.customerFeedback);
+                      setReportText(comment);
+                      setSales(dailyReport.sales); // Update sales data for the modal
+                      setShowReport(true);
+                    }}
+                  >
+                    <Text style={styles.viewReportButtonText}>Voir le rapport</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.sendFinalButton}
+                    onPress={handleSendReport}
+                  >
+                    <Image
+                      source={require('../assets/Logo/BulletYellow.png')}
+                      style={styles.bulletIcon}
+                      resizeMode="contain"
+                    />
+                    <Text style={styles.sendFinalButtonText}>Envoyer définitivement</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={styles.deleteTestButton}
+                  onPress={() => {
+                    console.log('🗑️ TouchableOpacity pressed');
+                    handleDeleteReport();
+                  }}
+                  activeOpacity={0.7}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Text style={styles.deleteTestButtonText}>Supprimer le rapport</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          {/* Tableau des ventes si disponible */}
+          {Object.keys(sales).length > 0 && (
+            <View style={styles.tableContainer}>
+              <SamsungSalesTable sales={sales} />
+            </View>
+          )}
+        </ScrollView>
+
+        {/* Modal de rapport */}
         <Modal
           visible={showReport}
           animationType="slide"
-          presentationStyle="pageSheet"
+          transparent={true}
+          onRequestClose={handleCloseReport}
         >
-          <SafeAreaView style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity onPress={handleCloseReport}>
-                <Text style={styles.closeButton}>✕ Fermer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleSendReport} style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>📤 Envoyer</Text>
-              </TouchableOpacity>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Rapport Samsung</Text>
+                <TouchableOpacity onPress={handleCloseReport}>
+                  <Text style={styles.closeButton}>×</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.modalBody}>
+                {/* Report Header */}
+                <View style={styles.reportHeader}>
+                  <Text style={styles.reportEventName}>
+                    {reportData?.event_name || MOCK_SAMSUNG_SALES.eventName || 'Événement'}
+                  </Text>
+                  <Text style={styles.reportMeta}>
+                    {MOCK_SAMSUNG_SALES.salesRepName}
+                  </Text>
+                  <Text style={styles.reportMeta}>
+                    {new Date().toLocaleDateString('fr-FR')}
+                  </Text>
+                </View>
+
+                {/* Comment Section */}
+                <View style={styles.sectionContainer}>
+                  <Text style={styles.sectionTitle}>COMMENTAIRE</Text>
+                  <View style={styles.commentBox}>
+                    <Text style={styles.commentText}>{reportText}</Text>
+                  </View>
+                </View>
+
+                {/* Sales Table */}
+                <View style={styles.sectionContainer}>
+                  <Text style={styles.sectionTitle}>TABLEAU DES VENTES</Text>
+                  <ReportTable salesData={sales} />
+                </View>
+
+                {/* Performance */}
+                {reportData && (
+                  <View style={styles.performanceContainer}>
+                    <Text style={styles.performanceText}>
+                      Performance globale :{' '}
+                      <Text style={styles.performanceValue}>
+                        {(() => {
+                          const totalSold = Object.values(sales).reduce((sum, val) => sum + val, 0);
+                          const totalObjectives = productsData.reduce((sum, p) => sum + p.objectifs, 0);
+                          return totalObjectives > 0 ? Math.round((totalSold / totalObjectives) * 100) : 0;
+                        })()}
+                        %
+                      </Text>
+                    </Text>
+                  </View>
+                )}
+              </ScrollView>
+
+              <View style={styles.modalFooter}>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={handleCloseReport}
+                >
+                  <Text style={styles.cancelButtonText}>Fermer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.sendButton]}
+                  onPress={handleSendReport}
+                >
+                  <Image
+                    source={require('../assets/Logo/BulletYellow.png')}
+                    style={styles.bulletIcon}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.sendButtonText}>Envoyer</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <SamsungSalesTable
-              sales={sales}
-              timeSpent={timeSpent || undefined}
-              customerFeedback={customerFeedback || undefined}
-            />
-          </SafeAreaView>
+          </View>
         </Modal>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.gray[50],
+    backgroundColor: colors.background.primary,
   },
-  content: {
+  safeArea: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: spacing.xxl,
   },
   centerContent: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xxl,
   },
-  recordingText: {
-    fontSize: 16,
-    color: colors.danger,
-    fontWeight: '600',
-    marginTop: 20,
+  transcriptionBox: {
+    marginTop: spacing.xl,
+    padding: spacing.md,
+    backgroundColor: colors.glass.background,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    maxWidth: '90%',
   },
-  processingText: {
-    fontSize: 16,
-    color: colors.gray[500],
+  transcriptionLabel: {
+    fontSize: 12,
     fontWeight: '600',
-    marginTop: 20,
+    color: colors.text.secondary,
+    marginBottom: spacing.xs,
+  },
+  transcriptionText: {
+    fontSize: 14,
+    color: colors.text.primary,
+    lineHeight: 20,
   },
   instructionText: {
     fontSize: 16,
-    color: colors.gray[500],
-    marginTop: 20,
+    color: colors.text.secondary,
+    marginTop: spacing.xl,
     textAlign: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: spacing.xl,
   },
-  modalContainer: {
+  tableContainer: {
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.lg,
+  },
+  modalOverlay: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '80%',
+    backgroundColor: colors.background.primary,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[200],
+    borderBottomColor: colors.glass.border,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text.primary,
   },
   closeButton: {
+    fontSize: 36,
+    fontWeight: '300',
+    color: colors.text.secondary,
+    lineHeight: 36,
+  },
+  modalBody: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+  reportHeader: {
+    paddingBottom: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glass.border,
+    marginBottom: spacing.lg,
+  },
+  reportEventName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.xs,
+  },
+  reportMeta: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    marginTop: spacing.xs,
+  },
+  sectionContainer: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
     fontSize: 16,
-    color: colors.gray[600],
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.md,
+  },
+  commentBox: {
+    backgroundColor: colors.glass.background,
+    padding: spacing.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  commentText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: colors.text.primary,
+  },
+  performanceContainer: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.glass.light,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  performanceText: {
+    fontSize: 16,
     fontWeight: '600',
+    color: colors.text.primary,
+  },
+  performanceValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.accent.gold,
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    padding: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.glass.border,
+  },
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  cancelButton: {
+    backgroundColor: colors.glass.background,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   sendButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: colors.accent.gold,
+    ...shadows.gold,
   },
   sendButtonText: {
     fontSize: 16,
-    color: colors.white,
     fontWeight: '600',
+    color: colors.text.primary,
+  },
+  reportStatusBanner: {
+    backgroundColor: 'rgba(255, 209, 102, 0.1)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.accent.gold,
+    marginBottom: spacing.lg,
+  },
+  reportStatusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.primary,
+    textAlign: 'center',
+  },
+  actionButtonsContainer: {
+    width: '100%',
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.md,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    width: '100%',
+  },
+  viewReportButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.background.dark,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    ...shadows.sm,
+  },
+  viewReportButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.onDark,
+  },
+  sendFinalButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.accent.gold,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.md,
+    ...shadows.gold,
+  },
+  sendFinalButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginLeft: spacing.xs,
+  },
+  deleteTestButton: {
+    alignSelf: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.md,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.accent.danger,
+    borderRadius: borderRadius.sm,
+    minHeight: 36,
+    justifyContent: 'center',
+    cursor: 'pointer',
+    zIndex: 999,
+  },
+  deleteTestButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.accent.danger,
+    textAlign: 'center',
+  },
+  bulletIcon: {
+    width: 20,
+    height: 20,
   },
 });

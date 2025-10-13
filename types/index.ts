@@ -18,10 +18,10 @@ export interface ReportData {
 }
 
 export interface ReportSections {
-  productsCount: string | null; // Nombre de produits vendus
-  timeSpent: string | null; // Temps passé dans la pharmacie
-  pharmacistComments: string | null; // Commentaires du pharmacien sur son activité
-  otherInfo: string | null; // Autres informations agrégées
+  productsCount?: string; // Nombre de produits vendus
+  timeSpent?: string; // Temps passé dans la pharmacie
+  pharmacistComments?: string; // Commentaires du pharmacien sur son activité
+  otherInfo?: string; // Autres informations agrégées
 }
 
 export interface MissingInfo {

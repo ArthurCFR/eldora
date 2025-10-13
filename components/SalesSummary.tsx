@@ -1,12 +1,13 @@
 /**
- * Résumé des informations de vente Samsung
+ * Modern Sales Summary with Glassmorphism
  */
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../constants/theme';
+import { colors, spacing, borderRadius, typography, shadows } from '../constants/theme';
 import { SamsungSalesInfo } from '../constants/samsungMockData';
+import GlassContainer from './GlassContainer';
 
 interface SalesSummaryProps {
   sales: SamsungSalesInfo;
@@ -14,79 +15,60 @@ interface SalesSummaryProps {
 
 export default function SalesSummary({ sales }: SalesSummaryProps) {
   return (
-    <View style={styles.container}>
+    <GlassContainer
+      style={styles.container}
+      intensity="medium"
+      shadow
+    >
       <View style={styles.header}>
-        <Ionicons name="storefront" size={24} color={colors.primary} />
-        <Text style={styles.title}>📱 Journée de Salon</Text>
+        <Text style={styles.title}>Session de vente</Text>
       </View>
 
       <View style={styles.infoContainer}>
-        <View style={styles.infoRow}>
-          <Ionicons name="calendar" size={18} color={colors.gray[600]} />
-          <Text style={styles.infoText}>
-            {sales.salesDate} • {sales.salesTime}
-          </Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="location" size={18} color={colors.gray[600]} />
-          <Text style={styles.infoText}>{sales.eventName}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="business" size={18} color={colors.gray[600]} />
-          <Text style={styles.infoText}>{sales.eventLocation}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="pricetag" size={18} color={colors.gray[600]} />
-          <Text style={styles.infoText}>Stand {sales.boothNumber}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="person" size={18} color={colors.gray[600]} />
-          <Text style={styles.infoText}>{sales.salesRepName}</Text>
-        </View>
+        <InfoRow text={`${sales.salesDate} • ${sales.salesTime}`} />
+        <InfoRow text={sales.eventName} />
+        <InfoRow text={sales.eventLocation} />
+        <InfoRow text={`Stand ${sales.boothNumber}`} />
+        <InfoRow text={sales.salesRepName} />
       </View>
+    </GlassContainer>
+  );
+}
+
+interface InfoRowProps {
+  text: string;
+}
+
+function InfoRow({ text }: InfoRowProps) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoText}>{text}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 20,
-    marginHorizontal: 20,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: spacing.md,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.md,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 12,
+    marginBottom: spacing.md,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.gray[900],
+    ...typography.h3,
+    color: colors.text.primary,
   },
   infoContainer: {
-    gap: 12,
+    gap: spacing.sm,
   },
   infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    paddingVertical: spacing.xs / 2,
   },
   infoText: {
-    fontSize: 15,
-    color: colors.gray[700],
+    ...typography.small,
+    color: colors.text.secondary,
     flex: 1,
   },
 });
