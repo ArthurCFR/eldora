@@ -15,7 +15,7 @@ from livekit.agents import (
     AgentSession,
 )
 from livekit.agents.voice import Agent, ConversationItemAddedEvent, UserInputTranscribedEvent
-from livekit.plugins import openai, silero
+from livekit.plugins import openai, silero, elevenlabs
 
 # Import our custom modules
 from conversational_engine import ConversationalEngine
@@ -44,9 +44,9 @@ async def entrypoint(ctx: JobContext):
         logger.error(f"❌ Failed to load products config: {e}")
         raise  # Stop the agent if config can't be loaded
 
-    # Initialize our custom engines
-    conversation_engine = ConversationalEngine()
-    sales_analyzer = SalesAnalyzer()
+    # Initialize our custom engines with config_loader
+    conversation_engine = ConversationalEngine(config_loader=config_loader)
+    sales_analyzer = SalesAnalyzer(config_loader=config_loader)
 
     # Track conversation messages for analysis
     conversation_messages = []
@@ -121,12 +121,21 @@ async def entrypoint(ctx: JobContext):
                         logger.info(f"   {i}. {clean_desc.strip()}")
 
                     # Update opening message based on config (for instant delivery)
-                    if existing_report:
+                    # Priority 1: Custom opening message from manager
+                    if config.get("customOpeningMessage"):
+                        # Replace {userName} placeholder if present
+                        opening_message = config.get("customOpeningMessage").replace("{userName}", user_name)
+                        logger.info("💬 Using CUSTOM opening message from manager")
+                    # Priority 2: Edit mode message
+                    elif existing_report:
                         opening_message = f"Salut {user_name} ! Tu veux compléter ton rapport de la journée ? Dis-moi ce qui a changé ou ce que tu veux ajouter."
+                    # Priority 3: First attention point natural prompt
                     elif attention_points and attention_points[0].get("naturalPrompts"):
                         opening_message = f"Salut {user_name} ! {attention_points[0]['naturalPrompts'][0]}"
+                    # Priority 4: Event name based message
                     elif event_name:
                         opening_message = f"Salut {user_name} ! Comment s'est passée ta journée au {event_name} ?"
+                    # Priority 5: Generic fallback
                     else:
                         opening_message = f"Salut {user_name} ! Comment s'est passée ta journée ?"
 
@@ -176,19 +185,32 @@ async def entrypoint(ctx: JobContext):
     # Create AgentSession with voice pipeline configuration
     session = AgentSession(
         vad=silero.VAD.load(
-            min_speech_duration=0.2,     # Réduit pour détecter la voix plus rapidement
-            min_silence_duration=0.4,    # Réduit pour permettre des pauses courtes
-            padding_duration=0.1,        # Réduit pour moins de sensibilité aux bruits
+            min_speech_duration=0.5,     # ↑ de 0.2 à 0.5s (ignorer bruits très courts)
+            min_silence_duration=1.2,    # ↑ de 0.6 à 1.2s (attendre plus longtemps avant de considérer fin de phrase)
+            prefix_padding_duration=0.3,  # ↑ de 0.2 à 0.3s (capturer début de phrase mieux)
         ),
-        stt=openai.STT(model="whisper-1"),
+        stt=openai.STT(
+            model="whisper-1",
+            language="fr",  # Force French language for transcription
+        ),
         llm=openai.LLM(model="gpt-4o-mini"),
-        tts=openai.TTS(voice="onyx"),
-    # alloy
-    # echo.
-    # fable.
-    # onyx.
-    # nova.
-    # shimmer.
+        tts=elevenlabs.TTS(
+            model="eleven_turbo_v2_5",  # ✅ model (pas model_id)
+            voice_id="5jCmrHdxbpU36l1wb3Ke",  # Voix française naturelle
+            streaming_latency=4,  # ↑ de 3 à 4 (latence max pour plus de stabilité)
+            language="fr",  # Code langue français
+        ),
+        # Paramètres anti-interruptions intempestives
+        allow_interruptions=True,  # Garder les interruptions, mais filtrées
+        min_interruption_duration=1.0,  # ↑ de 0.5s à 1.0s (parler 1s min pour interrompre)
+        min_interruption_words=2,  # ↑ de 0 à 2 (au moins 2 mots pour interrompre)
+        false_interruption_timeout=2.0,  # Détecter fausses interruptions après 2s
+        resume_false_interruption=True,  # Reprendre la parole si fausse interruption
+    # Paramètres ElevenLabs TTS valides:
+    # model: "eleven_turbo_v2_5" (rapide) ou "eleven_multilingual_v2" (qualité)
+    # voice_id: ID de la voix ElevenLabs
+    # streaming_latency: 0-4 pour optimiser la latence
+    # language: "fr" pour français (supporté par eleven_turbo_v2_5)
     )
 
     async def analyze_conversation_and_send_report():

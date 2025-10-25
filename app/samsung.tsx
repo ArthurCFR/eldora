@@ -3,7 +3,7 @@
  * V2: Utilise LiveKit pour conversation en temps réel
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -15,6 +15,9 @@ import {
   Alert,
   Platform,
   Image,
+  Dimensions,
+  TextInput,
+  Animated,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,10 +27,13 @@ import LiveKitVoiceButton from '../components/LiveKitVoiceButton';
 import SamsungSalesTable from '../components/SamsungSalesTable';
 import ReportTable from '../components/ReportTable';
 import Header from '../components/Header';
+import ConversationHistory, { Message } from '../components/ConversationHistory';
+import SoundWaveBar from '../components/SoundWaveBar';
+import { useApp } from '../contexts/AppContext';
 
 import { MOCK_SAMSUNG_SALES } from '../constants/samsungMockData';
 import { colors, spacing, borderRadius, shadows } from '../constants/theme';
-import productsData from '../produits.json';
+import productsData from '../agent/config/products.json';
 import {
   DailyReport,
   loadTodayReport,
@@ -38,6 +44,7 @@ import {
 } from '../services/dailyReportService';
 
 export default function SamsungSales() {
+  const { userName, justLoggedIn } = useApp();
   const [dailyReport, setDailyReport] = useState<DailyReport | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [sales, setSales] = useState<{ [productName: string]: number }>({});
@@ -46,11 +53,126 @@ export default function SamsungSales() {
   const [showReport, setShowReport] = useState(false);
   const [transcription, setTranscription] = useState('');
   const [reportText, setReportText] = useState('');
+  const [conversationMessages, setConversationMessages] = useState<Message[]>([]);
+  const [isConversationActive, setIsConversationActive] = useState(false);
+  const [isAgentSpeaking, setIsAgentSpeaking] = useState(false);
+  const [screenHeight] = useState(Dimensions.get('window').height);
+  const [agentAudioStream, setAgentAudioStream] = useState<MediaStream | null>(null);
+  const [userAudioStream, setUserAudioStream] = useState<MediaStream | null>(null);
+  const [showConversationHistory, setShowConversationHistory] = useState(false);
+  const [manualMessage, setManualMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [conversationMode, setConversationMode] = useState<'voice' | 'text'>('voice'); // Track current mode
+  const soundBarVerticalPosition = useRef(new Animated.Value(0)).current;
+  const soundBarScale = useRef(new Animated.Value(1)).current;
+  const soundBarOpacity = useRef(new Animated.Value(1)).current;
+  const [microphoneControl, setMicrophoneControl] = useState<((enabled: boolean) => Promise<void>) | null>(null);
+  const [sendDataMessage, setSendDataMessage] = useState<((data: any) => Promise<void>) | null>(null);
+  const [disconnectLiveKit, setDisconnectLiveKit] = useState<(() => void) | null>(null);
 
   const handleTranscription = (text: string, isFinal: boolean) => {
     // Afficher la transcription en temps réel
     setTranscription(text);
+
+    // Si la transcription est finale, ajouter au historique de conversation
+    if (isFinal && text.trim()) {
+      const userMessage: Message = {
+        id: `user-${Date.now()}`,
+        text: text.trim(),
+        sender: 'user',
+        timestamp: new Date(),
+      };
+      setConversationMessages(prev => [...prev, userMessage]);
+    }
   };
+
+  const handleAgentResponse = (text: string) => {
+    // Ajouter la réponse de l'agent à l'historique
+    if (text.trim()) {
+      const agentMessage: Message = {
+        id: `agent-${Date.now()}`,
+        text: text.trim(),
+        sender: 'agent',
+        timestamp: new Date(),
+      };
+      setConversationMessages(prev => [...prev, agentMessage]);
+    }
+  };
+
+  const handleConnectionStateChange = (isConnected: boolean, isAgentSpeaking: boolean) => {
+    setIsConversationActive(isConnected);
+    setIsAgentSpeaking(isAgentSpeaking);
+  };
+
+  const handleAudioStreamsChange = (agentStream: MediaStream | null, userStream: MediaStream | null) => {
+    setAgentAudioStream(agentStream);
+    setUserAudioStream(userStream);
+  };
+
+  const handleMicrophoneControl = (setEnabled: (enabled: boolean) => Promise<void>) => {
+    setMicrophoneControl(() => setEnabled);
+  };
+
+  const handleDataMessageControl = (sendData: (data: any) => Promise<void>) => {
+    setSendDataMessage(() => sendData);
+  };
+
+  const handleDisconnectControl = (disconnect: () => void) => {
+    setDisconnectLiveKit(() => disconnect);
+  };
+
+  // Animate sound bar position when conversation history opens/closes
+  // Calculate center position in pixels (50% of screen height - offset)
+  const [soundBarTopPosition] = useState(new Animated.Value(screenHeight / 2 - 40));
+
+  useEffect(() => {
+    // Target: 100px when conversation open, center when closed
+    const centerPosition = screenHeight / 2 - 40; // 50% of screen minus half of sound bar height
+    const topPosition = 100; // Fixed top position
+    const targetValue = showConversationHistory ? topPosition : centerPosition;
+
+    Animated.spring(soundBarTopPosition, {
+      toValue: targetValue,
+      useNativeDriver: false, // We're animating layout properties (top)
+      friction: 10, // Smooth spring animation
+      tension: 50,
+      velocity: 2,
+    }).start();
+  }, [showConversationHistory, screenHeight]);
+
+  // Animate sound bar when typing (collapse to circle) and disable microphone
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(soundBarScale, {
+        toValue: isTyping ? 0.4 : 1,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }),
+      Animated.timing(soundBarOpacity, {
+        toValue: isTyping ? 0 : 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Disable/enable microphone based on typing state
+    if (microphoneControl && typeof microphoneControl === 'function') {
+      microphoneControl(!isTyping).catch(err => {
+        console.error('Failed to toggle microphone:', err);
+      });
+    }
+  }, [isTyping, microphoneControl]);
+
+  // Calculate dynamic overlay position based on screen height
+  // Responsive layout constants
+  const HEADER_HEIGHT = 60;
+  const SOUND_WAVE_POSITION = 100; // Fixed position from top
+  const SOUND_WAVE_HEIGHT = 80;
+  const SAFE_MARGIN = 16;
+  // Conversation overlay should start below sound wave
+  const overlayTop = SOUND_WAVE_POSITION + SOUND_WAVE_HEIGHT + SAFE_MARGIN;
+  const overlayBottom = SAFE_MARGIN;
 
   const [reportData, setReportData] = useState<any>(null);
 
@@ -160,6 +282,23 @@ export default function SamsungSales() {
     return commentSection;
   };
 
+  // Parse markdown bold (**TEXT**) for rendering
+  const renderMarkdownText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        // Remove ** and render as bold
+        const boldText = part.slice(2, -2);
+        return (
+          <Text key={index} style={styles.commentTextBold}>
+            {boldText}
+          </Text>
+        );
+      }
+      return <Text key={index}>{part}</Text>;
+    });
+  };
+
   const handleCloseReport = () => {
     setShowReport(false);
     setSales({});
@@ -168,6 +307,7 @@ export default function SamsungSales() {
     setTranscription('');
     setReportText('');
     setReportData(null);
+    // Keep conversation messages - don't clear them
   };
 
   const handleSendReport = async () => {
@@ -235,6 +375,15 @@ export default function SamsungSales() {
   const performDelete = async () => {
     console.log('🗑️ performDelete called');
     try {
+      // CRITICAL: Disconnect LiveKit session FIRST before resetting state
+      if (disconnectLiveKit) {
+        console.log('🔌 Disconnecting LiveKit session...');
+        disconnectLiveKit();
+        console.log('✅ LiveKit disconnected');
+      } else {
+        console.warn('⚠️ No disconnect function available');
+      }
+
       const success = await deleteTodayReport(MOCK_SAMSUNG_SALES.salesRepName);
       console.log('🗑️ deleteTodayReport result:', success);
 
@@ -248,6 +397,8 @@ export default function SamsungSales() {
         setReportData(null);
         setShowReport(false);
         setTranscription('');
+        setConversationMessages([]);
+        setIsConversationActive(false); // Reset conversation state
 
         console.log('✅ Interface reset complete');
 
@@ -278,16 +429,155 @@ export default function SamsungSales() {
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <StatusBar style="dark" />
-        <Header />
+
+        {/* Header - always visible */}
+        <Header agentName={userName || MOCK_SAMSUNG_SALES.salesRepName} animated={justLoggedIn} />
+
+        {/* Sound wave bar - animated between centered and top position */}
+        {isConversationActive && (
+          <Animated.View
+            style={[
+              styles.soundWaveContainerAnimated,
+              {
+                // Animated top position (in pixels)
+                top: soundBarTopPosition,
+                transform: [
+                  { translateY: soundBarVerticalPosition },
+                  { scale: soundBarScale },
+                ],
+              },
+            ]}
+          >
+            {/* Sound bars (hidden when typing) */}
+            <Animated.View style={{ opacity: soundBarOpacity }}>
+              <View style={styles.soundWaveWrapper}>
+                <SoundWaveBar
+                  isActive={isConversationActive && !isTyping}
+                  isAgentSpeaking={isAgentSpeaking}
+                  agentStream={agentAudioStream}
+                  userStream={userAudioStream}
+                />
+                <TouchableOpacity
+                  style={styles.messageIconButton}
+                  onPress={() => setShowConversationHistory(!showConversationHistory)}
+                >
+                  <Ionicons
+                    name={showConversationHistory ? "close-circle" : "chatbubble-ellipses"}
+                    size={24}
+                    color={colors.text.secondary}
+                  />
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+
+            {/* Circular mic button (shown when typing) */}
+            {isTyping && (
+              <TouchableOpacity
+                style={styles.micCircleButton}
+                onPress={async () => {
+                  setIsTyping(false);
+                  setManualMessage('');
+                  setConversationMode('voice'); // Switch back to voice mode
+
+                  // Notify agent to switch to voice mode
+                  if (sendDataMessage) {
+                    try {
+                      await sendDataMessage({
+                        type: 'switch_to_voice',
+                      });
+                      console.log('🎤 Sent switch to voice mode signal to agent');
+                    } catch (error) {
+                      console.error('Failed to send switch to voice signal:', error);
+                    }
+                  }
+
+                  // Re-enable microphone
+                  if (microphoneControl && typeof microphoneControl === 'function') {
+                    try {
+                      await microphoneControl(true);
+                    } catch (error) {
+                      console.error('Failed to re-enable microphone:', error);
+                    }
+                  }
+                }}
+              >
+                <Ionicons name="mic" size={32} color={colors.accent.gold} />
+              </TouchableOpacity>
+            )}
+          </Animated.View>
+        )}
+
+        {/* Conversation overlay - only visible when user clicks message icon */}
+        {isConversationActive && showConversationHistory && (
+          <View style={[styles.conversationOverlay, { top: overlayTop, bottom: overlayBottom }]}>
+            <ConversationHistory messages={conversationMessages} />
+
+            {/* Manual message input */}
+            <View style={styles.manualInputContainer}>
+              <TextInput
+                style={styles.manualInput}
+                placeholder="Saisir un message manuel..."
+                placeholderTextColor={colors.text.secondary}
+                value={manualMessage}
+                onChangeText={(text) => {
+                  setManualMessage(text);
+                  // Enable typing mode when user starts typing
+                  if (text.length > 0 && !isTyping) {
+                    setIsTyping(true);
+                    setConversationMode('text'); // Switch to text mode
+                  } else if (text.length === 0 && isTyping) {
+                    setIsTyping(false);
+                  }
+                }}
+                multiline
+                autoFocus
+              />
+              <TouchableOpacity
+                style={styles.sendButton}
+                onPress={async () => {
+                  if (manualMessage.trim()) {
+                    // Send text message to agent via data channel
+                    if (sendDataMessage) {
+                      try {
+                        await sendDataMessage({
+                          type: 'user_text_message',
+                          text: manualMessage.trim(),
+                          mode: 'text', // Tell agent to respond in text only
+                        });
+
+                        // Add to local conversation history
+                        handleTranscription(manualMessage, true);
+                        setManualMessage('');
+                        setIsTyping(false);
+                      } catch (error) {
+                        console.error('Failed to send text message:', error);
+                      }
+                    } else {
+                      // Fallback if data channel not available
+                      handleTranscription(manualMessage, true);
+                      setManualMessage('');
+                      setIsTyping(false);
+                    }
+                  }
+                }}
+              >
+                <Ionicons name="send" size={20} color={colors.accent.gold} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={!isConversationActive}
         >
-          <SalesSummary sales={MOCK_SAMSUNG_SALES} />
+          {/* Sales summary - hidden during conversation */}
+          {!isConversationActive && <SalesSummary sales={MOCK_SAMSUNG_SALES} />}
 
           <View style={styles.centerContent}>
-            {/* Indicateur de rapport en cours */}
-            {dailyReport && (
+            {/* Indicateur de rapport en cours - hidden during conversation */}
+            {!isConversationActive && dailyReport && (
               <View style={styles.reportStatusBanner}>
                 <Text style={styles.reportStatusText}>
                   Rapport en cours • Dernière modification : {new Date(dailyReport.lastModifiedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -295,27 +585,25 @@ export default function SamsungSales() {
               </View>
             )}
 
-            <LiveKitVoiceButton
-              userName={MOCK_SAMSUNG_SALES.salesRepName}
-              eventName={MOCK_SAMSUNG_SALES.eventName}
-              existingReport={dailyReport}
-              onTranscription={handleTranscription}
-              onConversationComplete={handleConversationComplete}
-            />
+            {/* Voice button - hidden during conversation (replaced by sound wave) */}
+            <View style={isConversationActive ? styles.hiddenButton : styles.voiceButtonContainer}>
+              <LiveKitVoiceButton
+                userName={MOCK_SAMSUNG_SALES.salesRepName}
+                eventName={MOCK_SAMSUNG_SALES.eventName}
+                existingReport={dailyReport}
+                onTranscription={handleTranscription}
+                onAgentResponse={handleAgentResponse}
+                onConversationComplete={handleConversationComplete}
+                onConnectionStateChange={handleConnectionStateChange}
+                onAudioStreamsChange={handleAudioStreamsChange}
+                onMicrophoneControl={handleMicrophoneControl}
+                onDataMessageControl={handleDataMessageControl}
+                onDisconnectControl={handleDisconnectControl}
+              />
+            </View>
 
-            {transcription && (
-              <View style={styles.transcriptionBox}>
-                <Text style={styles.transcriptionLabel}>Transcription:</Text>
-                <Text style={styles.transcriptionText}>{transcription}</Text>
-              </View>
-            )}
-
-            <Text style={styles.instructionText}>
-              {isEditMode ? 'Ajoutez ou modifiez des informations' : 'Appuyez pour raconter votre journée de salon'}
-            </Text>
-
-            {/* Boutons d'action si un rapport existe */}
-            {dailyReport && (
+            {/* Boutons d'action si un rapport existe - hidden during conversation */}
+            {!isConversationActive && dailyReport && (
               <View style={styles.actionButtonsContainer}>
                 <View style={styles.actionButtons}>
                   <TouchableOpacity
@@ -360,8 +648,8 @@ export default function SamsungSales() {
             )}
           </View>
 
-          {/* Tableau des ventes si disponible */}
-          {Object.keys(sales).length > 0 && (
+          {/* Tableau des ventes si disponible - hidden during conversation */}
+          {!isConversationActive && Object.keys(sales).length > 0 && (
             <View style={styles.tableContainer}>
               <SamsungSalesTable sales={sales} />
             </View>
@@ -402,7 +690,9 @@ export default function SamsungSales() {
                 <View style={styles.sectionContainer}>
                   <Text style={styles.sectionTitle}>COMMENTAIRE</Text>
                   <View style={styles.commentBox}>
-                    <Text style={styles.commentText}>{reportText}</Text>
+                    <Text style={styles.commentText}>
+                      {renderMarkdownText(reportText)}
+                    </Text>
                   </View>
                 </View>
 
@@ -419,8 +709,8 @@ export default function SamsungSales() {
                       Performance globale :{' '}
                       <Text style={styles.performanceValue}>
                         {(() => {
-                          const totalSold = Object.values(sales).reduce((sum, val) => sum + val, 0);
-                          const totalObjectives = productsData.reduce((sum, p) => sum + p.objectifs, 0);
+                          const totalSold = Object.values(sales).reduce((sum: number, val: number) => sum + val, 0);
+                          const totalObjectives = productsData.products.reduce((sum: number, p: any) => sum + p.target_quantity, 0);
                           return totalObjectives > 0 ? Math.round((totalSold / totalObjectives) * 100) : 0;
                         })()}
                         %
@@ -436,6 +726,15 @@ export default function SamsungSales() {
                   onPress={handleCloseReport}
                 >
                   <Text style={styles.cancelButtonText}>Fermer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.editButton]}
+                  onPress={() => {
+                    setShowReport(false);
+                  }}
+                >
+                  <Ionicons name="pencil" size={18} color={colors.text.primary} />
+                  <Text style={styles.editButtonText}>Modifier</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.sendButton]}
@@ -474,32 +773,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.xxl,
   },
-  transcriptionBox: {
-    marginTop: spacing.xl,
-    padding: spacing.md,
-    backgroundColor: colors.glass.background,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.glass.border,
-    maxWidth: '90%',
-  },
-  transcriptionLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
-  },
-  transcriptionText: {
-    fontSize: 14,
-    color: colors.text.primary,
-    lineHeight: 20,
-  },
   instructionText: {
-    fontSize: 16,
+    fontSize: 13,
     color: colors.text.secondary,
-    marginTop: spacing.xl,
+    marginTop: spacing.sm,
     textAlign: 'center',
     paddingHorizontal: spacing.xl,
+  },
+  conversationContainer: {
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  conversationTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.xs,
+  },
+  conversationHistoryWrapper: {
+    height: 400,
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    overflow: 'hidden',
   },
   tableContainer: {
     paddingHorizontal: spacing.md,
@@ -579,6 +878,12 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.text.primary,
   },
+  commentTextBold: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: colors.text.primary,
+    fontWeight: '700',
+  },
   performanceContainer: {
     marginTop: spacing.md,
     padding: spacing.md,
@@ -622,6 +927,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text.primary,
   },
+  editButton: {
+    backgroundColor: colors.glass.medium,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  editButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
   sendButton: {
     backgroundColor: colors.accent.gold,
     ...shadows.gold,
@@ -638,7 +953,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.accent.gold,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.lg / 2,
+    marginTop: spacing.xs,
   },
   reportStatusText: {
     fontSize: 14,
@@ -712,5 +1028,117 @@ const styles = StyleSheet.create({
   bulletIcon: {
     width: 20,
     height: 20,
+  },
+  // Immersive conversation mode styles
+  soundWaveContainer: {
+    position: 'absolute',
+    top: 100, // Fixed distance from top (below header ~60px + margin) when conversation shown
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    minHeight: 80, // Minimum space for sound wave
+  },
+  soundWaveContainerCentered: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: -40, // Half of minHeight for vertical centering
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    minHeight: 80,
+  },
+  soundWaveContainerAnimated: {
+    position: 'absolute',
+    // top and marginTop will be animated inline
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    minHeight: 80,
+  },
+  voiceButtonContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    marginTop: -60, // Adjust based on button height for centering
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soundWaveWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  messageIconButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.glass.background,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  micCircleButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.background.dark,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.accent.gold,
+    ...shadows.gold,
+  },
+  conversationOverlay: {
+    position: 'absolute',
+    // top and bottom will be set dynamically
+    left: spacing.md,
+    right: spacing.md,
+    zIndex: 5,
+    backgroundColor: colors.background.primary,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    ...shadows.lg,
+  },
+  manualInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.glass.border,
+  },
+  manualInput: {
+    flex: 1,
+    backgroundColor: colors.glass.background,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: 14,
+    color: colors.text.primary,
+    maxHeight: 80,
+  },
+  sendButton: {
+    backgroundColor: colors.glass.background,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.accent.gold,
+    padding: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+  },
+  hiddenButton: {
+    position: 'absolute',
+    opacity: 0,
+    pointerEvents: 'none',
   },
 });

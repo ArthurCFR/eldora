@@ -34,6 +34,7 @@
     "expo-status-bar": "~3.0.8",
     "expo-video": "^3.0.11",
     "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "livekit-client": "^2.15.8",
     "livekit-server-sdk": "^2.14.0",
     "lottie-react-native": "^7.3.4",

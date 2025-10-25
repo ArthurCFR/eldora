@@ -76,7 +76,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       clearTimeout(playTimer);
       if (checkEndInterval) clearInterval(checkEndInterval);
       subscription.remove();
-      player.pause();
+      try {
+        player.pause();
+      } catch (e) {
+        // Ignore - native object may already be destroyed
+      }
     };
   }, []);
 

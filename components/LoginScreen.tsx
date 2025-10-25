@@ -66,7 +66,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <StatusBar style="dark" />
-        <Header />
+        <Header centered />
 
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingView}

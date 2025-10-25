@@ -2,7 +2,6 @@
 Dynamic prompt builder using product configuration
 """
 import json
-from typing import Dict, Any
 from utils.config_loader import ConfigLoader
 
 
@@ -35,13 +34,16 @@ class PromptBuilder:
 
         json_str = json.dumps(json_structure, indent=4, ensure_ascii=False)
 
-        prompt = f"""Analyse cette conversation de vente Samsung et extrait PRÉCISÉMENT les informations suivantes en JSON.
+        brand_name = self.config.get_brand_name()
+        conversation_context = self.config.client_config.get("client", {}).get("context", "ventes de produits")
+
+        prompt = f"""Analyse cette conversation de {conversation_context} et extrait PRÉCISÉMENT les informations suivantes en JSON.
 
 CONVERSATION COMPLÈTE :
 {conversation_text}
 
 ═══════════════════════════════════════════════════════════════
-📋 LISTE EXHAUSTIVE DES PRODUITS SAMSUNG ({products_count} produits UNIQUEMENT)
+📋 LISTE EXHAUSTIVE DES PRODUITS {brand_name.upper()} ({products_count} produits UNIQUEMENT)
 ═══════════════════════════════════════════════════════════════
 
 {products_list}
@@ -127,7 +129,7 @@ Réponds UNIQUEMENT avec un JSON valide (SANS markdown, SANS balises ``` ) :
 {json_str}
 
 ⚠️ IMPORTANT - RÈGLES FINALES :
-1. SALES : Mets les bonnes quantités pour les {products_count} produits Samsung
+1. SALES : Mets les bonnes quantités pour les {products_count} produits {brand_name}
 2. CUSTOMER_FEEDBACK : Sections **BOLD** structurées par points d'attention (SANS les insights de key_insights)
    🚫 N'invente PAS, ne déduis PAS - utilise UNIQUEMENT ce que le vendeur a EXPLICITEMENT dit
 3. KEY_INSIGHTS : Liste séparée de 2-4 insights courts (max 15 mots chacun)

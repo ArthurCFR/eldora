@@ -8,11 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 import SplashScreen from '../components/SplashScreen';
 import LoginScreen from '../components/LoginScreen';
+import { AppProvider, useApp } from '../contexts/AppContext';
 
-export default function RootLayout() {
+function RootLayoutContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
+  const { setUserName, setJustLoggedIn } = useApp();
 
   const handleSplashComplete = () => {
     setShowSplash(false);
@@ -21,6 +22,9 @@ export default function RootLayout() {
   const handleLoginSuccess = (firstName: string) => {
     setUserName(firstName);
     setIsLoggedIn(true);
+    setJustLoggedIn(true);
+    // Reset flag after animation
+    setTimeout(() => setJustLoggedIn(false), 1500);
   };
 
   if (showSplash) {
@@ -76,5 +80,13 @@ export default function RootLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AppProvider>
+      <RootLayoutContent />
+    </AppProvider>
   );
 }

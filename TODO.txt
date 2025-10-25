@@ -1,0 +1,24 @@
+Commandes : 
+npx expo start --tunnel
+npx expo start --web
+
+  Mémo - 4 terminaux nécessaires
+
+  1. Terminal 1 - LiveKit
+  npm run livekit:local
+  2. Terminal 2 - Proxy
+  npm run proxy
+  3. Terminal 3 - Agent Python 
+  npm run agent
+  4. Terminal 4 - Expo
+  npx expo start
+
+  Claude :
+  nvm use 22.16.0
+
+  TODO :
+  Enlever le mic vert au lancement
+  Investiger une DA pepite d'or
+  Crééer l'interface manager
+  Pouvoir avoir un "Top question" a mettre
+  

@@ -14,6 +14,7 @@ export interface AttentionPoint {
 export interface AssistantConfig {
   conversationStyle: 'friendly_colleague' | 'professional_warm' | 'coach_motivating' | 'casual_relaxed';
   attentionPoints: AttentionPoint[];
+  customOpeningMessage?: string; // Message d'accroche personnalisé par le manager
 }
 
 // Backward compatibility type

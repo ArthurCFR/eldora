@@ -26,6 +26,10 @@ export interface UseLiveKitRoomReturn {
   isAgentSpeaking: boolean;
   transcription: string;
   isGeneratingReport: boolean;
+  agentAudioStream: MediaStream | null;
+  userAudioStream: MediaStream | null;
+  setMicrophoneEnabled: (enabled: boolean) => Promise<void>;
+  sendDataMessage: (data: any) => Promise<void>;
 }
 
 export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomReturn {
@@ -37,9 +41,12 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
   const [isAgentSpeaking, setIsAgentSpeaking] = useState(false);
   const [transcription, setTranscription] = useState('');
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [agentAudioStream, setAgentAudioStream] = useState<MediaStream | null>(null);
+  const [userAudioStream, setUserAudioStream] = useState<MediaStream | null>(null);
 
   const roomRef = useRef<Room | null>(null);
   const roomNameRef = useRef<string>('');
+  const agentSpeakingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Setup room event listeners
   const setupRoomListeners = useCallback((room: Room) => {
@@ -77,7 +84,12 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
           const audioElement = track.attach();
           audioElement.play();
           console.log('Playing agent audio');
-          setIsAgentSpeaking(true);
+
+          // Get MediaStream for audio visualization
+          if (track.mediaStream) {
+            setAgentAudioStream(track.mediaStream);
+            console.log('Agent audio stream captured for visualization');
+          }
         }
       }
     );
@@ -89,27 +101,45 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
 
         if (track.kind === Track.Kind.Audio) {
           track.detach();
-          setIsAgentSpeaking(false);
+          setAgentAudioStream(null);
         }
       }
     );
 
-    // Transcription events
-    room.on(RoomEvent.TranscriptionReceived, (transcriptions) => {
-      transcriptions.forEach((transcription) => {
-        if (!transcription.segments || transcription.segments.length === 0) return;
+    // Active speakers detection - SIMPLIFIED to avoid event loops
+    room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+      // Clear any existing timeout to avoid memory leaks
+      if (agentSpeakingTimeoutRef.current) {
+        clearTimeout(agentSpeakingTimeoutRef.current);
+        agentSpeakingTimeoutRef.current = null;
+      }
 
-        const text = transcription.segments.map((s) => s.text).join(' ');
-        const isFinal = transcription.segments.every((s) => s.final);
+      // Simple logic: if any speaker is NOT the local user, agent is speaking
+      const agentIsCurrentlySpeaking = speakers.some(
+        speaker => speaker.identity !== room.localParticipant.identity
+      );
 
-        console.log('Transcription:', text, 'Final:', isFinal);
-        setTranscription(text);
-
-        if (onTranscription) {
-          onTranscription(text, isFinal);
-        }
-      });
+      // Update state directly without timeouts to avoid event loops
+      setIsAgentSpeaking(agentIsCurrentlySpeaking);
     });
+
+    // Transcription events (temporarily disabled - API changed)
+    // TODO: Update to new LiveKit transcription API
+    // room.on(RoomEvent.TranscriptionReceived, (transcriptions) => {
+    //   transcriptions.forEach((transcription) => {
+    //     if (!transcription.segments || transcription.segments.length === 0) return;
+
+    //     const text = transcription.segments.map((s: any) => s.text).join(' ');
+    //     const isFinal = transcription.segments.every((s: any) => s.final);
+
+    //     console.log('Transcription:', text, 'Final:', isFinal);
+    //     setTranscription(text);
+
+    //     if (onTranscription) {
+    //       onTranscription(text, isFinal);
+    //     }
+    //   });
+    // });
 
     // Track subscriptions for agent speech (to detect end of conversation)
     room.on(
@@ -143,8 +173,14 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
         else if (message.type === 'conversation_complete' && onConversationComplete) {
           setIsGeneratingReport(false); // Stop animation when report is ready
           onConversationComplete(message.data);
-        } else if (message.type === 'agent_response' && onAgentResponse) {
+        }
+        // Handle agent response (for conversation history)
+        else if (message.type === 'agent_response' && onAgentResponse) {
           onAgentResponse(message.text);
+        }
+        // Handle user transcription (for conversation history)
+        else if (message.type === 'user_transcription' && onTranscription) {
+          onTranscription(message.text, true);
         }
       } catch (e) {
         console.error('Failed to parse data message:', e);
@@ -218,10 +254,16 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
         await room.localParticipant.setMicrophoneEnabled(true);
         console.log('✅ Microphone enabled');
 
-        // Verify microphone track is published
+        // Verify microphone track is published and get MediaStream
         const micTrack = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-        if (micTrack) {
+        if (micTrack && micTrack.track) {
           console.log('✅ Microphone track published:', micTrack.trackSid);
+
+          // Get user audio stream for visualization
+          if (micTrack.track.mediaStream) {
+            setUserAudioStream(micTrack.track.mediaStream);
+            console.log('User audio stream captured for visualization');
+          }
         } else {
           console.warn('⚠️ No microphone track found after enabling');
         }
@@ -241,6 +283,12 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
 
   // Disconnect from room
   const disconnect = useCallback(() => {
+    // Clear any pending timeouts
+    if (agentSpeakingTimeoutRef.current) {
+      clearTimeout(agentSpeakingTimeoutRef.current);
+      agentSpeakingTimeoutRef.current = null;
+    }
+
     if (roomRef.current) {
       roomRef.current.disconnect();
       roomRef.current = null;
@@ -248,6 +296,38 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
       setIsConnecting(false);
       setTranscription('');
       setIsGeneratingReport(false);
+      setAgentAudioStream(null);
+      setUserAudioStream(null);
+      setIsAgentSpeaking(false);
+    }
+  }, []);
+
+  // Enable/disable microphone
+  const setMicrophoneEnabled = useCallback(async (enabled: boolean) => {
+    if (roomRef.current) {
+      try {
+        await roomRef.current.localParticipant.setMicrophoneEnabled(enabled);
+        console.log(`Microphone ${enabled ? 'enabled' : 'disabled'}`);
+      } catch (error) {
+        console.error('Failed to toggle microphone:', error);
+      }
+    }
+  }, []);
+
+  // Send data message to agent
+  const sendDataMessage = useCallback(async (data: any) => {
+    if (roomRef.current) {
+      try {
+        const encoder = new TextEncoder();
+        const payload = encoder.encode(JSON.stringify(data));
+        await roomRef.current.localParticipant.publishData(payload, { reliable: true });
+        console.log('Data message sent:', data);
+      } catch (error) {
+        console.error('Failed to send data message:', error);
+        throw error;
+      }
+    } else {
+      throw new Error('Room not connected');
     }
   }, []);
 
@@ -268,5 +348,9 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
     isAgentSpeaking,
     transcription,
     isGeneratingReport,
+    agentAudioStream,
+    userAudioStream,
+    setMicrophoneEnabled,
+    sendDataMessage,
   };
 }

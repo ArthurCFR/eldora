@@ -17,7 +17,13 @@ interface LiveKitVoiceButtonProps {
   eventName?: string;
   existingReport?: any;
   onTranscription?: (text: string, isFinal: boolean) => void;
+  onAgentResponse?: (text: string) => void;
   onConversationComplete?: (data: any) => void;
+  onConnectionStateChange?: (isConnected: boolean, isAgentSpeaking: boolean) => void;
+  onAudioStreamsChange?: (agentStream: MediaStream | null, userStream: MediaStream | null) => void;
+  onMicrophoneControl?: (setEnabled: (enabled: boolean) => Promise<void>) => void;
+  onDataMessageControl?: (sendData: (data: any) => Promise<void>) => void;
+  onDisconnectControl?: (disconnect: () => void) => void;
 }
 
 export default function LiveKitVoiceButton({
@@ -25,7 +31,13 @@ export default function LiveKitVoiceButton({
   eventName,
   existingReport,
   onTranscription,
+  onAgentResponse,
   onConversationComplete,
+  onConnectionStateChange,
+  onAudioStreamsChange,
+  onMicrophoneControl,
+  onDataMessageControl,
+  onDisconnectControl,
 }: LiveKitVoiceButtonProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -40,11 +52,16 @@ export default function LiveKitVoiceButton({
     isAgentSpeaking,
     transcription,
     isGeneratingReport,
+    agentAudioStream,
+    userAudioStream,
+    setMicrophoneEnabled,
+    sendDataMessage,
   } = useLiveKitRoom({
     userName,
     eventName,
     existingReport,
     onTranscription,
+    onAgentResponse,
     onConversationComplete: (data) => {
       // Report received, now we can fully disconnect
       console.log('Report received, disconnecting room...');
@@ -71,6 +88,41 @@ export default function LiveKitVoiceButton({
       setIsStarting(false);
     }
   }, [isAgentSpeaking, isStarting, isConnected, isConnecting]);
+
+  // Notify parent of connection state changes
+  useEffect(() => {
+    if (onConnectionStateChange) {
+      onConnectionStateChange(isConnected, isAgentSpeaking);
+    }
+  }, [isConnected, isAgentSpeaking, onConnectionStateChange]);
+
+  // Notify parent of audio stream changes
+  useEffect(() => {
+    if (onAudioStreamsChange) {
+      onAudioStreamsChange(agentAudioStream, userAudioStream);
+    }
+  }, [agentAudioStream, userAudioStream, onAudioStreamsChange]);
+
+  // Provide microphone control to parent
+  useEffect(() => {
+    if (onMicrophoneControl && setMicrophoneEnabled) {
+      onMicrophoneControl(setMicrophoneEnabled);
+    }
+  }, [onMicrophoneControl]);
+
+  // Provide data message control to parent
+  useEffect(() => {
+    if (onDataMessageControl && sendDataMessage) {
+      onDataMessageControl(sendDataMessage);
+    }
+  }, [onDataMessageControl]);
+
+  // Provide disconnect control to parent
+  useEffect(() => {
+    if (onDisconnectControl && disconnect) {
+      onDisconnectControl(disconnect);
+    }
+  }, [onDisconnectControl, disconnect]);
 
   // Pulse animation based on state
   useEffect(() => {
@@ -151,11 +203,11 @@ export default function LiveKitVoiceButton({
   };
 
   const getIcon = () => {
-    if (error) return <Ionicons name="alert-circle-outline" size={56} color={colors.text.onDark} />;
+    if (error) return <Ionicons name="alert-circle-outline" size={40} color={colors.text.onDark} />;
     if (isGeneratingReport) return null; // Lottie animation will replace icon
-    if (isAgentSpeaking || isStarting) return <Ionicons name="volume-high-outline" size={56} color={colors.text.onDark} />;
-    if (isConnected) return <Ionicons name="mic" size={56} color={colors.text.primary} />;
-    return <Ionicons name="mic-outline" size={56} color={colors.text.primary} />;
+    if (isAgentSpeaking || isStarting) return <Ionicons name="volume-high-outline" size={40} color={colors.text.onDark} />;
+    if (isConnected) return <Ionicons name="mic" size={40} color={colors.text.primary} />;
+    return <Ionicons name="mic-outline" size={40} color={colors.text.primary} />;
   };
 
 
@@ -165,7 +217,8 @@ export default function LiveKitVoiceButton({
     if (isAgentSpeaking) return 'Assistant parle...';
     if (isStarting) return 'Démarrage...';
     if (isConnected) return 'En écoute';
-    return 'Appuyez pour parler';
+    // Change text based on whether a report already exists
+    return existingReport ? 'Appuyez pour modifier le rapport' : 'Appuyez pour parler';
   };
 
   const handleStop = () => {
@@ -274,31 +327,31 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   glowRing: {
     position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
   },
   glowRingInner: {
     width: '100%',
     height: '100%',
-    borderRadius: 100,
+    borderRadius: 70,
     opacity: 0.2,
   },
   buttonContainer: {
-    width: 140,
-    height: 140,
+    width: 98,
+    height: 98,
     position: 'relative',
   },
   button: {
     width: '100%',
     height: '100%',
-    borderRadius: 70,
+    borderRadius: 49,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.background.dark,
@@ -310,35 +363,35 @@ const styles = StyleSheet.create({
   glassOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 70,
+    borderRadius: 49,
   },
   borderOverlay: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 70,
+    borderRadius: 49,
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     pointerEvents: 'none',
   },
   statusText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: 8,
+    fontSize: 13,
     fontWeight: '600',
     color: colors.text.primary,
   },
   stopButton: {
-    marginTop: 16,
+    marginTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     backgroundColor: 'rgba(244, 63, 94, 0.1)',
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.accent.danger,
   },
   stopButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: colors.accent.danger,
   },
@@ -369,7 +422,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   lottieAnimation: {
-    width: 100,
-    height: 100,
+    width: 70,
+    height: 70,
   },
 });

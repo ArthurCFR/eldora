@@ -3,7 +3,7 @@
  * Transforme les données brutes en intelligence business actionnable
  */
 
-import productsData from '../produits.json';
+import productsData from '../agent/config/products.json';
 
 interface SalesData {
   [productName: string]: number;
@@ -29,7 +29,7 @@ interface InsightReport {
  * Analyse les ventes et génère des métriques de performance
  */
 function analyzePerformance(sales: SalesData): InsightReport['performance_metrics'] {
-  const productMap = new Map(productsData.map(p => [p.nom, p]));
+  const productMap = new Map(productsData.products.map((p: any) => [p.name, p]));
 
   let totalSold = 0;
   let totalTarget = 0;
@@ -39,9 +39,9 @@ function analyzePerformance(sales: SalesData): InsightReport['performance_metric
     const product = productMap.get(productName);
     if (product) {
       totalSold += sold;
-      totalTarget += product.objectifs;
-      const rate = product.objectifs > 0 ? (sold / product.objectifs) * 100 : 0;
-      performances.push({ name: productName, rate, sold, target: product.objectifs });
+      totalTarget += product.target_quantity;
+      const rate = product.target_quantity > 0 ? (sold / product.target_quantity) * 100 : 0;
+      performances.push({ name: productName, rate, sold, target: product.target_quantity });
     }
   });
 

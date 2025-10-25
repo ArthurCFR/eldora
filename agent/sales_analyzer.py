@@ -1,6 +1,7 @@
 """
-Samsung Sales Analyzer for Voyaltis
+Sales Analyzer for Voyaltis
 Handles product mapping and sales data processing with fuzzy matching
+GENERIC version - works with any product configuration
 """
 import json
 import logging
@@ -12,88 +13,52 @@ logger = logging.getLogger(__name__)
 class SalesAnalyzer:
     """
     Analyzes sales data and maps product mentions to actual products
-    Based on samsungSalesAnalyzer.ts
+    Generic implementation that works with any client configuration
     """
 
-    def __init__(self, products_file: str = None):
-        if products_file is None:
-            # Default: look for produits.json in parent directory
-            import os
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            products_file = os.path.join(current_dir, "..", "produits.json")
+    def __init__(self, config_loader=None, products_list: List[Dict] = None, brand_mentions: List[str] = None, brand_bonus: int = 0):
+        """
+        Initialize analyzer with products from config loader or direct list
 
-        self.products = self._load_products(products_file)
+        Args:
+            config_loader: ConfigLoader instance (preferred method)
+            products_list: Alternative - direct list of products (for backward compatibility)
+            brand_mentions: List of brand names to give bonus points (e.g. ["Samsung", "Galaxy"])
+            brand_bonus: Bonus points to add when brand name is mentioned
+        """
+        if config_loader:
+            self.products = config_loader.get_products_for_analyzer()
+            self.brand_mentions = config_loader.get_brand_mentions()
+            self.brand_bonus = config_loader.get_brand_mention_bonus()
+            logger.info(f"Loaded {len(self.products)} products from ConfigLoader")
+        elif products_list:
+            self.products = products_list
+            self.brand_mentions = brand_mentions or []
+            self.brand_bonus = brand_bonus or 0
+            logger.info(f"Loaded {len(self.products)} products from direct list")
+        else:
+            raise ValueError("Must provide either config_loader or products_list")
+
         self.product_names = [p["nom"] for p in self.products]
         self.product_keywords = self._build_product_keywords()
 
-    def _load_products(self, products_file: str) -> List[Dict]:
-        """Load products from JSON file"""
-        try:
-            import os
-            abs_path = os.path.abspath(products_file)
-            logger.info(f"Loading products from: {abs_path}")
-            with open(abs_path, 'r', encoding='utf-8') as f:
-                products = json.load(f)
-                logger.info(f"Loaded {len(products)} products")
-                return products
-        except Exception as e:
-            logger.error(f"Error loading products from {products_file}: {e}")
-            return []
-
     def _build_product_keywords(self) -> Dict[str, List[str]]:
         """
-        Build keyword mapping for fuzzy matching
-        Based on the keyword system in TypeScript
+        Build keyword mapping for fuzzy matching dynamically from products config
         """
-        return {
-            "Samsung Galaxy Z Nova": [
-                "smartphone", "téléphone", "telephone", "phone", "mobile",
-                "cellulaire", "portable", "galaxy", "z nova", "nova",
-                "téléphone portable", "tel", "gsm", "android"
-            ],
-            "Samsung QLED Vision 8K": [
-                "télé", "tv", "téléviseur", "television", "écran",
-                "qled", "8k", "vision", "télévision", "tele", "telly",
-                "écran tv", "téléviseur 8k"
-            ],
-            "Samsung Galaxy Tab Ultra S": [
-                "tablette", "tablet", "tab", "ipad", "galaxy tab",
-                "ultra s", "tab ultra", "tablette tactile"
-            ],
-            "Samsung GearFit Pro": [
-                "montre", "watch", "montre connectée", "smartwatch",
-                "gearfit", "gear fit", "bracelet connecté", "fitness tracker",
-                "montre intelligente"
-            ],
-            "Samsung AirCool Max": [
-                "climatiseur", "clim", "climatisation", "air conditionné",
-                "aircool", "air cool", "clim réversible", "ac"
-            ],
-            "Samsung SoundBar X500": [
-                "soundbar", "barre de son", "sound bar", "enceinte",
-                "haut-parleur", "speaker", "audio", "son", "home cinema",
-                "x500", "système audio"
-            ],
-            "Samsung Galaxy Book Flex": [
-                "ordinateur", "laptop", "book", "pc", "flex", "notebook",
-                "galaxy book", "pc portable", "ordi portable", "ordi",
-                "ordinateur portable", "windows", "portable"
-            ],
-            "Samsung EcoWash 9000": [
-                "lave-linge", "machine à laver", "machine a laver",
-                "lave linge", "ecowash", "eco wash", "laveuse",
-                "washing machine", "9000"
-            ],
-            "Samsung SmartFridge Elite": [
-                "frigo", "réfrigérateur", "refrigerateur", "frigidaire",
-                "smartfridge", "smart fridge", "frigo connecté",
-                "réfrigérateur intelligent", "fridge"
-            ],
-            "Samsung LaserJet Pro M500": [
-                "imprimante", "printer", "laserjet", "laser jet",
-                "m500", "imprimante laser", "impression"
-            ]
-        }
+        keywords_map = {}
+
+        for product in self.products:
+            product_name = product["nom"]
+            keywords = product.get("keywords", [])
+
+            if keywords:
+                keywords_map[product_name] = keywords
+                logger.info(f"Loaded {len(keywords)} keywords for {product_name}")
+            else:
+                logger.warning(f"No keywords defined for {product_name}")
+
+        return keywords_map
 
     def map_sales_data(self, raw_sales: Dict[str, int]) -> Dict[str, int]:
         """
@@ -106,7 +71,7 @@ class SalesAnalyzer:
             # Try exact match first
             if raw_name in self.product_names:
                 mapped_sales[raw_name] = mapped_sales.get(raw_name, 0) + quantity
-                logger.info(f"Direct match: '{raw_name}' ({quantity})")
+                logger.info(f"✓ Direct match: '{raw_name}' ({quantity})")
                 continue
 
             # Fuzzy matching
@@ -115,11 +80,11 @@ class SalesAnalyzer:
                 product_name, score = best_match
                 if score >= 3:  # Minimum threshold
                     mapped_sales[product_name] = mapped_sales.get(product_name, 0) + quantity
-                    logger.info(f"Smart match: '{raw_name}' ({quantity}) → '{product_name}' (score: {score})")
+                    logger.info(f"✓ Fuzzy match: '{raw_name}' ({quantity}) → '{product_name}' (score: {score})")
                 else:
-                    logger.warning(f"No good match found for: '{raw_name}' (best score: {score})")
+                    logger.warning(f"✗ No good match for: '{raw_name}' (best score: {score})")
             else:
-                logger.warning(f"No match found for: '{raw_name}'")
+                logger.warning(f"✗ No match found for: '{raw_name}'")
 
         return mapped_sales
 
@@ -152,23 +117,25 @@ class SalesAnalyzer:
                 elif len(raw_lower) > 3 and raw_lower in keyword_lower:
                     score += 6
 
-            # Bonus if mentions "Samsung": +3 points
-            if "samsung" in raw_lower:
-                score += 3
+            # Generic brand mentions bonus (configurable)
+            for brand in self.brand_mentions:
+                if brand.lower() in raw_lower:
+                    score += self.brand_bonus
+                    break
 
-            # Bonus if mentions "Galaxy" for Galaxy products: +5 points
-            if "galaxy" in raw_lower and "galaxy" in product_name.lower():
-                score += 5
+            # Bonus for product name word matches
+            product_name_words = product_name.lower().split()
+            for word in product_name_words:
+                if len(word) > 3 and word in raw_lower:
+                    score += 5
 
-            # HUGE bonus for unique category terms: +15 points
-            unique_category_terms = [
-                "frigo", "réfrigérateur", "télé", "tv", "montre",
-                "clim", "climatiseur", "soundbar", "imprimante",
-                "lave-linge", "machine à laver"
-            ]
-            if any(term in raw_lower for term in unique_category_terms):
-                if any(term in keyword.lower() for keyword in keywords for term in unique_category_terms):
+            # HUGE bonus for unique category terms (short keywords like "frigo", "télé", etc.)
+            # These are typically 3-6 letter words that uniquely identify a category
+            for keyword in keywords:
+                keyword_lower = keyword.lower()
+                if 3 <= len(keyword_lower) <= 6 and keyword_lower in raw_lower:
                     score += 15
+                    break
 
             # Track best match
             if score > best_score:
@@ -184,7 +151,7 @@ class SalesAnalyzer:
     ) -> Dict[str, any]:
         """
         Generate managerial insights from sales data and feedback
-        Based on insightGenerator.ts
+        Generic implementation
         """
         # Calculate metrics
         total_sold = sum(sales.values())
@@ -233,7 +200,7 @@ class SalesAnalyzer:
     def _extract_insights_from_feedback(self, feedback: str) -> List[str]:
         """
         Extract insights from customer feedback using pattern matching
-        Based on patterns in insightGenerator.ts
+        Generic patterns that work for any business
         """
         if not feedback:
             return []
@@ -241,22 +208,27 @@ class SalesAnalyzer:
         feedback_lower = feedback.lower()
         insights = []
 
-        # Competitive insights
+        # Generic business insights patterns
         patterns = {
             "competitive": [
-                (r"compar.*apple", "Forte pression concurrentielle Apple"),
-                (r"moins cher.*concurrent", "Sensibilité prix face à la concurrence"),
+                (r"concurrent|concurrence|compétiteur", "Pression concurrentielle mentionnée"),
+                (r"moins cher|meilleur prix", "Sensibilité prix face à la concurrence"),
             ],
             "customer": [
-                (r"jeunes?|étudiant", "Segment jeune/étudiant présent"),
-                (r"professionnel|entreprise", "Cible B2B identifiée"),
+                (r"jeunes?|étudiant|ado", "Segment jeune présent"),
+                (r"professionnel|entreprise|b2b", "Cible professionnelle identifiée"),
+                (r"famille|parent", "Cible familiale identifiée"),
             ],
             "pricing": [
-                (r"trop cher|cher|prix élevé", "Objection prix fréquente"),
-                (r"bon (prix|rapport)", "Prix perçu positivement"),
+                (r"trop cher|cher|prix élevé|coûteux", "Objection prix fréquente"),
+                (r"bon (prix|rapport)|abordable|raisonnable", "Prix perçu positivement"),
             ],
             "stock": [
-                (r"rupture|stock|dispo", "Problème de disponibilité"),
+                (r"rupture|stock|dispo|indispo", "Problème de disponibilité mentionné"),
+            ],
+            "interest": [
+                (r"intéressé|curieux|beaucoup de questions", "Fort intérêt client"),
+                (r"hésit|indécis|réfléchi", "Clients indécis, besoin de réassurance"),
             ],
         }
 
@@ -265,6 +237,7 @@ class SalesAnalyzer:
             for pattern, insight in pattern_list:
                 if re.search(pattern, feedback_lower):
                     insights.append(insight)
+                    break  # Only one insight per category
 
         return insights
 

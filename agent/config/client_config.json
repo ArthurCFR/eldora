@@ -1,0 +1,26 @@
+{
+  "client": {
+    "name": "Samsung",
+    "brand_name": "Samsung",
+    "industry": "Électronique grand public",
+    "language": "fr",
+    "context": "ventes de produits électroniques Samsung sur des événements et salons"
+  },
+  "conversation": {
+    "objective": "Collecter des informations sur la journée de travail et les ventes",
+    "opening_context": "journée sur le stand Samsung",
+    "report_type": "rapport de vente événementiel",
+    "tone": "professionnel mais chaleureux",
+    "brand_specific_prompts": [
+      "RÈGLE D'OR PRODUITS : Si l'utilisateur dit 'frigo', 'télé', 'montre', etc.,",
+      "tu SAIS automatiquement de quel produit il parle (il n'y en a qu'UN seul par catégorie).",
+      "NE DEMANDE JAMAIS 'quel modèle' pour ces catégories uniques !"
+    ]
+  },
+  "products_context": {
+    "brand_mentions": ["Samsung", "Galaxy"],
+    "brand_mention_bonus_points": 3,
+    "unique_category": true,
+    "description": "Chaque catégorie de produit n'a qu'UN SEUL modèle disponible"
+  }
+}

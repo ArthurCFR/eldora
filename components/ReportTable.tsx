@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, spacing } from '../constants/theme';
-import productsData from '../produits.json';
+import productsData from '../agent/config/products.json';
 
 interface ReportTableProps {
   salesData: { [productName: string]: number };
@@ -16,16 +16,16 @@ export default function ReportTable({ salesData }: ReportTableProps) {
   let totalSales = 0;
   let totalObjectives = 0;
 
-  const rows = productsData.map((product) => {
-    const sold = salesData[product.nom] || 0;
-    const objective = product.objectifs;
+  const rows = productsData.products.map((product: any) => {
+    const sold = salesData[product.name] || 0;
+    const objective = product.target_quantity;
     const ratio = objective > 0 ? Math.round((sold / objective) * 100) : 0;
 
     totalSales += sold;
     totalObjectives += objective;
 
     return {
-      name: product.nom,
+      name: product.display_name,
       sold,
       objective,
       ratio,

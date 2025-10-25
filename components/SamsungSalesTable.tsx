@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, typography, shadows } from '../constants/theme';
-import productsData from '../produits.json';
+import productsData from '../agent/config/products.json';
 import GlassContainer from './GlassContainer';
 import { generateManagerialInsights, generateExecutiveSummary } from '../services/insightGenerator';
 import { MOCK_SAMSUNG_SALES } from '../constants/samsungMockData';
@@ -102,7 +102,7 @@ export default function SamsungSalesTable({
 
   const currentSales = isEditing ? editedSales : sales;
   const totalSold = Object.values(currentSales).reduce((sum, count) => sum + count, 0);
-  const totalTarget = productsData.reduce((sum, p) => sum + p.objectifs, 0);
+  const totalTarget = productsData.products.reduce((sum: number, p: any) => sum + p.target_quantity, 0);
   const globalScore = calculateScore(totalSold, totalTarget);
 
   return (
@@ -195,22 +195,22 @@ export default function SamsungSalesTable({
         </View>
 
         {/* Rows */}
-        {productsData.map((product, index) => {
-          const sold = currentSales[product.nom] || 0;
-          const score = calculateScore(sold, product.objectifs);
+        {productsData.products.map((product: any, index: number) => {
+          const sold = currentSales[product.name] || 0;
+          const score = calculateScore(sold, product.target_quantity);
           const scoreColor = getScoreColor(score);
 
           return (
             <View
-              key={product.nom}
+              key={product.name}
               style={[
                 styles.tableRow,
                 index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd,
               ]}
             >
               <View style={styles.productNameCell}>
-                <Text style={styles.productName}>{product.nom}</Text>
-                <Text style={styles.productCategory}>{product.catégorie}</Text>
+                <Text style={styles.productName}>{product.display_name}</Text>
+                <Text style={styles.productCategory}>{product.category}</Text>
               </View>
 
               {/* Colonne Vendu avec boutons +/- en mode édition */}
@@ -218,7 +218,7 @@ export default function SamsungSalesTable({
                 <View style={[styles.numberCell, styles.editableNumberCell]}>
                   <TouchableOpacity
                     style={styles.decrementButton}
-                    onPress={() => handleDecrementSale(product.nom)}
+                    onPress={() => handleDecrementSale(product.name)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <Text style={styles.decrementButtonText}>−</Text>
@@ -228,7 +228,7 @@ export default function SamsungSalesTable({
                   </Text>
                   <TouchableOpacity
                     style={styles.incrementButton}
-                    onPress={() => handleIncrementSale(product.nom)}
+                    onPress={() => handleIncrementSale(product.name)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <Text style={styles.incrementButtonText}>+</Text>
@@ -243,7 +243,7 @@ export default function SamsungSalesTable({
               )}
 
               <View style={styles.numberCell}>
-                <Text style={styles.tableCell}>{product.objectifs}</Text>
+                <Text style={styles.tableCell}>{product.target_quantity}</Text>
               </View>
               <View style={[styles.scoreCell, styles.scoreContainer]}>
                 <View style={[styles.scoreBadge, { backgroundColor: scoreColor }]}>

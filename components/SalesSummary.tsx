@@ -20,16 +20,9 @@ export default function SalesSummary({ sales }: SalesSummaryProps) {
       intensity="medium"
       shadow
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>Session de vente</Text>
-      </View>
-
       <View style={styles.infoContainer}>
-        <InfoRow text={`${sales.salesDate} • ${sales.salesTime}`} />
-        <InfoRow text={sales.eventName} />
-        <InfoRow text={sales.eventLocation} />
-        <InfoRow text={`Stand ${sales.boothNumber}`} />
-        <InfoRow text={sales.salesRepName} />
+        <Text style={styles.eventName}>{sales.eventName}</Text>
+        <InfoRow text={`${sales.salesDate} • ${sales.eventLocation} • Stand ${sales.boothNumber}`} />
       </View>
     </GlassContainer>
   );
@@ -49,25 +42,24 @@ function InfoRow({ text }: InfoRowProps) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: spacing.md,
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.md,
-  },
-  header: {
-    marginBottom: spacing.md,
-  },
-  title: {
-    ...typography.h3,
-    color: colors.text.primary,
+    padding: spacing.sm,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.xs,
   },
   infoContainer: {
-    gap: spacing.sm,
+    gap: spacing.xs,
+  },
+  eventName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: 2,
   },
   infoRow: {
-    paddingVertical: spacing.xs / 2,
+    paddingVertical: 2,
   },
   infoText: {
-    ...typography.small,
+    fontSize: 11,
     color: colors.text.secondary,
     flex: 1,
   },

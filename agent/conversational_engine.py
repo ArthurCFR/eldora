@@ -17,13 +17,14 @@ class ConversationalEngine:
     Based on the original conversationalEngine.ts
     """
 
-    def __init__(self):
+    def __init__(self, config_loader=None):
         self.anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         self.conversation_history: List[Dict[str, str]] = []
         self.collected_data: Dict[str, Any] = {}
         self.questions_asked = 0
         self.max_questions = 5  # 2 general + up to 3 specific
         self.config = self.load_default_config()
+        self.config_loader = config_loader
 
     def load_default_config(self) -> Dict[str, Any]:
         """
@@ -114,10 +115,16 @@ class ConversationalEngine:
 
         base_instructions = style_instructions.get(style, style_instructions["friendly_colleague"])
 
+        # Get brand name dynamically
+        brand_name = self.config_loader.get_brand_name() if self.config_loader else ""
+        objective = self.config_loader.get_conversation_objective() if self.config_loader else "Collecter des informations sur la journée de travail"
+
+        # Format objective with brand name if available
+        full_objective = f"{objective} {brand_name}" if brand_name else objective
+
         return f"""{base_instructions}
 
-OBJECTIF : Collecter les informations suivantes de manière naturelle et conversationnelle :
-{self._format_attention_points()}
+OBJECTIF : {full_objective}
 
 RÈGLES IMPORTANTES :
 1. LIMITE DE QUESTIONS : Tu as un maximum de {self.max_questions} questions à poser
@@ -179,8 +186,15 @@ Réponds TOUJOURS en JSON avec cette structure exacte :
 
         base_instructions = style_instructions.get(style, style_instructions["friendly_colleague"])
 
-        # Load Samsung products context
-        products_context = self._get_samsung_products_context()
+        # Load products context dynamically
+        products_context = self._get_products_context()
+
+        # Get brand name dynamically
+        brand_name = self.config_loader.get_brand_name() if self.config_loader else ""
+        objective = self.config_loader.get_conversation_objective() if self.config_loader else "Collecter des informations sur la journée de travail"
+
+        # Format objective with brand name if available
+        full_objective = f"{objective} {brand_name}" if brand_name else objective
 
         # Build existing report context if in edit mode
         existing_context = ""
@@ -210,10 +224,10 @@ VENTES DÉJÀ ENREGISTRÉES :
 {json.dumps(sales, indent=2, ensure_ascii=False)}
 
 RETOURS CLIENTS DÉJÀ ENREGISTRÉS :
-{feedback[:200] if feedback else "Aucun"}
+{feedback if feedback else "Aucun"}
 
 INSIGHTS DÉJÀ COLLECTÉS :
-{', '.join(insights[:3]) if insights else "Aucun"}
+{', '.join(insights) if insights else "Aucun"}
 
 🎯 TON RÔLE EN MODE ÉDITION - FLOW ULTRA-COURT :
 Tu as droit à SEULEMENT 2 QUESTIONS au total :
@@ -253,13 +267,22 @@ IMPORTANT : L'utilisateur a DÉJÀ donné toutes ces informations. C'est juste u
             attention_points_instructions = self._format_attention_points_for_agent(attention_points)
             max_questions_text = f"2 questions générales + 1 question par point d'attention (total: {2 + len(attention_points)} questions)"
 
+        # Get brand-specific prompts if available
+        brand_specific_prompts = ""
+        if self.config_loader:
+            brand_prompts_list = self.config_loader.get_brand_specific_prompts()
+            if brand_prompts_list:
+                brand_specific_prompts = "\n".join(brand_prompts_list)
+
         return f"""{base_instructions}
 
 {existing_context}
 
-OBJECTIF : Collecter des informations sur la journée de travail Samsung
+OBJECTIF : {full_objective}
 
 {products_context}
+
+{brand_specific_prompts}
 
 {attention_points_instructions}
 
@@ -293,15 +316,6 @@ EXEMPLES DE MAUVAISES QUESTIONS (TROP LONGUES) :
 ❌ "Merci pour ces informations détaillées ! Je note de belles ventes. Pour compléter, pourriez-vous me parler de vos visiteurs aujourd'hui ?"
 ❌ "C'est excellent ! Je vois que vous avez eu une belle journée. Maintenant, est-ce que vous pourriez me dire..."
 
-RÈGLE D'OR PRODUITS : Si l'utilisateur dit "frigo", "télé", "montre", etc.,
-tu SAIS automatiquement de quel produit il parle (il n'y en a qu'UN seul par catégorie).
-NE DEMANDE JAMAIS "quel modèle" pour ces catégories uniques !
-
-Exemples :
-- "J'ai vendu 2 frigos" → Tu sais que c'est le SmartFridge Elite
-- "3 télés" → Tu sais que c'est le QLED Vision 8K
-- "Des montres" → Tu sais que c'est le GearFit Pro
-
 CLÔTURE : Quand tu as atteint le nombre maximum de questions, dis :
 "Parfait ! Merci pour ces infos, je vais préparer ton rapport maintenant."
 
@@ -309,19 +323,32 @@ IMPORTANT : Réponds UNIQUEMENT avec du texte conversationnel naturel.
 N'utilise JAMAIS de JSON, de balises, ou de formatage technique dans ta réponse.
 Parle comme un humain normal."""
 
-    def _get_samsung_products_context(self) -> str:
-        """Get Samsung products context for the prompt"""
-        return """PRODUITS SAMSUNG (chaque catégorie n'a QU'UN SEUL produit) :
-- Smartphone : Samsung Galaxy Z Nova
-- Téléviseur : Samsung QLED Vision 8K
-- Tablette : Samsung Galaxy Tab Ultra S
-- Montre connectée : Samsung GearFit Pro
-- Climatiseur : Samsung AirCool Max
-- Audio : Samsung SoundBar X500
-- Ordinateur portable : Samsung Galaxy Book Flex
-- Lave-linge : Samsung EcoWash 9000
-- Réfrigérateur : Samsung SmartFridge Elite
-- Imprimante : Samsung LaserJet Pro M500"""
+    def _get_products_context(self) -> str:
+        """
+        Get products context dynamically from config_loader
+        Replaces the hardcoded _get_samsung_products_context()
+        """
+        if not self.config_loader:
+            return ""
+
+        # Get products description from config (generic description)
+        context_description = self.config_loader.get_products_context_description()
+
+        # Get formatted products list
+        products_list = self.config_loader.get_products_list_for_prompt()
+
+        # Build the full context
+        if context_description and products_list:
+            return f"""{context_description}
+
+{products_list}"""
+        elif products_list:
+            # Fallback to generic description if none provided
+            return f"""PRODUITS DISPONIBLES :
+
+{products_list}"""
+        else:
+            return ""
 
     def _format_attention_points(self) -> str:
         """Format attention points for the prompt"""

@@ -57,6 +57,7 @@ export default function AdminScreen() {
   const [selectedCommon, setSelectedCommon] = useState<string | null>(null);
   const [customPoint, setCustomPoint] = useState('');
   const [naturalPrompts, setNaturalPrompts] = useState('');
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   useEffect(() => {
     loadConfig();
@@ -131,6 +132,21 @@ export default function AdminScreen() {
     setPointToDelete(null);
   };
 
+  const insertUserNameVariable = () => {
+    const currentText = config.customOpeningMessage || '';
+    const beforeCursor = currentText.substring(0, cursorPosition);
+    const afterCursor = currentText.substring(cursorPosition);
+    const newText = beforeCursor + '{userName}' + afterCursor;
+
+    setConfig({
+      ...config,
+      customOpeningMessage: newText,
+    });
+
+    // Mettre à jour la position du curseur après l'insertion
+    setCursorPosition(cursorPosition + '{userName}'.length);
+  };
+
   const conversationStyles = [
     {
       value: 'friendly_colleague',
@@ -200,6 +216,67 @@ export default function AdminScreen() {
               )}
             </TouchableOpacity>
           ))}
+        </GlassContainer>
+
+        {/* Phrase d'accroche personnalisée */}
+        <GlassContainer style={styles.section} intensity="medium" shadow>
+          <Text style={styles.sectionTitle}>Phrase d'accroche</Text>
+          <Text style={styles.sectionSubtitle}>
+            Message d'ouverture de l'assistant (optionnel)
+          </Text>
+
+          <TextInput
+            style={[styles.customInput, styles.textArea]}
+            placeholder="Ex: Salut ! Raconte-moi ta journée sur le stand Samsung !"
+            value={config.customOpeningMessage || ''}
+            onChangeText={(text) =>
+              setConfig({
+                ...config,
+                customOpeningMessage: text.trim() === '' ? undefined : text,
+              })
+            }
+            onSelectionChange={(event) => {
+              setCursorPosition(event.nativeEvent.selection.start);
+            }}
+            placeholderTextColor={colors.text.tertiary}
+            multiline
+            numberOfLines={3}
+          />
+
+          {/* Bouton pour insérer la variable prénom */}
+          <TouchableOpacity style={styles.insertVariableButton} onPress={insertUserNameVariable}>
+            <Text style={styles.insertVariableButtonText}>📝 Insérer prénom</Text>
+          </TouchableOpacity>
+
+          {/* Aperçu du message avec la variable stylisée */}
+          {config.customOpeningMessage && config.customOpeningMessage.includes('{userName}') && (
+            <View style={styles.previewContainer}>
+              <Text style={styles.previewLabel}>Aperçu :</Text>
+              <View style={styles.previewTextContainer}>
+                {config.customOpeningMessage.split(/(\{userName\})/).map((part, index) => {
+                  if (part === '{userName}') {
+                    return (
+                      <View key={index} style={styles.variableTag}>
+                        <Text style={styles.variableTagText}>Thomas</Text>
+                      </View>
+                    );
+                  }
+                  return (
+                    <Text key={index} style={styles.previewText}>
+                      {part}
+                    </Text>
+                  );
+                })}
+              </View>
+              <Text style={styles.previewHint}>
+                Le prénom du vendeur remplacera automatiquement la variable
+              </Text>
+            </View>
+          )}
+
+          <Text style={styles.helperText}>
+            💡 Laissez vide pour utiliser le message par défaut généré automatiquement
+          </Text>
         </GlassContainer>
 
         {/* Points d'attention spécifiques */}
@@ -755,5 +832,72 @@ const styles = StyleSheet.create({
     ...typography.bodyMedium,
     color: colors.background.primary,
     fontWeight: '600',
+  },
+  helperText: {
+    ...typography.small,
+    color: colors.text.tertiary,
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
+  },
+  insertVariableButton: {
+    backgroundColor: colors.glass.medium,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    borderRadius: borderRadius.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    alignSelf: 'flex-start',
+  },
+  insertVariableButtonText: {
+    ...typography.small,
+    color: colors.text.primary,
+    fontWeight: '600',
+  },
+  previewContainer: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.glass.light,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  previewLabel: {
+    ...typography.small,
+    color: colors.text.tertiary,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  previewTextContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  previewText: {
+    ...typography.body,
+    color: colors.text.primary,
+    lineHeight: 24,
+  },
+  variableTag: {
+    backgroundColor: 'rgba(150, 150, 150, 0.25)',
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginHorizontal: 2,
+  },
+  variableTagText: {
+    ...typography.small,
+    color: colors.text.primary,
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  previewHint: {
+    ...typography.caption,
+    color: colors.text.tertiary,
+    fontStyle: 'italic',
+    marginTop: spacing.xs,
   },
 });

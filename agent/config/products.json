@@ -4,219 +4,110 @@
       "name": "Samsung Galaxy Z Nova",
       "display_name": "Samsung Galaxy Z Nova",
       "category": "Smartphone",
-      "keywords": [
-        "smartphone",
-        "téléphone",
-        "telephone",
-        "phone",
-        "mobile",
-        "portable",
-        "galaxy",
-        "z nova",
-        "nova",
-        "tel",
-        "gsm",
-        "android"
-      ],
-      "synonyms": [
-        "portable",
-        "téléphone",
-        "smartphone"
-      ],
+      "price": 1299.99,
+      "availability": "En stock",
+      "description": "Smartphone pliable avec écran AMOLED 7.2 pouces et triple caméra.",
+      "keywords": ["smartphone", "téléphone", "telephone", "phone", "mobile", "portable", "galaxy", "z nova", "nova", "tel", "gsm", "android"],
+      "synonyms": ["portable", "téléphone", "smartphone"],
       "target_quantity": 4
     },
     {
       "name": "Samsung QLED Vision 8K",
       "display_name": "Samsung QLED Vision 8K",
       "category": "Téléviseur",
-      "keywords": [
-        "télé",
-        "tv",
-        "téléviseur",
-        "television",
-        "écran",
-        "qled",
-        "8k",
-        "vision",
-        "tele",
-        "écran plat",
-        "smart tv"
-      ],
-      "synonyms": [
-        "télé",
-        "tv",
-        "téléviseur"
-      ],
+      "price": 4999.99,
+      "availability": "En stock",
+      "description": "Téléviseur QLED 8K de 75 pouces avec technologie Quantum HDR.",
+      "keywords": ["télé", "tv", "téléviseur", "television", "écran", "qled", "8k", "vision", "tele", "écran plat", "smart tv"],
+      "synonyms": ["télé", "tv", "téléviseur"],
       "target_quantity": 4
     },
     {
       "name": "Samsung Galaxy Tab Ultra S",
       "display_name": "Samsung Galaxy Tab Ultra S",
       "category": "Tablette",
-      "keywords": [
-        "tablette",
-        "tablet",
-        "tab",
-        "ipad",
-        "galaxy tab",
-        "ultra s",
-        "tab ultra",
-        "ardoise"
-      ],
-      "synonyms": [
-        "tablette",
-        "tablet",
-        "tab"
-      ],
+      "price": 899.99,
+      "availability": "En rupture de stock",
+      "description": "Tablette Android avec écran Super AMOLED 12.4 pouces et stylet S Pen.",
+      "keywords": ["tablette", "tablet", "tab", "ipad", "galaxy tab", "ultra s", "tab ultra", "ardoise"],
+      "synonyms": ["tablette", "tablet", "tab"],
       "target_quantity": 3
     },
     {
       "name": "Samsung GearFit Pro",
       "display_name": "Samsung GearFit Pro",
       "category": "Montre connectée",
-      "keywords": [
-        "montre",
-        "watch",
-        "montre connectée",
-        "smartwatch",
-        "gearfit",
-        "gear fit",
-        "bracelet",
-        "fitness tracker"
-      ],
-      "synonyms": [
-        "montre",
-        "montre connectée",
-        "smartwatch"
-      ],
+      "price": 249.99,
+      "availability": "En stock",
+      "description": "Montre connectée avec suivi de santé, GPS intégré et autonomie de 7 jours.",
+      "keywords": ["montre", "watch", "montre connectée", "smartwatch", "gearfit", "gear fit", "bracelet", "fitness tracker"],
+      "synonyms": ["montre", "montre connectée", "smartwatch"],
       "target_quantity": 4
     },
     {
       "name": "Samsung AirCool Max",
       "display_name": "Samsung AirCool Max",
       "category": "Climatiseur",
-      "keywords": [
-        "clim",
-        "climatisation",
-        "climatiseur",
-        "air conditionné",
-        "aircool",
-        "air cool",
-        "ac"
-      ],
-      "synonyms": [
-        "clim",
-        "climatiseur",
-        "climatisation"
-      ],
+      "price": 699.99,
+      "availability": "En stock",
+      "description": "Climatiseur intelligent avec contrôle Wi-Fi et mode éco.",
+      "keywords": ["clim", "climatisation", "climatiseur", "air conditionné", "aircool", "air cool", "ac"],
+      "synonyms": ["clim", "climatiseur", "climatisation"],
       "target_quantity": 3
     },
     {
       "name": "Samsung SoundBar X500",
       "display_name": "Samsung SoundBar X500",
       "category": "Audio",
-      "keywords": [
-        "soundbar",
-        "barre de son",
-        "sound bar",
-        "enceinte",
-        "haut-parleur",
-        "speaker",
-        "audio",
-        "son",
-        "home cinema",
-        "x500"
-      ],
-      "synonyms": [
-        "soundbar",
-        "barre de son",
-        "enceinte"
-      ],
+      "price": 349.99,
+      "availability": "En stock",
+      "description": "Barre de son avec Dolby Atmos et caisson de basses sans fil.",
+      "keywords": ["soundbar", "barre de son", "sound bar", "enceinte", "haut-parleur", "speaker", "audio", "son", "home cinema", "x500"],
+      "synonyms": ["soundbar", "barre de son", "enceinte"],
       "target_quantity": 3
     },
     {
       "name": "Samsung Galaxy Book Flex",
       "display_name": "Samsung Galaxy Book Flex",
       "category": "Ordinateur portable",
-      "keywords": [
-        "ordinateur",
-        "laptop",
-        "book",
-        "pc",
-        "flex",
-        "notebook",
-        "galaxy book",
-        "pc portable",
-        "ordi",
-        "ultrabook",
-        "windows"
-      ],
-      "synonyms": [
-        "ordinateur",
-        "laptop",
-        "pc"
-      ],
+      "price": 1599.99,
+      "availability": "En stock",
+      "description": "Ordinateur portable convertible avec écran tactile QLED et processeur Intel i7.",
+      "keywords": ["ordinateur", "laptop", "book", "pc", "flex", "notebook", "galaxy book", "pc portable", "ordi", "ultrabook", "windows"],
+      "synonyms": ["ordinateur", "laptop", "pc"],
       "target_quantity": 5
     },
     {
       "name": "Samsung EcoWash 9000",
       "display_name": "Samsung EcoWash 9000",
       "category": "Lave-linge",
-      "keywords": [
-        "lave-linge",
-        "machine à laver",
-        "lave linge",
-        "ecowash",
-        "eco wash",
-        "laveuse",
-        "washing machine",
-        "9000"
-      ],
-      "synonyms": [
-        "lave-linge",
-        "machine à laver",
-        "laveuse"
-      ],
+      "price": 799.99,
+      "availability": "En stock",
+      "description": "Lave-linge connecté avec technologie EcoBubble et tambour 10 kg.",
+      "keywords": ["lave-linge", "machine à laver", "lave linge", "ecowash", "eco wash", "laveuse", "washing machine", "9000"],
+      "synonyms": ["lave-linge", "machine à laver", "laveuse"],
       "target_quantity": 4
     },
     {
       "name": "Samsung SmartFridge Elite",
       "display_name": "Samsung SmartFridge Elite",
       "category": "Réfrigérateur",
-      "keywords": [
-        "frigo",
-        "réfrigérateur",
-        "refrigerateur",
-        "frigidaire",
-        "smartfridge",
-        "smart fridge",
-        "frigo connecté",
-        "fridge"
-      ],
-      "synonyms": [
-        "frigo",
-        "réfrigérateur",
-        "frigidaire"
-      ],
+      "price": 1899.99,
+      "availability": "En rupture de stock",
+      "description": "Réfrigérateur connecté avec écran tactile et gestion des aliments.",
+      "keywords": ["frigo", "réfrigérateur", "refrigerateur", "frigidaire", "smartfridge", "smart fridge", "frigo connecté", "fridge"],
+      "synonyms": ["frigo", "réfrigérateur", "frigidaire"],
       "target_quantity": 5
     },
     {
       "name": "Samsung LaserJet Pro M500",
       "display_name": "Samsung LaserJet Pro M500",
       "category": "Imprimante",
-      "keywords": [
-        "imprimante",
-        "printer",
-        "laserjet",
-        "laser jet",
-        "m500",
-        "imprimante laser",
-        "impression"
-      ],
-      "synonyms": [
-        "imprimante",
-        "printer"
-      ],
+      "price": 299.99,
+      "availability": "En stock",
+      "description": "Imprimante laser couleur avec Wi-Fi et impression recto-verso automatique.",
+      "keywords": ["imprimante", "printer", "laserjet", "laser jet", "m500", "imprimante laser", "impression"],
+      "synonyms": ["imprimante", "printer"],
       "target_quantity": 1
     }
   ]
