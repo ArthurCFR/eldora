@@ -19,6 +19,15 @@ def build_simple_instructions(user_name: str, attention_points: list, questions_
     Agent talks naturally like a colleague, no rigid structure
     """
 
+    # Default report config
+    if report_config is None:
+        report_config = {
+            "attentionPointsTracking": True,
+            "productSalesTracking": False,
+            "stockAlertsTracking": False,
+            "additionalRemarksTracking": False
+        }
+
     # Build list of attention points
     attention_points_list = []
     if attention_points:
@@ -27,6 +36,29 @@ def build_simple_instructions(user_name: str, attention_points: list, questions_
             attention_points_list.append(f"{i}. {desc}")
 
     attention_points_section = "\n".join(attention_points_list) if attention_points_list else "Aucun point spécifique"
+
+    # Build what to capture for report
+    capture_instructions = []
+
+    if report_config.get("productSalesTracking"):
+        if table_structure and table_structure.get("columns"):
+            sales_columns = [col for col in table_structure.get("columns", []) if col.get("source") == "sales"]
+            if sales_columns:
+                capture_instructions.append("📊 VENTES À CAPTURER (pour chaque produit mentionné) :")
+                for col in sales_columns:
+                    capture_instructions.append(f"  • {col.get('label')} ({col.get('type')})")
+            else:
+                capture_instructions.append("📊 Note les QUANTITÉS de produits vendus")
+        else:
+            capture_instructions.append("📊 Note les QUANTITÉS de produits vendus")
+
+    if report_config.get("stockAlertsTracking"):
+        capture_instructions.append("\n⚠️ ALERTES STOCK : Demande s'il y a un risque de rupture pour les produits mentionnés")
+
+    if report_config.get("additionalRemarksTracking"):
+        capture_instructions.append("\n💡 Note toute info pertinente même si elle ne correspond pas aux points d'attention")
+
+    capture_section = "\n".join(capture_instructions) if capture_instructions else ""
 
     # Products catalog
     products_section = ""
@@ -63,6 +95,22 @@ L'historique complet est ci-dessus. LIS-LE pour :
 - Détecter si {user_name} veut finir
 
 {products_section}
+
+{capture_section}
+
+💾 CAPTURE SILENCIEUSE
+Pendant la conversation naturelle :
+- CAPTE mentalement toutes les infos pertinentes (ventes, quantités, problèmes, feedback...)
+- NE les répète PAS (ne dis pas "Ok donc 2 cuiseurs...")
+- Juste accuse réception : "Super !", "Ok !", "Parfait !"
+- Ces infos seront utilisées pour générer le rapport à la fin
+- Continue la conversation naturellement
+
+💬 SI {user_name.upper()} POSE UNE QUESTION
+Exemple : "J'ai vendu 2 cuiseurs. C'est quoi le prix déjà ?"
+→ Réponds brièvement avec le catalogue : "299€ le cuiseur."
+→ Capte quand même "2 cuiseurs vendus" pour le rapport
+→ Reprends la conversation naturellement
 
 🚫 INTERDICTIONS
 - NE répète JAMAIS ce que {user_name} vient de dire
