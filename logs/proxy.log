@@ -1,0 +1,6 @@
+
+> voyaltis-pharmacy-assistant@1.0.0 proxy
+> node server.js
+
+Proxy server running on http://localhost:3001
+Killed

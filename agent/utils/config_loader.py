@@ -4,7 +4,8 @@ Loads products and client configuration dynamically
 """
 import json
 import os
-from typing import Dict, List, Any
+import re
+from typing import Dict, List, Any, Optional
 
 
 class ConfigLoader:
@@ -25,7 +26,17 @@ class ConfigLoader:
             data = json.load(f)
 
         # Load products from JSON structure
-        self.products = data.get("products", [])
+        # Support both formats:
+        # 1. {"products": [...]} (old Samsung format)
+        # 2. [{...}, {...}] (new project format from Excel)
+        if isinstance(data, list):
+            # Direct array format (from project Excel upload)
+            self.products = data
+        elif isinstance(data, dict):
+            # Object with "products" key (old format)
+            self.products = data.get("products", [])
+        else:
+            self.products = []
 
         if not self.products:
             raise ValueError("No products found in JSON file")
@@ -69,28 +80,145 @@ class ConfigLoader:
             }
         }
 
+    def _find_price_field(self, product: Dict) -> Optional[float]:
+        """
+        Intelligently find the price field in a product using regex.
+        Matches variations like "Prix", "Prix (€)", "Prix (€/unité)", "price"
+        but excludes false positives like "Prix au kilo", "Prix de gros"
+
+        Returns the price value or 0 if not found
+        """
+        # Pattern: starts with "prix" or "price" (case insensitive)
+        # May contain parentheses with currency/unit info
+        # Must NOT be followed by certain keywords that indicate wrong field
+
+        for field_name, field_value in product.items():
+            field_lower = field_name.lower()
+
+            # Check if it starts with "prix" or "price"
+            if not (field_lower.startswith("prix") or field_lower.startswith("price")):
+                continue
+
+            # Exclude false positives
+            exclude_patterns = [
+                r"au\s+(kilo|litre|kg|l\b)",  # "au kilo", "au litre"
+                r"de\s+(gros|détail)",         # "de gros", "de détail"
+                r"achat",                       # "prix achat"
+                r"revient",                     # "prix de revient"
+            ]
+
+            # Check if this field should be excluded
+            is_excluded = any(re.search(pattern, field_lower) for pattern in exclude_patterns)
+            if is_excluded:
+                continue
+
+            # This looks like the right price field!
+            # Try to extract numeric value
+            if isinstance(field_value, (int, float)):
+                return float(field_value)
+            elif isinstance(field_value, str):
+                # Try to parse string as number
+                try:
+                    return float(field_value)
+                except ValueError:
+                    continue
+
+        # No price field found
+        return 0.0
+
+    def _normalize_product_field(self, product: Dict, field: str) -> Any:
+        """
+        Normalize product field names to handle different formats
+        Maps Excel format (Nom, Catégorie, etc.) to standard format
+        """
+        # Special handling for price field - use intelligent detection
+        if field == "price":
+            return self._find_price_field(product)
+
+        field_mappings = {
+            "name": ["name", "Nom", "nom"],
+            "display_name": ["display_name", "Nom d'affichage", "display name"],
+            "category": ["category", "Catégorie", "catégorie"],
+            "keywords": ["keywords", "Mots-clés", "mots-clés"],
+            "target_quantity": ["target_quantity", "Objectif", "objectif", "target"],
+        }
+
+        # Get possible field names for this field
+        possible_names = field_mappings.get(field, [field])
+
+        # Try each possible field name
+        for name in possible_names:
+            if name in product:
+                return product[name]
+
+        # Return default values based on field type
+        if field in ["keywords"]:
+            return []
+        elif field in ["target_quantity"]:
+            return 0
+        else:
+            return ""
+
     def get_products_list_for_prompt(self) -> str:
         """
-        Generate formatted product list for Claude prompt
+        Generate formatted product list for Claude prompt with ALL available fields
         Returns string like:
 
         1. Samsung Galaxy Z Nova (Smartphone)
            - Mots-clés : smartphone, téléphone, mobile...
            - Objectif : 4 unités
+           - Prix : 1299€
+           - [All other fields from Excel...]
 
         2. Samsung QLED Vision 8K (Téléviseur)
            ...
         """
         lines = []
-        for i, product in enumerate(self.products, 1):
-            name = product.get("display_name") or product.get("name")
-            category = product.get("category", "")
-            keywords = product.get("keywords", [])
-            target = product.get("target_quantity") or product.get("target", 0)
 
-            lines.append(f"{i}. {name} ({category})")
-            lines.append(f"   - Mots-clés : {', '.join(keywords[:8])}...")  # Limit keywords for readability
-            lines.append(f"   - Objectif : {target} unités")
+        # Define standard fields that always get formatted specially
+        standard_fields = {
+            "name", "Nom", "nom",
+            "display_name", "Nom d'affichage",
+            "id", "ID",
+            "category", "Catégorie", "catégorie",
+            "keywords", "Mots-clés", "mots-clés"
+        }
+
+        for i, product in enumerate(self.products, 1):
+            name = self._normalize_product_field(product, "display_name") or self._normalize_product_field(product, "name")
+            category = self._normalize_product_field(product, "category")
+            keywords = self._normalize_product_field(product, "keywords")
+
+            # Header line with name and category
+            lines.append(f"{i}. {name}" + (f" ({category})" if category else ""))
+
+            # Keywords line
+            if keywords:
+                lines.append(f"   - Mots-clés : {', '.join(keywords[:8])}...")
+
+            # Add ALL other fields from the product (excluding standard fields)
+            for field_name, field_value in product.items():
+                # Skip standard fields already displayed
+                if field_name in standard_fields:
+                    continue
+
+                # Skip empty values
+                if field_value is None or field_value == "" or field_value == []:
+                    continue
+
+                # Format the field nicely
+                display_name = field_name.replace('_', ' ').title()
+
+                # Format value based on type
+                if isinstance(field_value, list):
+                    formatted_value = ', '.join(str(v) for v in field_value)
+                elif isinstance(field_value, (int, float)):
+                    formatted_value = str(field_value)
+                else:
+                    formatted_value = str(field_value)
+
+                lines.append(f"   - {display_name} : {formatted_value}")
+
             lines.append("")  # Empty line between products
 
         return "\n".join(lines)
@@ -106,7 +234,7 @@ class ConfigLoader:
         """
         sales = {}
         for product in self.products:
-            name = product.get("display_name") or product.get("name")
+            name = self._normalize_product_field(product, "display_name") or self._normalize_product_field(product, "name")
             sales[name] = 0
         return sales
 
@@ -119,12 +247,12 @@ class ConfigLoader:
 
         # Generate examples dynamically from first few products
         for i, product in enumerate(self.products[:5]):  # First 5 products
-            name = product.get("display_name") or product.get("name")
-            keywords = product.get("keywords", [])
-            category = product.get("category", "")
+            name = self._normalize_product_field(product, "display_name") or self._normalize_product_field(product, "name")
+            keywords = self._normalize_product_field(product, "keywords")
+            category = self._normalize_product_field(product, "category")
 
             # Pick first 2 keywords as examples
-            if len(keywords) >= 2:
+            if keywords and len(keywords) >= 2:
                 keyword1 = keywords[0]
                 keyword2 = keywords[1]
                 examples.append(f'- "J\'ai vendu 3 {keyword1}s" → {{"{name}": 3}}')
@@ -135,7 +263,7 @@ class ConfigLoader:
     def get_product_names_list(self) -> List[str]:
         """Return list of all product display names"""
         return [
-            product.get("display_name") or product.get("name")
+            self._normalize_product_field(product, "display_name") or self._normalize_product_field(product, "name")
             for product in self.products
         ]
 
@@ -144,10 +272,10 @@ class ConfigLoader:
         formatted = []
         for product in self.products:
             formatted.append({
-                "nom": product.get("display_name") or product.get("name"),
-                "catégorie": product.get("category", ""),
-                "objectifs": product.get("target_quantity", 0),
-                "keywords": product.get("keywords", [])
+                "nom": self._normalize_product_field(product, "display_name") or self._normalize_product_field(product, "name"),
+                "catégorie": self._normalize_product_field(product, "category"),
+                "objectifs": self._normalize_product_field(product, "target_quantity"),
+                "keywords": self._normalize_product_field(product, "keywords")
             })
         return formatted
 

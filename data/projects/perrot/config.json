@@ -1,0 +1,82 @@
+{
+  "id": "perrot",
+  "name": "Perrot",
+  "description": "ColorPro Distribution est un grossiste en peintures professionnelles fondé en 2008, distribuant 12 gammes de peinture auprès de 180 artisans peintres indépendants et petites entreprises de peinture en Île-de-France et Centre-Val de Loire. L'entreprise emploie 15 personnes dont 7 commerciaux terrain qui visitent les chantiers et dépôts des artisans pour prendre les commandes et conseiller sur les produits techniques. Le CA annuel s'élève à 5,8 millions d'euros avec une marge moyenne de 43%.\n\nLes vendeurs en boutique acceuillent les artisans peintres, avant leurs chantiers, pour prendre les commandes de réapprovisionnement et conseiller sur les chantiers à venir (choix produits selon supports et contraintes techniques). l doit etre attentif : ca génère une commande détaillée avec références, conditionnements, quantités, teintes personnalisées et date de livraison souhaitée. Les commerciaux passent beaucoup de temps en voiture (200-300km/jour) entre les différents chantiers répartis sur leur secteur.\n\nLes rapports permettent de DE GAGNER DU TEMPS EN FIN DE JOURN2E POUR LES COMMANDES MARQUANTES ET SURTOUT RECCEUILLR les imporessions terrains et les tendances.",
+  "companyContext": "ColorPro Distribution est un grossiste en peintures professionnelles fondé en 2008, distribuant 12 gammes de peinture auprès de 180 artisans peintres indépendants et petites entreprises de peinture en Île-de-France et Centre-Val de Loire. L'entreprise emploie 15 personnes dont 7 commerciaux terrain qui visitent les chantiers et dépôts des artisans pour prendre les commandes et conseiller sur les produits techniques. Le CA annuel s'élève à 5,8 millions d'euros avec une marge moyenne de 43%.",
+  "reportContext": "Les vendeurs en boutique acceuillent les artisans peintres, avant leurs chantiers, pour prendre les commandes de réapprovisionnement et conseiller sur les chantiers à venir (choix produits selon supports et contraintes techniques). l doit etre attentif : ca génère une commande détaillée avec références, conditionnements, quantités, teintes personnalisées et date de livraison souhaitée. Les commerciaux passent beaucoup de temps en voiture (200-300km/jour) entre les différents chantiers répartis sur leur secteur.",
+  "reportGoal": "Les rapports permettent de DE GAGNER DU TEMPS EN FIN DE JOURN2E POUR LES COMMANDES MARQUANTES ET SURTOUT RECCEUILLR les imporessions terrains et les tendances.",
+  "startDate": "2025-10-18T15:07:43.528Z",
+  "createdAt": "2025-10-28T16:20:35.206Z",
+  "updatedAt": "2025-10-28T16:21:07.894Z",
+  "settings": {
+    "industry": "general",
+    "reportType": "visit",
+    "language": "fr",
+    "reportScheduleType": "fixed",
+    "reportFrequency": "daily"
+  },
+  "conversationStyle": "friendly_professional",
+  "attentionPoints": [
+    {
+      "id": "paint_orders",
+      "description": "Commandes détaillées de peinture et spécifications",
+      "priority": "high",
+      "naturalPrompts": [
+        "Raconte-moi tes plus grosses commandes du jour ?",
+        "T'as eu des demandes particulières sur les teintes ?"
+      ]
+    },
+    {
+      "id": "technical_advice",
+      "description": "Conseils techniques donnés sur chantiers",
+      "priority": "high",
+      "naturalPrompts": [
+        "T'as dû gérer des cas techniques particuliers aujourd'hui ?",
+        "Les artisans t'ont posé quelles questions sur leurs chantiers ?"
+      ]
+    },
+    {
+      "id": "client_feedback",
+      "description": "Retours des artisans sur les produits",
+      "priority": "medium",
+      "naturalPrompts": [
+        "Les peintres t'ont fait des retours sur nos produits ?",
+        "T'as eu des remarques sur la qualité des peintures ?"
+      ]
+    },
+    {
+      "id": "market_insights",
+      "description": "Tendances et besoins terrain",
+      "priority": "medium",
+      "naturalPrompts": [
+        "Tu as repéré des nouveaux besoins chez les artisans ?",
+        "Qu'est-ce qui ressort comme tendance sur ton secteur ?"
+      ]
+    }
+  ],
+  "reportTemplate": {
+    "sections": [
+      "daily_summary",
+      "key_orders",
+      "technical_support",
+      "client_feedback",
+      "market_insights",
+      "next_actions"
+    ],
+    "configuration": {
+      "attentionPointsTracking": true,
+      "salesTableTracking": true,
+      "additionalRemarksTracking": true
+    }
+  },
+  "userFacingDescription": "Je t'accompagne pour faire ton compte-rendu de tournée en roulant, sans perdre de temps. Raconte-moi tes visites, je note tout pour toi !",
+  "collaborators": [
+    "Georges",
+    "Fred",
+    "Carl",
+    "Tom",
+    "Alicia",
+    "Nicolas"
+  ],
+  "hasProductsTable": true
+}

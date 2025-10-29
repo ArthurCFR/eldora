@@ -1,0 +1,63 @@
+{
+  "id": "fiestasatdsdfze",
+  "name": "Fiestasatdsdfze",
+  "description": "Entreprise de B2B de revente de deguisement halloween\n\nVendeur itinerant de costumes dans des magasin de deco pendant la periode d'Halloween\n\nCapter les retours terrains chez nos revendeurs partenaire",
+  "companyContext": "Entreprise de B2B de revente de deguisement halloween",
+  "reportContext": "Vendeur itinerant de costumes dans des magasin de deco pendant la periode d'Halloween",
+  "reportGoal": "Capter les retours terrains chez nos revendeurs partenaire",
+  "startDate": "2025-09-28T17:17:55.954Z",
+  "createdAt": "2025-10-28T18:45:19.645Z",
+  "updatedAt": "2025-10-28T18:47:50.214Z",
+  "settings": {
+    "industry": "retail",
+    "reportType": "visit",
+    "language": "fr",
+    "reportScheduleType": "per-appointment",
+    "reportFrequency": "daily"
+  },
+  "conversationStyle": "friendly_colleague",
+  "attentionPoints": [
+    {
+      "id": "sales_performance",
+      "description": "Ventes réalisées par magasin avec détail des costumes",
+      "priority": "high",
+      "naturalPrompts": [
+        "Alors, qu'est-ce que tu as vendu aujourd'hui ?",
+        "Ça s'est bien vendu dans ce magasin ?",
+        "Tu as écoulé combien de costumes ?"
+      ]
+    },
+    {
+      "id": "partner_feedback",
+      "description": "Retours terrains des revendeurs partenaires",
+      "priority": "high",
+      "naturalPrompts": [
+        "Qu'est-ce qu'ils t'ont dit les gérants ?",
+        "Les revendeurs avaient des retours pour nous ?",
+        "T'as eu des commentaires intéressants ?"
+      ]
+    }
+  ],
+  "reportTemplate": {
+    "sections": [
+      "summary",
+      "sales_results",
+      "partner_feedback",
+      "market_insights",
+      "action_items"
+    ],
+    "configuration": {
+      "attentionPointsTracking": true,
+      "productTableTracking": true,
+      "productSalesTracking": false,
+      "stockAlertsTracking": true,
+      "additionalRemarksTracking": true
+    }
+  },
+  "userFacingDescription": "Je t'aide à faire ton rapport de tournée rapidement après ta journée. Raconte-moi juste comment ça s'est passé chez tes revendeurs !",
+  "collaborators": [
+    "Herve",
+    "Marc"
+  ],
+  "hasProductsTable": true
+}

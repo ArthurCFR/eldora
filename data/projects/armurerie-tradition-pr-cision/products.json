@@ -1,0 +1,227 @@
+[
+  {
+    "Nom": "Arabica-Ethiopie-250g",
+    "Nom d'affichage": "Arabica Éthiopie",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 12.9,
+    "Marge (%)": 0.45,
+    "Caractéristiques": "Origine single, torréfaction artisanale, notes florales, 250g, bio",
+    "id": "prod-1"
+  },
+  {
+    "Nom": "Robusta-Vietnam-1kg",
+    "Nom d'affichage": "Robusta Vietnam",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 18.5,
+    "Marge (%)": 0.38,
+    "Caractéristiques": "Corsé, notes chocolatées, 1kg, commerce équitable",
+    "id": "prod-2"
+  },
+  {
+    "Nom": "Blend-Maison-500g",
+    "Nom d'affichage": "Blend Signature",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 15.8,
+    "Marge (%)": 0.42,
+    "Caractéristiques": "Assemblage 70/30 arabica/robusta, torréfaction médium, 500g",
+    "id": "prod-3"
+  },
+  {
+    "Nom": "Colombie-Supremo-250g",
+    "Nom d'affichage": "Colombie Supremo",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 14.2,
+    "Marge (%)": 0.43,
+    "Caractéristiques": "Altitude 1800m, lavé, notes caramel, 250g, Rainforest Alliance",
+    "id": "prod-4"
+  },
+  {
+    "Nom": "Kenya-AA-250g",
+    "Nom d'affichage": "Kenya AA",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 16.5,
+    "Marge (%)": 0.46,
+    "Caractéristiques": "Grade AA, acidité vive, notes agrumes, 250g, bio",
+    "id": "prod-5"
+  },
+  {
+    "Nom": "Decafeine-Colombie-250g",
+    "Nom d'affichage": "Décaféiné Colombie",
+    "Catégorie": "Café moulu",
+    "Prix (€/unité)": 13.9,
+    "Marge (%)": 0.4,
+    "Caractéristiques": "Décaféination Swiss Water, arabica 100%, moulu expresso, 250g",
+    "id": "prod-6"
+  },
+  {
+    "Nom": "Espresso-Blend-1kg",
+    "Nom d'affichage": "Espresso Blend Pro",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 24.9,
+    "Marge (%)": 0.35,
+    "Caractéristiques": "Blend italien, torréfaction foncée, crema dense, 1kg",
+    "id": "prod-7"
+  },
+  {
+    "Nom": "Bresil-Santos-500g",
+    "Nom d'affichage": "Brésil Santos",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 11.8,
+    "Marge (%)": 0.41,
+    "Caractéristiques": "Doux, notes noisette, séchage naturel, 500g",
+    "id": "prod-8"
+  },
+  {
+    "Nom": "Guatemala-Antigua-250g",
+    "Nom d'affichage": "Guatemala Antigua",
+    "Catégorie": "Café en grains",
+    "Prix (€/unité)": 15.9,
+    "Marge (%)": 0.44,
+    "Caractéristiques": "Volcanique, corps rond, notes cacao, 250g, bio",
+    "id": "prod-9"
+  },
+  {
+    "Nom": "Capsules-Arabica-x50",
+    "Nom d'affichage": "Capsules Pur Arabica",
+    "Catégorie": "Capsules compatibles",
+    "Prix (€/unité)": 19.9,
+    "Marge (%)": 0.48,
+    "Caractéristiques": "50 capsules aluminium, compatible Nespresso, intensité 7/10",
+    "id": "prod-10"
+  },
+  {
+    "Nom": "Capsules-Deca-x50",
+    "Nom d'affichage": "Capsules Décaféiné",
+    "Catégorie": "Capsules compatibles",
+    "Prix (€/unité)": 21.5,
+    "Marge (%)": 0.47,
+    "Caractéristiques": "50 capsules, décaféiné naturel, intensité 5/10",
+    "id": "prod-11"
+  },
+  {
+    "Nom": "The-Vert-Sencha-100g",
+    "Nom d'affichage": "Thé Vert Sencha",
+    "Catégorie": "Thé vert",
+    "Prix (€/unité)": 8.9,
+    "Marge (%)": 0.52,
+    "Caractéristiques": "Japon, première récolte, notes herbacées, 100g, bio",
+    "id": "prod-12"
+  },
+  {
+    "Nom": "The-Vert-Gunpowder-100g",
+    "Nom d'affichage": "Gunpowder Impérial",
+    "Catégorie": "Thé vert",
+    "Prix (€/unité)": 7.5,
+    "Marge (%)": 0.5,
+    "Caractéristiques": "Chine, roulé main, puissant, 100g",
+    "id": "prod-13"
+  },
+  {
+    "Nom": "The-Noir-Darjeeling-100g",
+    "Nom d'affichage": "Darjeeling First Flush",
+    "Catégorie": "Thé noir",
+    "Prix (€/unité)": 11.9,
+    "Marge (%)": 0.48,
+    "Caractéristiques": "Inde, récolte printemps, notes muscatées, 100g, biologique",
+    "id": "prod-14"
+  },
+  {
+    "Nom": "The-Noir-Assam-100g",
+    "Nom d'affichage": "Assam Golden Tips",
+    "Catégorie": "Thé noir",
+    "Prix (€/unité)": 9.8,
+    "Marge (%)": 0.49,
+    "Caractéristiques": "Inde, maltée, idéal petit-déjeuner, 100g",
+    "id": "prod-15"
+  },
+  {
+    "Nom": "The-Noir-CeylanOP-100g",
+    "Nom d'affichage": "Ceylan Orange Pekoe",
+    "Catégorie": "Thé noir",
+    "Prix (€/unité)": 10.5,
+    "Marge (%)": 0.47,
+    "Caractéristiques": "Sri Lanka, feuilles entières, équilibré, 100g, bio",
+    "id": "prod-16"
+  },
+  {
+    "Nom": "The-Blanc-Aiguilles-50g",
+    "Nom d'affichage": "Aiguilles d'Argent",
+    "Catégorie": "Thé blanc",
+    "Prix (€/unité)": 18.9,
+    "Marge (%)": 0.55,
+    "Caractéristiques": "Chine Fujian, bourgeons uniquement, délicat, 50g, rare",
+    "id": "prod-17"
+  },
+  {
+    "Nom": "Oolong-Tieguanyin-75g",
+    "Nom d'affichage": "Oolong Tieguanyin",
+    "Catégorie": "Thé oolong",
+    "Prix (€/unité)": 14.9,
+    "Marge (%)": 0.51,
+    "Caractéristiques": "Chine, oxydation 30%, notes florales, 75g",
+    "id": "prod-18"
+  },
+  {
+    "Nom": "Earl-Grey-Premium-100g",
+    "Nom d'affichage": "Earl Grey Supérieur",
+    "Catégorie": "Thé noir aromatisé",
+    "Prix (€/unité)": 9.9,
+    "Marge (%)": 0.5,
+    "Caractéristiques": "Bergamote Calabre, base Ceylon, 100g",
+    "id": "prod-19"
+  },
+  {
+    "Nom": "Rooibos-Nature-100g",
+    "Nom d'affichage": "Rooibos Rouge Bio",
+    "Catégorie": "Infusion",
+    "Prix (€/unité)": 6.9,
+    "Marge (%)": 0.53,
+    "Caractéristiques": "Afrique du Sud, sans théine, notes vanillées, 100g, bio",
+    "id": "prod-20"
+  },
+  {
+    "Nom": "Infusion-Verveine-50g",
+    "Nom d'affichage": "Verveine de Provence",
+    "Catégorie": "Infusion",
+    "Prix (€/unité)": 7.8,
+    "Marge (%)": 0.54,
+    "Caractéristiques": "France, récolte manuelle, digestive, 50g, bio",
+    "id": "prod-21"
+  },
+  {
+    "Nom": "Matcha-Ceremonial-30g",
+    "Nom d'affichage": "Matcha Cérémonial",
+    "Catégorie": "Thé vert poudre",
+    "Prix (€/unité)": 24.9,
+    "Marge (%)": 0.58,
+    "Caractéristiques": "Japon, grade cérémonial, umami intense, 30g, bio",
+    "id": "prod-22"
+  },
+  {
+    "Nom": "Chai-Massala-100g",
+    "Nom d'affichage": "Chaï Massala",
+    "Catégorie": "Thé noir épicé",
+    "Prix (€/unité)": 10.9,
+    "Marge (%)": 0.51,
+    "Caractéristiques": "Mélange indien, cardamome cannelle gingembre, 100g",
+    "id": "prod-23"
+  },
+  {
+    "Nom": "Jasmin-Perles-75g",
+    "Nom d'affichage": "Perles de Jasmin",
+    "Catégorie": "Thé vert parfumé",
+    "Prix (€/unité)": 13.9,
+    "Marge (%)": 0.49,
+    "Caractéristiques": "Chine, infusé 7 fois au jasmin, roulé main, 75g",
+    "id": "prod-24"
+  },
+  {
+    "Nom": "Coffret-Decouverte-5x50g",
+    "Nom d'affichage": "Coffret Découverte",
+    "Catégorie": "Assortiment",
+    "Prix (€/unité)": 42,
+    "Marge (%)": 0.44,
+    "Caractéristiques": "5 thés premium, coffret carton noble, 5x50g, idéal cadeau",
+    "id": "prod-25"
+  }
+]

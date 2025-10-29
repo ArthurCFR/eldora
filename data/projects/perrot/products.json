@@ -1,0 +1,110 @@
+[
+  {
+    "Nom": "Acrylique-Mat-10L",
+    "Nom d'affichage": "Acrylique Mat Blanc",
+    "Catégorie": "Peinture murale",
+    "Prix (€/unité)": 68,
+    "Marge (%)": 0.42,
+    "Caractéristiques": "Phase aqueuse, finition mate, 10L, rendement 80m²/10L, lessivable",
+    "id": "prod-1"
+  },
+  {
+    "Nom": "Acrylique-Satin-10L",
+    "Nom d'affichage": "Acrylique Satin Blanc",
+    "Catégorie": "Peinture murale",
+    "Prix (€/unité)": 72,
+    "Marge (%)": 0.43,
+    "Caractéristiques": "Phase aqueuse, finition satinée, 10L, rendement 75m²/10L, haute résistance",
+    "id": "prod-2"
+  },
+  {
+    "Nom": "Acrylique-Velours-5L",
+    "Nom d'affichage": "Acrylique Velours Blanc",
+    "Catégorie": "Peinture murale",
+    "Prix (€/unité)": 42,
+    "Marge (%)": 0.44,
+    "Caractéristiques": "Finition veloutée, 5L, rendement 35m²/5L, anti-traces, élégant",
+    "id": "prod-3"
+  },
+  {
+    "Nom": "Glycero-Brillant-2.5L",
+    "Nom d'affichage": "Glycéro Brillant Blanc",
+    "Catégorie": "Peinture boiseries",
+    "Prix (€/unité)": 38.5,
+    "Marge (%)": 0.39,
+    "Caractéristiques": "Phase solvant, brillant laqué, 2.5L, rendement 25m²/2.5L, résistant chocs",
+    "id": "prod-4"
+  },
+  {
+    "Nom": "Glycero-Satin-2.5L",
+    "Nom d'affichage": "Glycéro Satin Blanc",
+    "Catégorie": "Peinture boiseries",
+    "Prix (€/unité)": 35,
+    "Marge (%)": 0.4,
+    "Caractéristiques": "Phase solvant, satin tendu, 2.5L, rendement 25m²/2.5L, portes fenêtres",
+    "id": "prod-5"
+  },
+  {
+    "Nom": "Facade-Pliolite-10L",
+    "Nom d'affichage": "Façade Pliolite",
+    "Catégorie": "Peinture extérieure",
+    "Prix (€/unité)": 95,
+    "Marge (%)": 0.38,
+    "Caractéristiques": "Résine pliolite, 10L, rendement 50m²/10L, imperméable, ton pierre",
+    "id": "prod-6"
+  },
+  {
+    "Nom": "Facade-Siloxane-15L",
+    "Nom d'affichage": "Façade Siloxane",
+    "Catégorie": "Peinture extérieure",
+    "Prix (€/unité)": 145,
+    "Marge (%)": 0.41,
+    "Caractéristiques": "Haute technicité, 15L, rendement 90m²/15L, autonettoyante, 15 ans garantie",
+    "id": "prod-7"
+  },
+  {
+    "Nom": "Sous-Couche-Universelle-10L",
+    "Nom d'affichage": "Sous-Couche Universelle",
+    "Catégorie": "Préparation",
+    "Prix (€/unité)": 52,
+    "Marge (%)": 0.45,
+    "Caractéristiques": "Accrochage multi-supports, 10L, rendement 100m²/10L, séchage 4h",
+    "id": "prod-8"
+  },
+  {
+    "Nom": "Enduit-Rebouchage-5kg",
+    "Nom d'affichage": "Enduit Rebouchage",
+    "Catégorie": "Préparation",
+    "Prix (€/unité)": 18.5,
+    "Marge (%)": 0.48,
+    "Caractéristiques": "Pâte prête emploi, 5kg, intérieur, sans retrait, ponçable 2h",
+    "id": "prod-9"
+  },
+  {
+    "Nom": "Laque-Meuble-1L",
+    "Nom d'affichage": "Laque Meuble Satinée",
+    "Catégorie": "Peinture décoration",
+    "Prix (€/unité)": 28,
+    "Marge (%)": 0.46,
+    "Caractéristiques": "Acrylique, 1L, rendement 12m²/L, meubles cuisine, 12 coloris",
+    "id": "prod-10"
+  },
+  {
+    "Nom": "Primaire-Bois-2.5L",
+    "Nom d'affichage": "Primaire Bois Extérieur",
+    "Catégorie": "Préparation",
+    "Prix (€/unité)": 32,
+    "Marge (%)": 0.44,
+    "Caractéristiques": "Anti-tanins, 2.5L, rendement 30m²/2.5L, protection UV",
+    "id": "prod-11"
+  },
+  {
+    "Nom": "Colorant-Universel-250ml",
+    "Nom d'affichage": "Colorant Universel",
+    "Catégorie": "Teinte",
+    "Prix (€/unité)": 12.5,
+    "Marge (%)": 0.52,
+    "Caractéristiques": "250ml, compatible toutes peintures, dosage 5-10%, 24 teintes",
+    "id": "prod-12"
+  }
+]

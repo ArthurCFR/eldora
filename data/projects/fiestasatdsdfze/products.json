@@ -1,0 +1,182 @@
+[
+  {
+    "Nom": "Sorciere-Deluxe-Adulte",
+    "Nom d'affichage": "Sorcière Deluxe",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 45,
+    "Marge (%)": 0.58,
+    "Caractéristiques": "Robe longue noire, chapeau pointu, ceinture, taille S-L, polyester",
+    "id": "prod-1"
+  },
+  {
+    "Nom": "Vampire-Gothique-Adulte",
+    "Nom d'affichage": "Vampire Gothique",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 52,
+    "Marge (%)": 0.56,
+    "Caractéristiques": "Cape velours, chemise jabot, médaillon, crocs inclus, taille M-XL",
+    "id": "prod-2"
+  },
+  {
+    "Nom": "Zombie-Realiste-Adulte",
+    "Nom d'affichage": "Zombie Réaliste",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 38,
+    "Marge (%)": 0.54,
+    "Caractéristiques": "Tenue déchirée, maquillage latex, gants, unisexe, taille unique",
+    "id": "prod-3"
+  },
+  {
+    "Nom": "Squelette-Combinaison",
+    "Nom d'affichage": "Squelette Fluorescent",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 32,
+    "Marge (%)": 0.52,
+    "Caractéristiques": "Combinaison imprimée os, fluorescent noir, lycra, taille S-XXL",
+    "id": "prod-4"
+  },
+  {
+    "Nom": "Fantome-Traditionnel",
+    "Nom d'affichage": "Fantôme Classique",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 28,
+    "Marge (%)": 0.5,
+    "Caractéristiques": "Drap blanc, masque, chaînes, effet vieilli, taille unique",
+    "id": "prod-5"
+  },
+  {
+    "Nom": "Citrouille-Gonflable",
+    "Nom d'affichage": "Citrouille Gonflable",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 42,
+    "Marge (%)": 0.55,
+    "Caractéristiques": "Costume gonflable, ventilateur inclus, pile, rigolo, taille unique",
+    "id": "prod-6"
+  },
+  {
+    "Nom": "Diablesse-Sexy",
+    "Nom d'affichage": "Diablesse Rouge",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 48,
+    "Marge (%)": 0.57,
+    "Caractéristiques": "Robe moulante, cornes, trident, queue, taille XS-L, satiné",
+    "id": "prod-7"
+  },
+  {
+    "Nom": "Momie-Bandages",
+    "Nom d'affichage": "Momie Égyptienne",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 35,
+    "Marge (%)": 0.53,
+    "Caractéristiques": "Bandages pré-cousus, masque, effet vieilli, taille M-XL",
+    "id": "prod-8"
+  },
+  {
+    "Nom": "Clown-Terrifiant",
+    "Nom d'affichage": "Clown Horror",
+    "Catégorie": "Déguisement adulte",
+    "Prix (€/unité)": 55,
+    "Marge (%)": 0.59,
+    "Caractéristiques": "Combinaison bicolore, masque latex réaliste, gants, taille unique",
+    "id": "prod-9"
+  },
+  {
+    "Nom": "Sorciere-Enfant-8ans",
+    "Nom d'affichage": "Sorcière Enfant",
+    "Catégorie": "Déguisement enfant",
+    "Prix (€/unité)": 28,
+    "Marge (%)": 0.56,
+    "Caractéristiques": "Robe violette paillettes, chapeau, baguette, 6-8 ans, confortable",
+    "id": "prod-10"
+  },
+  {
+    "Nom": "Squelette-Enfant-10ans",
+    "Nom d'affichage": "Squelette Enfant",
+    "Catégorie": "Déguisement enfant",
+    "Prix (€/unité)": 24,
+    "Marge (%)": 0.54,
+    "Caractéristiques": "Combinaison imprimée, capuche, gants, 8-10 ans, phosphorescent",
+    "id": "prod-11"
+  },
+  {
+    "Nom": "Vampire-Enfant-12ans",
+    "Nom d'affichage": "Vampire Junior",
+    "Catégorie": "Déguisement enfant",
+    "Prix (€/unité)": 32,
+    "Marge (%)": 0.55,
+    "Caractéristiques": "Cape satin rouge/noir, médaillon, crocs, 10-12 ans",
+    "id": "prod-12"
+  },
+  {
+    "Nom": "Citrouille-Bebe-24mois",
+    "Nom d'affichage": "Citrouille Bébé",
+    "Catégorie": "Déguisement bébé",
+    "Prix (€/unité)": 35,
+    "Marge (%)": 0.58,
+    "Caractéristiques": "Combinaison rembourrée, chapeau, 18-24 mois, ultra-doux",
+    "id": "prod-13"
+  },
+  {
+    "Nom": "Chapeau-Sorciere-Velours",
+    "Nom d'affichage": "Chapeau Sorcière",
+    "Catégorie": "Accessoire",
+    "Prix (€/unité)": 15,
+    "Marge (%)": 0.62,
+    "Caractéristiques": "Velours noir, boucle argentée, taille ajustable, qualité premium",
+    "id": "prod-14"
+  },
+  {
+    "Nom": "Masque-Latex-Horreur",
+    "Nom d'affichage": "Masque Latex Zombie",
+    "Catégorie": "Accessoire",
+    "Prix (€/unité)": 22,
+    "Marge (%)": 0.6,
+    "Caractéristiques": "Latex naturel, détails réalistes, confortable, adulte",
+    "id": "prod-15"
+  },
+  {
+    "Nom": "Faux-Sang-100ml",
+    "Nom d'affichage": "Faux Sang Réaliste",
+    "Catégorie": "Maquillage",
+    "Prix (€/unité)": 8.5,
+    "Marge (%)": 0.65,
+    "Caractéristiques": "100ml, lavable, non toxique, effet coagulé, professionnel",
+    "id": "prod-16"
+  },
+  {
+    "Nom": "Kit-Maquillage-Zombie",
+    "Nom d'affichage": "Kit Maquillage Horror",
+    "Catégorie": "Maquillage",
+    "Prix (€/unité)": 18,
+    "Marge (%)": 0.61,
+    "Caractéristiques": "6 couleurs, éponges, pinceaux, tutoriel inclus, hypoallergénique",
+    "id": "prod-17"
+  },
+  {
+    "Nom": "Perruque-Sorciere-Verte",
+    "Nom d'affichage": "Perruque Sorcière",
+    "Catégorie": "Accessoire",
+    "Prix (€/unité)": 16.5,
+    "Marge (%)": 0.59,
+    "Caractéristiques": "Cheveux longs verts, fibre synthétique, élastique ajustable",
+    "id": "prod-18"
+  },
+  {
+    "Nom": "Dents-Vampire-Thermoformables",
+    "Nom d'affichage": "Crocs Vampire Pro",
+    "Catégorie": "Accessoire",
+    "Prix (€/unité)": 12,
+    "Marge (%)": 0.63,
+    "Caractéristiques": "Thermoformables, réutilisables, coffret, qualité dentaire",
+    "id": "prod-19"
+  },
+  {
+    "Nom": "Toiles-Araignees-100g",
+    "Nom d'affichage": "Toiles d'Araignées",
+    "Catégorie": "Décoration",
+    "Prix (€/unité)": 6.5,
+    "Marge (%)": 0.68,
+    "Caractéristiques": "100g coton extensible, araignées incluses, réutilisable, effet réaliste",
+    "id": "prod-20"
+  }
+]

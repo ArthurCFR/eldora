@@ -105,11 +105,17 @@ Si aucun chiffre n'est donné, utilise 1 par défaut.
 3. CONTEXTE ÉMOTIONNEL :
    - Enthousiaste, fatigué, content, frustré, stressé, neutre
 
-4. INSIGHTS CLÉS (key_insights) :
+4. INSIGHTS CLÉS (key_insights) - REMARQUES COMPLÉMENTAIRES :
    - Liste de 2-4 insights COURTS et PERCUTANTS (maximum 10-15 mots chacun)
    - Ces insights sont SÉPARÉS du customer_feedback
    - Ils seront affichés en liste à puces APRÈS les sections
    - Focus : Tendances marché, opportunités, difficultés, actions recommandées
+
+   🚨 RÈGLE CRITIQUE ANTI-REDONDANCE :
+   Les key_insights NE DOIVENT CONTENIR QUE des informations NOUVELLES qui n'ont PAS déjà été mentionnées dans customer_feedback.
+   - Si une information est déjà dans une section de customer_feedback → NE PAS la répéter dans key_insights
+   - Si le vendeur n'a partagé AUCUNE information en dehors des points d'attention → key_insights = []
+   - SEULEMENT si le vendeur a mentionné des choses SUPPLÉMENTAIRES non couvertes par les points d'attention → les mettre dans key_insights
 
    🚫 RÈGLE CRITIQUE ANTI-HALLUCINATION :
    Les insights DOIVENT être basés UNIQUEMENT sur ce qui est EXPLICITEMENT dit dans la conversation.
@@ -119,11 +125,12 @@ Si aucun chiffre n'est donné, utilise 1 par défaut.
    - "Succès des ventes croisées" si non mentionné explicitement
    - "Forte dynamique" basé sur juste quelques chiffres
    - Toute conclusion non exprimée par l'utilisateur
+   - TOUTE information déjà présente dans customer_feedback
 
-   ✅ AUTORISÉ :
-   - "Bonne performance sur [produit]" si vendeur dit "ça marche bien"
-   - "[Produit X] a attiré l'attention" si vendeur le mentionne
-   - "Clients intéressés par [feature]" si vendeur le dit explicitement
+   ✅ AUTORISÉ (UNIQUEMENT si NON présent dans customer_feedback) :
+   - "Bonne performance sur [produit]" si vendeur dit "ça marche bien" ET que ce n'est pas déjà dans customer_feedback
+   - "[Produit X] a attiré l'attention" si vendeur le mentionne ET que ce n'est pas déjà dans customer_feedback
+   - "Clients intéressés par [feature]" si vendeur le dit explicitement ET que ce n'est pas déjà dans customer_feedback
 
 Réponds UNIQUEMENT avec un JSON valide (SANS markdown, SANS balises ``` ) :
 {json_str}
@@ -133,8 +140,10 @@ Réponds UNIQUEMENT avec un JSON valide (SANS markdown, SANS balises ``` ) :
 2. CUSTOMER_FEEDBACK : Sections **BOLD** structurées par points d'attention (SANS les insights de key_insights)
    🚫 N'invente PAS, ne déduis PAS - utilise UNIQUEMENT ce que le vendeur a EXPLICITEMENT dit
 3. KEY_INSIGHTS : Liste séparée de 2-4 insights courts (max 15 mots chacun)
+   🚨 ANTI-REDONDANCE : N'inclus QUE des informations qui ne sont PAS déjà dans customer_feedback
    🚫 N'invente PAS de "ventes croisées", "dynamique", ou autres conclusions non mentionnées
-4. SÉPARATION STRICTE : customer_feedback contient les sections détaillées, key_insights contient les points clés courts
+   🚫 Si rien de nouveau à ajouter → key_insights = []
+4. SÉPARATION STRICTE : customer_feedback contient les sections détaillées, key_insights contient UNIQUEMENT les points nouveaux
 5. AUCUNE répétition entre sections ou entre customer_feedback et key_insights
 6. NE MENTIONNE PAS les quantités dans customer_feedback (déjà dans sales)
 7. 🚫 ANTI-HALLUCINATION : Si le vendeur n'a PAS dit quelque chose, ne l'écris PAS dans le rapport"""

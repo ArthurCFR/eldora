@@ -1,0 +1,38 @@
+{
+  "id": "rep-1761668737960",
+  "projectId": "perrot",
+  "date": "2025-10-23",
+  "userName": "Nicolas",
+  "eventName": "Perrot",
+  "sales": {
+    "Acrylique Mat Blanc": 0,
+    "Acrylique Satin Blanc": 0,
+    "Acrylique Velours Blanc": 0,
+    "Glycéro Brillant Blanc": 0,
+    "Glycéro Satin Blanc": 0,
+    "Façade Pliolite": 4,
+    "Façade Siloxane": 4,
+    "Sous-Couche Universelle": 5,
+    "Enduit Rebouchage": 0,
+    "Laque Meuble Satinée": 0,
+    "Primaire Bois Extérieur": 3,
+    "Colorant Universel": 6
+  },
+  "salesAmounts": {
+    "Façade Pliolite": 380,
+    "Façade Siloxane": 580,
+    "Sous-Couche Universelle": 260,
+    "Primaire Bois Extérieur": 96,
+    "Colorant Universel": 75
+  },
+  "totalAmount": 1391,
+  "customerFeedback": "**COMMANDES DÉTAILLÉES DE PEINTURE ET SPÉCIFICATIONS**\nDeux clients majeurs avec commandes multiples. Un client reviendra jeudi pour acheter de l'acrylique.\n\n**CONSEILS TECHNIQUES DONNÉS SUR CHANTIERS**\nL'outil de calcul de surface par rapport au litrage facilite grandement les échanges avec les clients.\n\n**RETOURS DES ARTISANS SUR LES PRODUITS**\nLa nouvelle gamme Fluo est particulièrement appréciée par la clientèle jeune.\n\n**TENDANCES ET BESOINS TERRAIN**\nL'arrivée de l'automne oriente la demande vers les couleurs chaudes (marron, orange, pastel).",
+  "keyInsights": [
+    "Besoin d'un système de gestion des CV reçus en magasin",
+    "Difficulté à vendre l'enduit de rebouchage"
+  ],
+  "emotionalContext": "enthousiaste",
+  "createdAt": "2025-10-28T16:25:37.960Z",
+  "updatedAt": "2025-10-28T16:25:37.960Z",
+  "sentAt": null
+}

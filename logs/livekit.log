@@ -1,0 +1,6 @@
+
+> voyaltis-pharmacy-assistant@1.0.0 livekit:local
+> docker-compose up -d
+
+Some networks were defined but are not used by any service: voyaltis
+livekit-server is up-to-date

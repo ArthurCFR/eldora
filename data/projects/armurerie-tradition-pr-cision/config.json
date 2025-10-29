@@ -1,0 +1,86 @@
+{
+  "id": "armurerie-tradition-pr-cision",
+  "name": "Armurerie Tradition & Précision",
+  "description": "Armurerie Tradition & Précision est une armurerie familiale créée en 1985, spécialisée dans la vente d'armes de chasse, de tir sportif et d'accessoires haut de gamme, avec une boutique de 200m² à Lyon et une forte présence sur les salons professionnels européens (IWA Nuremberg, SHOT Show Paris, FIHAV Bruxelles). L'entreprise emploie 8 personnes dont 4 armuriers-vendeurs qui participent en rotation aux 8-10 salons annuels, réalise 3,2 millions d'euros de CA dont 35% générés lors des salons professionnels. Le catalogue comprend 450 références (armes catégories B et C, optiques, munitions, coffres-forts, accessoires) avec un positionnement premium et un service d'expertise reconnu auprès des tireurs sportifs, chasseurs et collectionneurs.\n\nLes armuriers-vendeurs participent à des salons européens de 3 à 5 jours (jeudi-lundi typiquement) où ils tiennent un stand de 40m² avec exposition produits, espace démonstration et conseil technique aux visiteurs professionnels et particuliers. Chaque salon génère 150 à 400 contacts qualifiés par jour (chasseurs, tireurs sportifs, clubs de tir, revendeurs), avec prise de commandes sur place, devis personnalisés pour armes sur-mesure, et inscriptions pour essais en stand de tir. Les vendeurs cumulent journées de 10h debout (9h-19h), discussions techniques poussées (balistique, réglementation européenne, comparatifs produits), et gestion administrative (vérification permis, attestations conformité, exports UE) dans un environnement bruyant et fatigant.\n\nLes rapports post-salon permettent de consolider les commandes fermes et devis à suivre pour traitement prioritaire dès le retour en boutique, de qualifier les prospects (coordonnées, besoins, budget, échéance d'achat) pour relance commerciale, et d'analyser la performance du salon (CA réalisé, produits stars, tendances marché, positionnement concurrence). Les données alimentent la stratégie de participation aux prochains salons (choix des produits à exposer, ajustement tarifaire, formations techniques nécessaires) et le CRM pour suivi long-terme des clients européens. L'objectif du projet vocal est de permettre aux vendeurs de dicter leurs rapports depuis leur chambre d'hôtel le soir après le salon (souvent à l'étranger), en capturant à chaud les dizaines de contacts de la journée sans ressaisie fastidieuse, pour transmission immédiate au back-office qui prépare devis et commandes pendant que l'équipe est encore sur place.",
+  "companyContext": "Armurerie Tradition & Précision est une armurerie familiale créée en 1985, spécialisée dans la vente d'armes de chasse, de tir sportif et d'accessoires haut de gamme, avec une boutique de 200m² à Lyon et une forte présence sur les salons professionnels européens (IWA Nuremberg, SHOT Show Paris, FIHAV Bruxelles). L'entreprise emploie 8 personnes dont 4 armuriers-vendeurs qui participent en rotation aux 8-10 salons annuels, réalise 3,2 millions d'euros de CA dont 35% générés lors des salons professionnels. Le catalogue comprend 450 références (armes catégories B et C, optiques, munitions, coffres-forts, accessoires) avec un positionnement premium et un service d'expertise reconnu auprès des tireurs sportifs, chasseurs et collectionneurs.",
+  "reportContext": "Les armuriers-vendeurs participent à des salons européens de 3 à 5 jours (jeudi-lundi typiquement) où ils tiennent un stand de 40m² avec exposition produits, espace démonstration et conseil technique aux visiteurs professionnels et particuliers. Chaque salon génère 150 à 400 contacts qualifiés par jour (chasseurs, tireurs sportifs, clubs de tir, revendeurs), avec prise de commandes sur place, devis personnalisés pour armes sur-mesure, et inscriptions pour essais en stand de tir. Les vendeurs cumulent journées de 10h debout (9h-19h), discussions techniques poussées (balistique, réglementation européenne, comparatifs produits), et gestion administrative (vérification permis, attestations conformité, exports UE) dans un environnement bruyant et fatigant.",
+  "reportGoal": "Les rapports post-salon permettent de consolider les commandes fermes et devis à suivre pour traitement prioritaire dès le retour en boutique, de qualifier les prospects (coordonnées, besoins, budget, échéance d'achat) pour relance commerciale, et d'analyser la performance du salon (CA réalisé, produits stars, tendances marché, positionnement concurrence). Les données alimentent la stratégie de participation aux prochains salons (choix des produits à exposer, ajustement tarifaire, formations techniques nécessaires) et le CRM pour suivi long-terme des clients européens. L'objectif du projet vocal est de permettre aux vendeurs de dicter leurs rapports depuis leur chambre d'hôtel le soir après le salon (souvent à l'étranger), en capturant à chaud les dizaines de contacts de la journée sans ressaisie fastidieuse, pour transmission immédiate au back-office qui prépare devis et commandes pendant que l'équipe est encore sur place.",
+  "startDate": "2025-07-26T18:43:32.045Z",
+  "createdAt": "2025-10-28T19:48:52.917Z",
+  "updatedAt": "2025-10-29T10:55:45.660Z",
+  "settings": {
+    "industry": "b2b",
+    "reportType": "visit",
+    "language": "fr",
+    "reportScheduleType": "fixed",
+    "reportFrequency": "weekly"
+  },
+  "conversationStyle": "friendly_colleague",
+  "attentionPoints": [
+    {
+      "id": "contacts_prospects",
+      "description": "Contacts qualifiés récoltés avec coordonnées, besoins et budgets",
+      "priority": "high",
+      "naturalPrompts": [
+        "Combien de contacts tu as récoltés aujourd'hui ?",
+        "Tu as eu des prospects intéressants ?",
+        "T'as noté les coordonnées de tout le monde ?"
+      ]
+    },
+    {
+      "id": "ventes_devis",
+      "description": "Commandes fermes et devis personnalisés réalisés sur le stand",
+      "priority": "high",
+      "naturalPrompts": [
+        "Tu as pris des commandes directement ?",
+        "Combien de devis tu as fait aujourd'hui ?",
+        "Qu'est-ce qui s'est le mieux vendu ?"
+      ]
+    },
+    {
+      "id": "produits_performance",
+      "description": "Produits qui ont attiré l'attention et tendances observées",
+      "priority": "medium",
+      "naturalPrompts": [
+        "Quels produits ont fait sensation ?",
+        "Les visiteurs cherchaient quoi surtout ?",
+        "T'as vu des tendances particulières ?"
+      ]
+    },
+    {
+      "id": "concurrence_positionnement",
+      "description": "Observation de la concurrence et positionnement prix",
+      "priority": "medium",
+      "naturalPrompts": [
+        "Tu as fait un tour chez la concurrence ?",
+        "Comment on se positionne niveau prix ?",
+        "T'as vu des nouveautés intéressantes ?"
+      ]
+    }
+  ],
+  "reportTemplate": {
+    "sections": [
+      "summary",
+      "contacts_prospects",
+      "sales_orders",
+      "product_insights",
+      "competition",
+      "improvements",
+      "next_actions"
+    ],
+    "configuration": {
+      "attentionPointsTracking": true,
+      "productTableTracking": true,
+      "productSalesTracking": true,
+      "stockAlertsTracking": false,
+      "additionalRemarksTracking": true
+    }
+  },
+  "userFacingDescription": "Je t'aide à faire ton rapport de salon rapidement depuis ta chambre d'hôtel. Raconte-moi ta journée, je structure tout pour l'équipe !",
+  "collaborators": [
+    "Fred",
+    "Paul",
+    "Jacques"
+  ],
+  "hasProductsTable": true
+}

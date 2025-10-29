@@ -1,0 +1,24 @@
+env: load .env
+env: export ANTHROPIC_API_KEY LIVEKIT_URL LIVEKIT_API_KEY LIVEKIT_API_SECRET OPENAI_API_KEY ELEVEN_API_KEY EXPO_PUBLIC_PROXY_URL
+Starting project at /home/arthurc/dev/projects/Eldora
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+The following packages should be updated for best compatibility with the installed expo version:
+  @expo/vector-icons@15.0.2 - expected version: ^15.0.3
+  expo@54.0.12 - expected version: 54.0.20
+  expo-file-system@19.0.16 - expected version: ~19.0.17
+  expo-font@14.0.8 - expected version: ~14.0.9
+  expo-modules-core@3.0.20 - expected version: ~3.0.22
+  expo-router@6.0.10 - expected version: ~6.0.13
+  react-native@0.81.4 - expected version: 0.81.5
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 44.4% ( 36/157)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 44.4% (326/530)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓░░░░░░░░ 53.5% (430/588)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89.9% (797/861)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.8% (951/952)
+Web Bundled 15229ms node_modules/expo-router/entry.js (952 modules)
+Killed

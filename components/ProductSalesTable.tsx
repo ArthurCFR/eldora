@@ -1,15 +1,14 @@
 /**
- * Modern Samsung Sales Table with Glassmorphism
+ * Modern Product Sales Table with Glassmorphism
+ * Generic component that works with any project's products
  */
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, typography, shadows } from '../constants/theme';
-import productsData from '../agent/config/products.json';
 import GlassContainer from './GlassContainer';
 import { generateManagerialInsights, generateExecutiveSummary } from '../services/insightGenerator';
-import { MOCK_SAMSUNG_SALES } from '../constants/samsungMockData';
 
 /**
  * Formate le feedback avec support des marqueurs ** pour le gras
@@ -37,21 +36,35 @@ function formatFeedback(feedback: string | null): Array<{ text: string; bold: bo
   return result;
 }
 
-interface SamsungSalesTableProps {
+interface Product {
+  name: string;
+  display_name?: string;
+  category?: string;
+  target_quantity?: number;
+  [key: string]: any; // Allow additional fields from Excel
+}
+
+interface ProductSalesTableProps {
   sales: { [productName: string]: number };
+  salesAmounts?: { [productName: string]: number }; // Individual amounts per product
+  totalAmount?: number; // Total sales amount
+  products: Product[]; // Products from project
   timeSpent?: string;
   customerFeedback?: string;
   onSalesChange?: (sales: { [productName: string]: number }) => void;
   onFeedbackChange?: (feedback: string) => void;
 }
 
-export default function SamsungSalesTable({
+export default function ProductSalesTable({
   sales,
+  salesAmounts,
+  totalAmount,
+  products,
   timeSpent,
   customerFeedback,
   onSalesChange,
   onFeedbackChange
-}: SamsungSalesTableProps) {
+}: ProductSalesTableProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedSales, setEditedSales] = useState(sales);
   const [editedFeedback, setEditedFeedback] = useState(
@@ -102,7 +115,7 @@ export default function SamsungSalesTable({
 
   const currentSales = isEditing ? editedSales : sales;
   const totalSold = Object.values(currentSales).reduce((sum, count) => sum + count, 0);
-  const totalTarget = productsData.products.reduce((sum: number, p: any) => sum + p.target_quantity, 0);
+  const totalTarget = products.reduce((sum: number, p: Product) => sum + (p.target_quantity || 0), 0);
   const globalScore = calculateScore(totalSold, totalTarget);
 
   return (
@@ -184,6 +197,17 @@ export default function SamsungSalesTable({
         </View>
       </GlassContainer>
 
+      {/* Total des ventes */}
+      {totalAmount !== undefined && totalAmount > 0 && (
+        <GlassContainer style={styles.totalSalesBox} intensity="strong" bordered={false}>
+          <View style={[styles.totalSalesGradient, { backgroundColor: colors.accent.gold }]} />
+          <View style={styles.totalSalesContent}>
+            <Text style={styles.totalSalesLabel}>Total des Ventes</Text>
+            <Text style={styles.totalSalesValue}>{totalAmount.toFixed(2)} €</Text>
+          </View>
+        </GlassContainer>
+      )}
+
       {/* Tableau */}
       <GlassContainer style={styles.table} intensity="medium">
         {/* Header */}
@@ -191,14 +215,25 @@ export default function SamsungSalesTable({
           <Text style={[styles.tableHeaderCell, styles.productNameCell]}>Produit</Text>
           <Text style={[styles.tableHeaderCell, styles.numberCell]}>Vendu</Text>
           <Text style={[styles.tableHeaderCell, styles.numberCell]}>Objectif</Text>
+          <Text style={[styles.tableHeaderCell, styles.amountCell]}>Montant</Text>
           <Text style={[styles.tableHeaderCell, styles.scoreCell]}>Score</Text>
         </View>
 
-        {/* Rows */}
-        {productsData.products.map((product: any, index: number) => {
+        {/* Rows - Sorted by sales quantity */}
+        {[...products]
+          .sort((a, b) => {
+            const soldA = currentSales[a.name] || 0;
+            const soldB = currentSales[b.name] || 0;
+            if (soldA !== soldB) {
+              return soldB - soldA; // Higher sales first
+            }
+            return a.name.localeCompare(b.name); // Alphabetical for same sales
+          })
+          .map((product: Product, index: number) => {
           const sold = currentSales[product.name] || 0;
-          const score = calculateScore(sold, product.target_quantity);
+          const score = calculateScore(sold, product.target_quantity || 0);
           const scoreColor = getScoreColor(score);
+          const hasZeroSales = sold === 0;
 
           return (
             <View
@@ -206,11 +241,14 @@ export default function SamsungSalesTable({
               style={[
                 styles.tableRow,
                 index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd,
+                hasZeroSales && styles.tableRowZero,
               ]}
             >
               <View style={styles.productNameCell}>
-                <Text style={styles.productName}>{product.display_name}</Text>
-                <Text style={styles.productCategory}>{product.category}</Text>
+                <Text style={styles.productName}>{product.display_name || product.name}</Text>
+                {product.category && (
+                  <Text style={styles.productCategory}>{product.category}</Text>
+                )}
               </View>
 
               {/* Colonne Vendu avec boutons +/- en mode édition */}
@@ -243,8 +281,18 @@ export default function SamsungSalesTable({
               )}
 
               <View style={styles.numberCell}>
-                <Text style={styles.tableCell}>{product.target_quantity}</Text>
+                <Text style={styles.tableCell}>{product.target_quantity || 0}</Text>
               </View>
+
+              {/* Colonne Montant */}
+              <View style={styles.amountCell}>
+                <Text style={[styles.tableCellAmount, sold > 0 && styles.boldText]}>
+                  {salesAmounts && salesAmounts[product.name]
+                    ? `${salesAmounts[product.name].toFixed(2)} €`
+                    : '-'}
+                </Text>
+              </View>
+
               <View style={[styles.scoreCell, styles.scoreContainer]}>
                 <View style={[styles.scoreBadge, { backgroundColor: scoreColor }]}>
                   <Text style={styles.scoreText}>{score}%</Text>
@@ -381,6 +429,32 @@ const styles = StyleSheet.create({
     ...typography.small,
     color: colors.text.secondary,
   },
+  totalSalesBox: {
+    marginBottom: spacing.md,
+    padding: 0,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  totalSalesGradient: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.15,
+  },
+  totalSalesContent: {
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
+  totalSalesLabel: {
+    ...typography.small,
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: spacing.xs,
+  },
+  totalSalesValue: {
+    ...typography.h1,
+    color: colors.accent.gold,
+    fontWeight: '700',
+  },
   table: {
     padding: 0,
     overflow: 'hidden',
@@ -411,6 +485,9 @@ const styles = StyleSheet.create({
   tableRowOdd: {
     backgroundColor: colors.glass.light,
   },
+  tableRowZero: {
+    opacity: 0.5,
+  },
   tableCell: {
     ...typography.small,
     color: colors.text.secondary,
@@ -432,6 +509,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  amountCell: {
+    flex: 1.2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tableCellAmount: {
+    ...typography.small,
+    color: colors.accent.gold,
+    fontWeight: '600',
   },
   scoreCell: {
     flex: 1,

@@ -1,0 +1,83 @@
+🚀 Starting Voyaltis Agent V2 (Ultra-Simplified)
+================================================
+
+Version: V2 - Simple linear question flow
+Features: Minimal complexity, direct questions
+
+Checking for existing agents...
+✅ No existing agents found
+Starting agent...
+{"message": "starting worker", "level": "INFO", "name": "livekit.agents", "version": "1.2.15", "rtc-version": "1.0.13", "timestamp": "2025-10-27T14:52:23.726099+00:00"}
+{"message": "preloading plugins", "level": "INFO", "name": "livekit.agents", "packages": ["livekit.plugins.openai", "livekit.plugins.silero", "livekit.plugins.elevenlabs", "av"], "timestamp": "2025-10-27T14:52:23.726472+00:00"}
+{"message": "initializing process", "level": "INFO", "name": "livekit.agents", "pid": 1695869, "timestamp": "2025-10-27T14:52:26.332292+00:00"}
+{"message": "initializing process", "level": "INFO", "name": "livekit.agents", "pid": 1695871, "timestamp": "2025-10-27T14:52:26.340877+00:00"}
+{"message": "initializing process", "level": "INFO", "name": "livekit.agents", "pid": 1695873, "timestamp": "2025-10-27T14:52:26.346519+00:00"}
+{"message": "initializing process", "level": "INFO", "name": "livekit.agents", "pid": 1695875, "timestamp": "2025-10-27T14:52:26.351883+00:00"}
+{"message": "process initialized", "level": "INFO", "name": "livekit.agents", "pid": 1695869, "elapsed_time": 0.05, "timestamp": "2025-10-27T14:52:26.386964+00:00"}
+{"message": "process initialized", "level": "INFO", "name": "livekit.agents", "pid": 1695871, "elapsed_time": 0.06, "timestamp": "2025-10-27T14:52:26.405262+00:00"}
+{"message": "process initialized", "level": "INFO", "name": "livekit.agents", "pid": 1695875, "elapsed_time": 0.06, "timestamp": "2025-10-27T14:52:26.409125+00:00"}
+{"message": "process initialized", "level": "INFO", "name": "livekit.agents", "pid": 1695873, "elapsed_time": 0.07, "timestamp": "2025-10-27T14:52:26.420292+00:00"}
+{"message": "registered worker", "level": "INFO", "name": "livekit.agents", "id": "AW_YrHmUQqXhBqt", "url": "ws://172.28.191.115:7880", "region": "", "protocol": 16, "timestamp": "2025-10-27T14:52:26.429014+00:00"}
+{"message": "worker is at full capacity, marking as unavailable", "level": "INFO", "name": "livekit.agents", "load": 0.8988571428571428, "threshold": "_WorkerEnvOption(dev_default=inf, prod_default=0.7)", "timestamp": "2025-10-27T14:52:52.302117+00:00"}
+{"message": "worker is below capacity, marking as available", "level": "INFO", "name": "livekit.agents", "load": 0.415542857142857, "threshold": "_WorkerEnvOption(dev_default=inf, prod_default=0.7)", "timestamp": "2025-10-27T14:53:02.308141+00:00"}
+{"message": "received job request", "level": "INFO", "name": "livekit.agents", "job_id": "AJ_kqbHXYDCxyNT", "dispatch_id": "AD_8GCKZWqSJ86H", "room_name": "voyaltis-Frank-1761576802658", "agent_name": "", "resuming": false, "timestamp": "2025-10-27T14:53:24.362863+00:00"}
+{"message": "🚀 [V2] Starting simple agent for room: voyaltis-Frank-1761576802658", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:24.371753+00:00"}
+Failed to load CUDA modules. maybe the NVIDIA driver is not installed?
+Failed to initialize CUDA context.
+Failed to open VA display. Maybe the AMD video driver or libva-dev/libdrm-dev is not installed?
+Failed to open VAAPI display.
+Failed to load CUDA modules. maybe the NVIDIA driver is not installed?
+Failed to initialize CUDA context.
+{"message": "initializing process", "level": "INFO", "name": "livekit.agents", "pid": 1696451, "timestamp": "2025-10-27T14:53:24.430849+00:00"}
+{"message": "process initialized", "level": "INFO", "name": "livekit.agents", "pid": 1696451, "elapsed_time": 0.06, "timestamp": "2025-10-27T14:53:24.494719+00:00"}
+{"message": "🔌 Connected to LiveKit room", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.498428+00:00"}
+{"message": "👋 Participant connected: Frank", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.499055+00:00"}
+{"message": "📁 Loading project config for: procuis", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.499970+00:00"}
+{"message": "✅ Loaded project config: ProCuis, 3 attention points", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.502238+00:00"}
+{"message": "📋 Report config - Attention:True, Sales:True, Remarks:True", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.502398+00:00"}
+{"message": "📊 Table structure: 5 columns - Tableau de suivi des ventes d'équipements de cuisine professionnelle permettant d'analyser les performances commerciales par produit", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.502449+00:00"}
+{"message": "📦 Loading products from project: procuis", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.502663+00:00"}
+{"message": "✅ Loaded 20 products from project procuis", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.503816+00:00"}
+{"message": "Loaded 20 products from ConfigLoader", "level": "INFO", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.504425+00:00"}
+{"message": "No keywords defined for Four Convection FC800", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.504817+00:00"}
+{"message": "No keywords defined for Friteuse Pro 2x15L", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.504997+00:00"}
+{"message": "No keywords defined for Piano Cuisson 6 Feux", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505047+00:00"}
+{"message": "No keywords defined for Batteur Mélangeur 20L", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505083+00:00"}
+{"message": "No keywords defined for Trancheur Jambon Pro", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505161+00:00"}
+{"message": "No keywords defined for Cellule Refroidissement 20kg", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505201+00:00"}
+{"message": "No keywords defined for Lave-Vaisselle Frontal", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505235+00:00"}
+{"message": "No keywords defined for Table Réfrigérée 3 Portes", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505268+00:00"}
+{"message": "No keywords defined for Armoire Froide 1400L", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505296+00:00"}
+{"message": "No keywords defined for Armoire Froide -18°C", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505323+00:00"}
+{"message": "No keywords defined for Hotte Extraction 2m", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505350+00:00"}
+{"message": "No keywords defined for Robot Coupe R301", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505375+00:00"}
+{"message": "No keywords defined for Bain-Marie 3 Bacs", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505399+00:00"}
+{"message": "No keywords defined for Salamandre Électrique", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505424+00:00"}
+{"message": "No keywords defined for Machine Sous-Vide Pro", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505449+00:00"}
+{"message": "No keywords defined for Cutter 9L Inox", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505472+00:00"}
+{"message": "No keywords defined for Plonge Inox 2 Bacs", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505497+00:00"}
+{"message": "No keywords defined for Étagère Inox 4 Niveaux", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505521+00:00"}
+{"message": "No keywords defined for Grill Panini Double", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505547+00:00"}
+{"message": "No keywords defined for Steamer Riz 10L", "level": "WARNING", "name": "sales_analyzer", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505575+00:00"}
+{"message": "📦 Products info prepared for agent (20 products)", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.505864+00:00"}
+{"message": "📊 Will ask up to 5 questions (3 base + 2 follow-ups)", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:25.507606+00:00"}
+{"message": "🔍 AgentSession created with VAD/STT/LLM/TTS", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:26.054401+00:00"}
+{"message": "📢 Track published: 1 from Frank", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:26.085327+00:00"}
+{"message": "🎵 Track subscribed: 1 from Frank", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:26.086684+00:00"}
+{"message": "✅ Agent started", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:26.110764+00:00"}
+{"message": "🎤 [V2] Simple agent started", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:26.110989+00:00"}
+{"message": "💬 assistant: Salut Frank ! Alors, ils ont choisi quel matériel finalement ?", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:30.046773+00:00"}
+{"message": "✅ [V2] Session running", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:30.060647+00:00"}
+{"message": "💬 user: Alors, on a vendu 2 steameries électriques, 1 plonge en inox, 1 machine sous vide et 3 salamandres. Par contre, j'ai essayé de leur vendre des robots coupe R301, mais je ne me rappelle plus le prix. Est-ce que tu peux me le donner, s'il te plaît ?", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:53:54.739011+00:00"}
+{"message": "💬 assistant: Le Robot Coupe R301 est à 1 299€. D'accord ! T'as vérifié les branchements sur place ?", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:00.800098+00:00"}
+{"message": "💡 Agent answered user question - not counting (still at 0/5)", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:00.800445+00:00"}
+{"message": "💬 user: Oui, ils ont les bons équipements, juste il y a quelques travaux à prévoir pour les salamandres.", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:12.717238+00:00"}
+{"message": "💬 assistant: Super, merci pour l'info ! On doit livrer pour quand ?", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:17.345670+00:00"}
+{"message": "📊 Questions: 1/5", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:17.346034+00:00"}
+{"message": "💬 user: Le 12 décembre.", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:28.966799+00:00"}
+{"message": "💬 assistant: Merci Frank ! Pour résumer, tu as vendu 2 steameries électriques, 1 plonge inox, 1 machine sous vide, et 3 salamandres. Les branchements sont bons, mais des travaux sont nécessaires pour les salamandres. La livraison est prévue pour le 12 décembre. As-tu une dernière information à me partager ?", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:47.004318+00:00"}
+{"message": "📊 Questions: 2/5", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:47.004653+00:00"}
+{"message": "💬 user: Non c'est bon, tu peux rédiger.", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:52.916316+00:00"}
+{"message": "💬 assistant: Parfait, merci ! Je vais préparer ton rapport.", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:56.101604+00:00"}
+{"message": "📊 Questions: 3/5", "level": "INFO", "name": "voyaltis-agent-v2", "pid": 1695869, "job_id": "AJ_kqbHXYDCxyNT", "timestamp": "2025-10-27T14:54:56.101893+00:00"}
+./start-v2.sh: line 39: 1695757 Killed                  python mainV2.py start

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,49 +16,76 @@ import { colors, spacing, borderRadius, typography, shadows } from '../constants
 import GlassContainer from './GlassContainer';
 import { Ionicons } from '@expo/vector-icons';
 import Header from './Header';
+import ProjectSelector from './ProjectSelector';
+import { getProject } from '../services/projectService';
 
 interface LoginScreenProps {
-  onLoginSuccess: (firstName: string) => void;
+  onLoginSuccess: (firstName: string, projectId: string) => void;
 }
 
 export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
-  const [firstName, setFirstName] = useState('Thomas');
-  const [projectCode, setProjectCode] = useState('XB45T');
+  const [firstName, setFirstName] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>(undefined);
+  const [collaborators, setCollaborators] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Load collaborators when project is selected
+  useEffect(() => {
+    if (selectedProjectId) {
+      loadProjectCollaborators(selectedProjectId);
+    } else {
+      setCollaborators([]);
+      setFirstName('');
+    }
+  }, [selectedProjectId]);
+
+  const loadProjectCollaborators = async (projectId: string) => {
+    try {
+      const project = await getProject(projectId);
+      if (project.collaborators && project.collaborators.length > 0) {
+        setCollaborators(project.collaborators);
+      } else {
+        setCollaborators([]);
+      }
+    } catch (error) {
+      console.error('Error loading project collaborators:', error);
+      setCollaborators([]);
+    }
+  };
 
   const handleLogin = () => {
     // Reset error
     setErrorMessage('');
 
     // Validation
+    if (!selectedProjectId) {
+      setErrorMessage('Veuillez sélectionner un projet');
+      return;
+    }
+
     if (!firstName.trim()) {
       setErrorMessage('Veuillez entrer votre prénom');
       return;
     }
 
-    if (!projectCode.trim()) {
-      setErrorMessage('Veuillez entrer le code projet');
-      return;
+    // Check if collaborator is authorized (if project has collaborators defined)
+    if (collaborators.length > 0) {
+      const isAuthorized = collaborators.some(
+        c => c.toLowerCase() === firstName.trim().toLowerCase()
+      );
+      if (!isAuthorized) {
+        setErrorMessage('Vous n\'êtes pas autorisé à utiliser ce projet');
+        return;
+      }
     }
 
     setIsLoading(true);
 
-    // Vérifier les credentials
-    const isValidFirstName = firstName.trim().toLowerCase() === 'thomas';
-    const isValidCode = projectCode.trim().toUpperCase() === 'XB45T';
-
+    // Simulate login delay
     setTimeout(() => {
       setIsLoading(false);
-
-      if (isValidFirstName && isValidCode) {
-        onLoginSuccess(firstName.trim());
-      } else if (!isValidCode) {
-        setErrorMessage('Code projet incorrect. Veuillez vérifier et réessayer.');
-        setProjectCode('');
-      } else {
-        setErrorMessage('Les informations saisies ne sont pas correctes.');
-      }
+      onLoginSuccess(firstName.trim(), selectedProjectId);
     }, 600);
   };
 
@@ -95,41 +122,73 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               {/* Login Form */}
               <GlassContainer style={styles.formContainer} intensity="strong">
                 <View style={styles.form}>
-                  {/* Prénom */}
+                  {/* Project Selector */}
                   <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Prénom</Text>
-                    <TextInput
-                      style={styles.inputSimple}
-                      placeholder="Entrez votre prénom"
-                      placeholderTextColor={colors.text.tertiary}
-                      value={firstName}
-                      onChangeText={(text) => {
-                        setFirstName(text);
+                    <Text style={styles.label}>Projet</Text>
+                    <ProjectSelector
+                      selectedProjectId={selectedProjectId}
+                      onProjectSelect={(projectId) => {
+                        setSelectedProjectId(projectId);
                         setErrorMessage('');
                       }}
-                      autoCapitalize="words"
-                      autoCorrect={false}
-                      editable={!isLoading}
+                      disabled={isLoading}
                     />
                   </View>
 
-                  {/* Code Projet */}
-                  <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Code Projet</Text>
-                    <TextInput
-                      style={styles.inputSimple}
-                      placeholder="Entrez le code projet"
-                      placeholderTextColor={colors.text.tertiary}
-                      value={projectCode}
-                      onChangeText={(text) => {
-                        setProjectCode(text);
-                        setErrorMessage('');
-                      }}
-                      autoCapitalize="characters"
-                      autoCorrect={false}
-                      editable={!isLoading}
-                    />
-                  </View>
+                  {/* Prénom - Only shown after project selection */}
+                  {selectedProjectId && (
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.label}>Prénom</Text>
+
+                      {/* Show collaborator buttons if available */}
+                      {collaborators.length > 0 && (
+                        <View style={styles.collaboratorsContainer}>
+                          <Text style={styles.collaboratorsHint}>
+                            Collaborateurs autorisés :
+                          </Text>
+                          <View style={styles.collaboratorsButtons}>
+                            {collaborators.map((collab) => (
+                              <TouchableOpacity
+                                key={collab}
+                                style={[
+                                  styles.collaboratorButton,
+                                  firstName.toLowerCase() === collab.toLowerCase() && styles.collaboratorButtonSelected,
+                                ]}
+                                onPress={() => {
+                                  setFirstName(collab);
+                                  setErrorMessage('');
+                                }}
+                                disabled={isLoading}
+                              >
+                                <Text
+                                  style={[
+                                    styles.collaboratorButtonText,
+                                    firstName.toLowerCase() === collab.toLowerCase() && styles.collaboratorButtonTextSelected,
+                                  ]}
+                                >
+                                  {collab}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+
+                      <TextInput
+                        style={styles.inputSimple}
+                        placeholder={collaborators.length > 0 ? "Sélectionnez votre prénom ci-dessus" : "Entrez votre prénom"}
+                        placeholderTextColor={colors.text.tertiary}
+                        value={firstName}
+                        onChangeText={(text) => {
+                          setFirstName(text);
+                          setErrorMessage('');
+                        }}
+                        autoCapitalize="words"
+                        autoCorrect={false}
+                        editable={!isLoading}
+                      />
+                    </View>
+                  )}
 
                   {/* Login Button */}
                   <TouchableOpacity
@@ -267,5 +326,38 @@ const styles = StyleSheet.create({
     ...typography.small,
     color: colors.text.tertiary,
     textAlign: 'center',
+  },
+  collaboratorsContainer: {
+    marginBottom: spacing.sm,
+  },
+  collaboratorsHint: {
+    ...typography.small,
+    color: colors.text.secondary,
+    marginBottom: spacing.sm,
+  },
+  collaboratorsButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  collaboratorButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    backgroundColor: colors.background.secondary,
+  },
+  collaboratorButtonSelected: {
+    borderColor: colors.accent.gold,
+    backgroundColor: 'rgba(245, 197, 66, 0.1)',
+  },
+  collaboratorButtonText: {
+    ...typography.body,
+    color: colors.text.secondary,
+  },
+  collaboratorButtonTextSelected: {
+    color: colors.accent.gold,
+    fontWeight: '600',
   },
 });

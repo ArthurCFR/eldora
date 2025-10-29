@@ -2,16 +2,20 @@ Commandes :
 npx expo start --tunnel
 npx expo start --web
 
-  Mémo - 4 terminaux nécessaires
+L'objectif du projet est de permettre de traquer les visites des commerciaux de labo tech au sein des pharmacies de la région parisienne. Il faut traquer la vente des produits, les commentaires des pharmaciens et essayer de comprendre quels sont les best sellers des concurrents.
 
+  Mémo - 4 terminaux nécessaires
+./start-all.sh
   1. Terminal 1 - LiveKit
   npm run livekit:local
   2. Terminal 2 - Proxy
   npm run proxy
   3. Terminal 3 - Agent Python 
   npm run agent
+  OR
+  ./start-v2.sh
   4. Terminal 4 - Expo
-  npx expo start
+  npx expo start --web -c
 
   Claude :
   nvm use 22.16.0
@@ -21,4 +25,190 @@ npx expo start --web
   Investiger une DA pepite d'or
   Crééer l'interface manager
   Pouvoir avoir un "Top question" a mettre
-  
+
+  ✅ FAIT - Corrections agent conversationnel (27 oct 2025) :
+  1. Accès aux produits dans les instructions de l'agent
+     - L'agent a maintenant accès à TOUS les champs du catalogue produits (prix, caractéristiques, etc.)
+     - Peut répondre aux questions sur les prix et calculer des totaux
+     - Format: get_products_list_for_prompt() inclus dans les instructions
+
+  2. Génération automatique du rapport JSON
+     - Patterns de détection élargis: "préparer ton rapport", "voici le rapport", "je vais générer", etc.
+     - Instruction explicite: NE PAS réciter le rapport oralement
+     - L'agent doit dire "Parfait ! Je vais préparer ton rapport." puis s'arrêter
+
+  Fichiers modifiés :
+  - agent/mainV2.py : Ajout products_info dans build_simple_instructions (ligne 32)
+  - agent/mainV2.py : Section catalogue produits dans instructions (lignes 129-141)
+  - agent/mainV2.py : Patterns de fin élargis (lignes 715-723 et 526-534)
+  - agent/mainV2.py : Instruction anti-récitation orale du rapport (ligne 167)
+
+  ✅ FAIT - Gestion des questions de l'utilisateur (27 oct 2025) :
+  - L'agent peut maintenant répondre aux questions de l'utilisateur
+  - Détection automatique : phrase finissant par "?"
+  - Fouille dans le catalogue produits pour répondre
+  - Extraction des infos pertinentes même quand l'utilisateur pose une question
+  - Les réponses aux questions NE COMPTENT PAS dans le quota
+  - Transition naturelle directe vers la question suivante
+  - Exemples :
+    * User : "J'ai vendu 2 cuiseurs. C'est quoi le prix déjà ?"
+    * Agent : "Le cuiseur est à 299€. D'accord ! Et c'est pour quand la livraison ?"
+    * Comptage : Toujours à la même position (pas +1)
+
+  Fichiers modifiés :
+  - agent/mainV2.py : Section "GESTION DES QUESTIONS" dans instructions (lignes 175-193)
+  - agent/mainV2.py : Comptage intelligent mode voice (lignes 718-735)
+  - agent/mainV2.py : Comptage intelligent mode texte (lignes 530-545)
+
+  ✅ FAIT - Flow de fin en 3 étapes (27 oct 2025) :
+  Le processus de fin est maintenant structuré en 3 étapes obligatoires :
+
+  1. RÉCAPITULATIF (questions_asked >= max_questions)
+     - L'agent fait un résumé naturel et chaleureux
+     - Exemple : "Merci Boris ! Pour résumer, tu as vendu [produits], tu as eu des difficultés sur [points]"
+     - L'agent demande : "As-tu une dernière information à me partager ?"
+     - État interne : recap_done = True
+
+  2. DERNIÈRE PAROLE UTILISATEUR
+     - L'utilisateur peut faire un ajout, une modification, ou dire "non c'est bon"
+     - Cette réponse est capturée pour le rapport
+
+  3. CONCLUSION ET GÉNÉRATION
+     - L'agent dit : "Parfait, merci ! Je vais préparer ton rapport."
+     - Détection de fin se déclenche (recap_done=True + pattern de fin)
+     - Le rapport JSON est généré automatiquement
+     - Micro coupé, barre de son disparaît, rapport affiché
+
+  Patterns de détection :
+  - Récapitulatif : "dernière information", "dernière chose", "as-tu autre chose"
+  - Conclusion : "préparer ton rapport", "rédiger ton rapport", "je vais générer"
+
+  Fichiers modifiés :
+  - agent/mainV2.py : État recap_done ajouté (ligne 278-280)
+  - agent/mainV2.py : Instructions PROCESSUS DE FIN EN 3 ÉTAPES (lignes 166-178)
+  - agent/mainV2.py : Détection HYBRIDE mode voice (lignes 799-855)
+  - agent/mainV2.py : Détection HYBRIDE mode texte (lignes 563-615)
+
+  ✅ FAIT - Système hybride robuste (27 oct 2025) :
+  Le déclenchement de fin utilise maintenant un système hybride à 4 chemins :
+
+  **TRIGGER PRINCIPAL** : questions_asked >= max_questions (robuste, basé sur compteur)
+
+  **4 CHEMINS DE DÉTECTION** :
+
+  1. CHEMIN IDÉAL (Patterns stricts)
+     - Détection "dernière information/chose/autre chose" → recap_done = True
+     - User répond → user_responded_after_recap = True
+     - Agent dit "préparer ton rapport" → END ✅
+
+  2. CHEMIN SOUPLE (Patterns + Safety)
+     - Détection recap (patterns élargis incluant "autre chose")
+     - User répond après recap
+     - Agent répond avec pattern de conclusion → END ✅
+
+  3. CHEMIN SAFETY NET (Compteur intelligent)
+     - User a répondu après le recap
+     - Agent répond à nouveau (peu importe le texte)
+     - → END ✅ (ne reste pas bloqué si patterns ne matchent pas)
+
+  4. CHEMIN ULTIME (Filet de sécurité)
+     - exchanges_after_max >= 6 (3 échanges complets)
+     - → END ✅ (protection contre boucle infinie)
+
+  **Scénarios couverts** :
+  - ✅ Agent suit les instructions (chemin 1)
+  - ✅ Agent dit "autre chose" au lieu de "dernière information" (chemin 2)
+  - ✅ User pose une question après le recap (continue normalement, puis chemin 3)
+  - ✅ Patterns ne matchent pas du tout (chemin 3)
+  - ✅ Boucle bizarre (chemin 4)
+
+  Fichiers modifiés :
+  - agent/mainV2.py : 3 états de tracking (lignes 278-280)
+  - agent/mainV2.py : Patterns élargis pour recap (8 variantes)
+  - agent/mainV2.py : Logique hybride 4 chemins voice (lignes 799-855)
+  - agent/mainV2.py : Logique hybride 4 chemins texte (lignes 563-615)
+
+  ✅ FAIT - Coupure micro immédiate (27 oct 2025) :
+  Correction critique du timing de fin de conversation :
+
+  **PROBLÈME** : L'utilisateur pouvait continuer à parler APRÈS que l'agent dise "Je vais préparer ton rapport",
+  créant des messages supplémentaires qui empêchaient la génération du rapport.
+
+  **SOLUTION** : Envoi immédiat du signal `conversation_ending` dès que l'agent prononce la phrase finale,
+  AVANT que l'utilisateur puisse intervenir.
+
+  **FLOW CORRIGÉ** :
+  1. Agent dit : "Parfait ! Je vais préparer ton rapport."
+  2. Signal `conversation_ending` envoyé IMMÉDIATEMENT (ligne 854-862 voice, 586-594 texte)
+  3. Client reçoit signal → Coupe micro INSTANTANÉMENT
+  4. Génération du rapport commence (plus de messages utilisateur possibles)
+
+  **CHEMIN 0** ajouté : Détection immédiate des patterns finaux
+  - "je vais préparer ton rapport"
+  - "je vais préparer le rapport"
+  - "je vais rédiger ton rapport"
+  - "je vais rédiger le rapport"
+  → Envoi asyncio.create_task(send_ending_signal()) immédiat
+
+  Fichiers modifiés :
+  - agent/mainV2.py : CHEMIN 0 détection immédiate (lignes 841-863 voice, 574-594 texte)
+  - agent/mainV2.py : Suppression signal dupliqué dans finalize() (ligne 925-928)
+
+  ✅ FAIT - Système de métadonnées produits enrichies :
+  - Toutes les colonnes Excel sont maintenant capturées et stockées
+  - Distinction entre colonnes affichées (max 5) et champs disponibles (tous)
+  - L'IA peut utiliser toutes les infos produits dans les conversations
+  - Enrichissement automatique des métadonnées par IA
+  - Documentation complète : voir PRODUCT_METADATA_SYSTEM.md
+
+  Fichiers modifiés :
+  - types/project.ts : Ajout ProductFieldMetadata, TableStructure enrichi
+  - services/productFieldAnalyzer.ts : Nouveau service d'analyse
+  - services/tableStructureGenerator.ts : Utilisation des métadonnées
+  - server.js : Endpoints /analyze-product-fields + mise à jour /generate-table-structure
+  - agent/utils/config_loader.py : Affichage de tous les champs produits
+
+  ✅ FAIT - Système de limitation intelligente des questions :
+  - Formule flexible : base + 50% buffer (ex: 3 points → 5 questions max)
+  - 🎯 PRIORITÉ ABSOLUE : Questions obligatoires (base) AVANT questions bonus
+  - Suivi en temps réel : "Questions obligatoires couvertes : 2/3"
+  - Permet des questions de suivi pour clarifier les réponses
+  - Garde-fous automatiques pour éviter conversations trop longues
+  - Instructions adaptatives selon progression (alertes à -1 et 0 questions)
+  - Mise à jour dynamique des instructions en temps réel
+  - Documentation complète : voir agent/QUESTION_LIMIT_SYSTEM.md + PRIORITY_SYSTEM.md
+
+  Fichiers modifiés :
+  - agent/mainV2.py : Nouvelle formule de calcul + garde-fous + instructions adaptatives
+
+  ✅ FAIT - Système de génération de questions naturelles :
+  - Transformation intelligente des points d'attention en questions orales
+  - Deux niveaux : Claude (création projet) + Fallback Python (runtime)
+  - 10+ patterns pour questions naturelles (ventes, opportunités, retours, etc.)
+  - Fini les "Parle-moi de..." → Questions courtes et personnelles
+  - Exemples : "Tu as eu des belles opportunités ?" au lieu de "Parle-moi de détail des opportunités B2B/B2C"
+  - Documentation complète : voir agent/NATURAL_QUESTIONS_SYSTEM.md
+
+  Fichiers créés :
+  - agent/utils/question_generator.py : Générateur intelligent de questions
+
+  Fichiers modifiés :
+  - services/claudeProjectAnalyzer.ts : Prompt enrichi pour générer naturalPrompts
+  - agent/mainV2.py : Intégration du générateur en fallback
+
+  ✅ FAIT - Description utilisateur conviviale :
+  - Ajout d'un champ 'userFacingDescription' généré par Claude (max 2 phrases)
+  - Description courte et engageante pour l'utilisateur final
+  - Différente de la description technique du manager
+  - Affichée dans la page principale à la place de la description projet
+  - Exemple : "Je t'aide à créer ton rapport de journée en quelques minutes. Raconte-moi simplement ta journée, je m'occupe du reste !"
+
+  Fichiers modifiés :
+  - types/project.ts : Ajout du champ userFacingDescription
+  - services/claudeProjectAnalyzer.ts : Génération de la description par Claude + normalisation reportTemplate
+  - components/ProjectCreator.tsx : Sauvegarde + affichage dans le récapitulatif
+  - app/project.tsx : Affichage dans la bannière principale
+
+  Note : Normalisation reportTemplate pour gérer les deux formats (array vs object)
+  - Format array ["section1"] → Converti en {sections: ["section1"]}
+  - Garantit la compatibilité avec les réponses Claude

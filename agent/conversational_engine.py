@@ -432,7 +432,7 @@ Parle comme un humain normal."""
         try:
             # Call Claude API
             response = await self.anthropic.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-sonnet-4-20250514",
                 max_tokens=1024,
                 messages=[{"role": "user", "content": analysis_prompt}]
             )

@@ -1,0 +1,107 @@
+{
+  "id": "smitharm-2",
+  "name": "SmithArm 2",
+  "description": "Armurerie Tradition & Précision est une armurerie familiale créée en 1985, spécialisée dans la vente d'armes de chasse, de tir sportif et d'accessoires haut de gamme, avec une boutique de 200m² à Lyon et une forte présence sur les salons professionnels européens (IWA Nuremberg, SHOT Show Paris, FIHAV Bruxelles). L'entreprise emploie 8 personnes dont 4 armuriers-vendeurs qui participent en rotation aux 8-10 salons annuels, réalise 3,2 millions d'euros de CA dont 35% générés lors des salons professionnels. Le catalogue comprend 450 références (armes catégories B et C, optiques, munitions, coffres-forts, accessoires) avec un positionnement premium et un service d'expertise reconnu auprès des tireurs sportifs, chasseurs et collectionneurs.\n\nLes armuriers-vendeurs participent à des salons européens de 3 à 5 jours (jeudi-lundi typiquement) où ils tiennent un stand de 40m² avec exposition produits, espace démonstration et conseil technique aux visiteurs professionnels et particuliers. Chaque salon génère 150 à 400 contacts qualifiés par jour (chasseurs, tireurs sportifs, clubs de tir, revendeurs), avec prise de commandes sur place, devis personnalisés pour armes sur-mesure, et inscriptions pour essais en stand de tir. Les vendeurs cumulent journées de 10h debout (9h-19h), discussions techniques poussées (balistique, réglementation européenne, comparatifs produits), et gestion administrative (vérification permis, attestations conformité, exports UE) dans un environnement bruyant et fatigant.\n\nLe rapport est surtout qualitatif : l'idée est de capter les grands enjeux de la journée, les tendances, les grosses commandes et leur contexte. Je veux aussi savoir quels sont les produits complémentaires (munitions, visuers, vêtements) qui intéressent le plus notre cible de client : les agences de sécurité privée. Cela alimentera notre base de connaissance pour mieux cibler les participations aux prochains salons et la gamme de produit à venir.",
+  "companyContext": "Armurerie Tradition & Précision est une armurerie familiale créée en 1985, spécialisée dans la vente d'armes de chasse, de tir sportif et d'accessoires haut de gamme, avec une boutique de 200m² à Lyon et une forte présence sur les salons professionnels européens (IWA Nuremberg, SHOT Show Paris, FIHAV Bruxelles). L'entreprise emploie 8 personnes dont 4 armuriers-vendeurs qui participent en rotation aux 8-10 salons annuels, réalise 3,2 millions d'euros de CA dont 35% générés lors des salons professionnels. Le catalogue comprend 450 références (armes catégories B et C, optiques, munitions, coffres-forts, accessoires) avec un positionnement premium et un service d'expertise reconnu auprès des tireurs sportifs, chasseurs et collectionneurs.",
+  "reportContext": "Les armuriers-vendeurs participent à des salons européens de 3 à 5 jours (jeudi-lundi typiquement) où ils tiennent un stand de 40m² avec exposition produits, espace démonstration et conseil technique aux visiteurs professionnels et particuliers. Chaque salon génère 150 à 400 contacts qualifiés par jour (chasseurs, tireurs sportifs, clubs de tir, revendeurs), avec prise de commandes sur place, devis personnalisés pour armes sur-mesure, et inscriptions pour essais en stand de tir. Les vendeurs cumulent journées de 10h debout (9h-19h), discussions techniques poussées (balistique, réglementation européenne, comparatifs produits), et gestion administrative (vérification permis, attestations conformité, exports UE) dans un environnement bruyant et fatigant.",
+  "reportGoal": "Le rapport est surtout qualitatif : l'idée est de capter les grands enjeux de la journée, les tendances, les grosses commandes et leur contexte. Je veux aussi savoir quels sont les produits complémentaires (munitions, visuers, vêtements) qui intéressent le plus notre cible de client : les agences de sécurité privée. Cela alimentera notre base de connaissance pour mieux cibler les participations aux prochains salons et la gamme de produit à venir.",
+  "startDate": "2025-10-27T10:58:29.182Z",
+  "createdAt": "2025-10-29T11:10:36.381Z",
+  "updatedAt": "2025-10-29T11:11:17.262Z",
+  "settings": {
+    "industry": "general",
+    "reportType": "visit",
+    "language": "fr",
+    "reportScheduleType": "fixed",
+    "reportFrequency": "daily"
+  },
+  "conversationStyle": "friendly_colleague",
+  "attentionPoints": [
+    {
+      "id": "daily_highlights",
+      "description": "Grandes tendances et enjeux marquants de la journée",
+      "priority": "high",
+      "naturalPrompts": [
+        "Alors, comment ça s'est passé cette journée ?",
+        "Qu'est-ce qui t'a le plus marqué aujourd'hui ?",
+        "Tu as senti quelles tendances sur le salon ?"
+      ]
+    },
+    {
+      "id": "major_sales",
+      "description": "Grosses commandes et ventes significatives avec contexte",
+      "priority": "high",
+      "naturalPrompts": [
+        "Tu as fait de belles ventes aujourd'hui ?",
+        "T'as eu des grosses commandes ?",
+        "Raconte-moi tes plus beaux coups du jour ?"
+      ]
+    },
+    {
+      "id": "security_agencies_interest",
+      "description": "Intérêt des agences de sécurité privée pour produits complémentaires",
+      "priority": "high",
+      "naturalPrompts": [
+        "T'as vu des agences de sécurité aujourd'hui ?",
+        "Qu'est-ce qui les intéresse le plus en accessoires ?",
+        "Côté sécurité privée, ils cherchent quoi ?"
+      ]
+    },
+    {
+      "id": "client_profiles",
+      "description": "Types de visiteurs rencontrés et leurs besoins spécifiques",
+      "priority": "medium",
+      "naturalPrompts": [
+        "T'as eu quel type de clients aujourd'hui ?",
+        "Plutôt chasseurs ou tireurs sportifs ?",
+        "Des collectionneurs sont passés ?"
+      ]
+    },
+    {
+      "id": "product_feedback",
+      "description": "Retours et demandes spécifiques sur les produits",
+      "priority": "medium",
+      "naturalPrompts": [
+        "Qu'est-ce qu'ils te demandent le plus ?",
+        "T'as eu des retours intéressants sur nos produits ?",
+        "Des demandes particulières aujourd'hui ?"
+      ]
+    },
+    {
+      "id": "competition_insights",
+      "description": "Observations sur la concurrence et positionnement marché",
+      "priority": "low",
+      "naturalPrompts": [
+        "Tu as vu ce que fait la concurrence ?",
+        "Qu'est-ce qui se dit sur les autres stands ?",
+        "On est bien positionnés par rapport aux autres ?"
+      ]
+    }
+  ],
+  "reportTemplate": {
+    "sections": [
+      "summary",
+      "major_sales",
+      "security_agencies_insights",
+      "client_trends",
+      "product_feedback",
+      "competition",
+      "next_actions"
+    ],
+    "configuration": {
+      "attentionPointsTracking": true,
+      "productTableTracking": true,
+      "productSalesTracking": true,
+      "stockAlertsTracking": false,
+      "additionalRemarksTracking": true
+    }
+  },
+  "userFacingDescription": "Je t'aide à créer ton rapport de salon en quelques minutes après ta longue journée. Raconte-moi simplement ce qui s'est passé, je structure tout ça pour toi !",
+  "collaborators": [
+    "Bob",
+    "Dylan",
+    "Roco",
+    "Patoche"
+  ],
+  "hasProductsTable": true
+}

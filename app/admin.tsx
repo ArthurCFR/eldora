@@ -1,5 +1,5 @@
 /**
- * Interface d'administration - Configuration de l'assistant vocal
+ * Interface d'administration - Configuration de l'assistant vocal et gestion des projets
  */
 
 import React, { useState, useEffect } from 'react';
@@ -16,159 +16,93 @@ import {
   Platform,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { colors, spacing, borderRadius, typography, shadows } from '../constants/theme';
-import {
-  loadAssistantConfig,
-  saveAssistantConfig,
-  AssistantConfig,
-  AttentionPoint,
-  generateAttentionPointId,
-} from '../services/assistantConfig';
+import { listProjects, deleteProject } from '../services/projectService';
+import type { Project, ProjectListItem } from '../types/project';
 import Header from '../components/Header';
 import GlassContainer from '../components/GlassContainer';
-
-// Points d'attention courants prédéfinis
-const COMMON_ATTENTION_POINTS = [
-  'Produits vendus avec quantités',
-  'Retours clients',
-  'Ambiance générale de l\'événement',
-  'Demandes spécifiques des clients',
-  'Produits en rupture de stock',
-  'Comparaisons avec la concurrence',
-  'Questions fréquentes des clients',
-  'Profil des visiteurs (âge, secteur)',
-  'Difficultés rencontrées',
-  'Best practices identifiées',
-  'Opportunités commerciales',
-  'Durée de la présence sur le stand',
-];
+import ProjectCreator from '../components/ProjectCreator';
+import ProjectConfigEditor from '../components/ProjectConfigEditor';
 
 export default function AdminScreen() {
-  const [config, setConfig] = useState<AssistantConfig>({
-    conversationStyle: 'friendly_colleague',
-    attentionPoints: [],
-  });
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [pointToDelete, setPointToDelete] = useState<string | null>(null);
-  const [selectedCommon, setSelectedCommon] = useState<string | null>(null);
-  const [customPoint, setCustomPoint] = useState('');
-  const [naturalPrompts, setNaturalPrompts] = useState('');
-  const [cursorPosition, setCursorPosition] = useState(0);
+  // Projects state
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const [showProjectCreator, setShowProjectCreator] = useState(false);
+  const [showProjectEditor, setShowProjectEditor] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    loadConfig();
+    loadProjects();
   }, []);
 
-  const loadConfig = async () => {
-    const loaded = await loadAssistantConfig();
-    if (loaded) {
-      setConfig(loaded);
-    }
-  };
-
-  const handleSaveConfig = async () => {
+  const loadProjects = async () => {
+    setIsLoadingProjects(true);
     try {
-      await saveAssistantConfig(config);
-      Alert.alert('Succès', 'La configuration a été enregistrée avec succès !');
+      const projectsList = await listProjects();
+      setProjects(projectsList);
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de sauvegarder la configuration');
+      console.error('Error loading projects:', error);
+      Alert.alert('Erreur', 'Impossible de charger les projets');
+    } finally {
+      setIsLoadingProjects(false);
     }
   };
 
-  const handleAddPoint = () => {
-    const description = selectedCommon || customPoint.trim();
+  const handleDeleteProject = async (projectId: string) => {
+    console.log('handleDeleteProject called with:', projectId);
 
-    if (!description) {
-      Alert.alert('Attention', 'Veuillez sélectionner ou saisir un point d\'attention');
-      return;
+    // On web, Alert.alert with buttons doesn't work - use window.confirm
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?');
+      if (!confirmed) return;
+
+      try {
+        console.log('Deleting project:', projectId);
+        await deleteProject(projectId);
+        console.log('Project deleted, reloading...');
+        await loadProjects();
+        Alert.alert('Succès', 'Projet supprimé avec succès');
+      } catch (error) {
+        console.error('Delete error:', error);
+        Alert.alert('Erreur', 'Impossible de supprimer le projet');
+      }
+    } else {
+      // Native mobile - use Alert.alert with buttons
+      Alert.alert(
+        'Confirmer la suppression',
+        'Êtes-vous sûr de vouloir supprimer ce projet ?',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          {
+            text: 'Supprimer',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                console.log('Deleting project:', projectId);
+                await deleteProject(projectId);
+                console.log('Project deleted, reloading...');
+                await loadProjects();
+                Alert.alert('Succès', 'Projet supprimé avec succès');
+              } catch (error) {
+                console.error('Delete error:', error);
+                Alert.alert('Erreur', 'Impossible de supprimer le projet');
+              }
+            },
+          },
+        ]
+      );
     }
-
-    const prompts = naturalPrompts
-      .split('\n')
-      .map(p => p.trim())
-      .filter(p => p.length > 0);
-
-    const newPoint: AttentionPoint = {
-      id: generateAttentionPointId(description),
-      description,
-      priority: 'medium',
-      naturalPrompts: prompts.length > 0 ? prompts : undefined,
-    };
-
-    setConfig({
-      ...config,
-      attentionPoints: [...config.attentionPoints, newPoint],
-    });
-
-    // Reset modal
-    setShowAddModal(false);
-    setSelectedCommon(null);
-    setCustomPoint('');
-    setNaturalPrompts('');
   };
 
-  const removePoint = (id: string) => {
-    setPointToDelete(id);
-    setShowDeleteModal(true);
+  const handleProjectCreated = (project: Project) => {
+    loadProjects();
+    Alert.alert('Succès', `Projet "${project.name}" créé avec succès !`);
   };
-
-  const confirmDelete = () => {
-    if (pointToDelete) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        attentionPoints: prevConfig.attentionPoints.filter(p => p.id !== pointToDelete),
-      }));
-    }
-    setShowDeleteModal(false);
-    setPointToDelete(null);
-  };
-
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setPointToDelete(null);
-  };
-
-  const insertUserNameVariable = () => {
-    const currentText = config.customOpeningMessage || '';
-    const beforeCursor = currentText.substring(0, cursorPosition);
-    const afterCursor = currentText.substring(cursorPosition);
-    const newText = beforeCursor + '{userName}' + afterCursor;
-
-    setConfig({
-      ...config,
-      customOpeningMessage: newText,
-    });
-
-    // Mettre à jour la position du curseur après l'insertion
-    setCursorPosition(cursorPosition + '{userName}'.length);
-  };
-
-  const conversationStyles = [
-    {
-      value: 'friendly_colleague',
-      label: 'Collègue sympa',
-      description: 'Décontracté, chaleureux et empathique',
-    },
-    {
-      value: 'professional_warm',
-      label: 'Professionnel chaleureux',
-      description: 'Respectueux mais bienveillant',
-    },
-    {
-      value: 'coach_motivating',
-      label: 'Coach motivant',
-      description: 'Encourageant et énergique',
-    },
-    {
-      value: 'casual_relaxed',
-      label: 'Décontracté',
-      description: 'Informel et sans pression',
-    },
-  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -177,314 +111,141 @@ export default function AdminScreen() {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Configuration de l'Assistant</Text>
+          <Text style={styles.title}>Administration</Text>
         </View>
 
-        {/* Ton de l'assistant */}
-        <GlassContainer style={styles.section} intensity="medium" shadow>
-          <Text style={styles.sectionTitle}>Ton de l'assistant</Text>
-          <Text style={styles.sectionSubtitle}>
-            Choisissez le style de conversation de l'assistant
+        {/* Info text */}
+        <View style={styles.infoBox}>
+          <Ionicons name="information-circle-outline" size={20} color={colors.accent.gold} />
+          <Text style={styles.infoText}>
+            Gérez vos projets d'assistant vocal. Chaque projet a sa propre configuration.
           </Text>
+        </View>
 
-          {conversationStyles.map((style) => (
-            <TouchableOpacity
-              key={style.value}
-              style={[
-                styles.styleCard,
-                config.conversationStyle === style.value && styles.styleCardSelected,
-              ]}
-              onPress={() =>
-                setConfig({
-                  ...config,
-                  conversationStyle: style.value as AssistantConfig['conversationStyle'],
-                })
-              }
-            >
-              <View style={styles.styleCardContent}>
-                <View style={styles.styleTextContainer}>
-                  <Text style={styles.styleLabel}>{style.label}</Text>
-                  <Text style={styles.styleDescription}>{style.description}</Text>
+        {/* Projects Section */}
+        <GlassContainer style={styles.section} intensity="medium" shadow>
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.sectionTitle}>Mes projets</Text>
+                  <Text style={styles.sectionSubtitle}>
+                    Gérez vos projets d'assistant vocal
+                  </Text>
                 </View>
               </View>
-              {config.conversationStyle === style.value && (
-                <Image
-                  source={require('../assets/Logo/BulletDark.png')}
-                  style={styles.selectedBullet}
-                  resizeMode="contain"
-                />
-              )}
-            </TouchableOpacity>
-          ))}
-        </GlassContainer>
 
-        {/* Phrase d'accroche personnalisée */}
-        <GlassContainer style={styles.section} intensity="medium" shadow>
-          <Text style={styles.sectionTitle}>Phrase d'accroche</Text>
-          <Text style={styles.sectionSubtitle}>
-            Message d'ouverture de l'assistant (optionnel)
-          </Text>
+              <TouchableOpacity
+                style={styles.createProjectButton}
+                onPress={() => setShowProjectCreator(true)}
+              >
+                <Ionicons name="add-circle" size={24} color={colors.text.primary} />
+                <Text style={styles.createProjectButtonText}>Créer un projet</Text>
+              </TouchableOpacity>
 
-          <TextInput
-            style={[styles.customInput, styles.textArea]}
-            placeholder="Ex: Salut ! Raconte-moi ta journée sur le stand Samsung !"
-            value={config.customOpeningMessage || ''}
-            onChangeText={(text) =>
-              setConfig({
-                ...config,
-                customOpeningMessage: text.trim() === '' ? undefined : text,
-              })
-            }
-            onSelectionChange={(event) => {
-              setCursorPosition(event.nativeEvent.selection.start);
-            }}
-            placeholderTextColor={colors.text.tertiary}
-            multiline
-            numberOfLines={3}
-          />
-
-          {/* Bouton pour insérer la variable prénom */}
-          <TouchableOpacity style={styles.insertVariableButton} onPress={insertUserNameVariable}>
-            <Text style={styles.insertVariableButtonText}>📝 Insérer prénom</Text>
-          </TouchableOpacity>
-
-          {/* Aperçu du message avec la variable stylisée */}
-          {config.customOpeningMessage && config.customOpeningMessage.includes('{userName}') && (
-            <View style={styles.previewContainer}>
-              <Text style={styles.previewLabel}>Aperçu :</Text>
-              <View style={styles.previewTextContainer}>
-                {config.customOpeningMessage.split(/(\{userName\})/).map((part, index) => {
-                  if (part === '{userName}') {
-                    return (
-                      <View key={index} style={styles.variableTag}>
-                        <Text style={styles.variableTagText}>Thomas</Text>
+              {isLoadingProjects ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={colors.accent.gold} />
+                  <Text style={styles.loadingText}>Chargement des projets...</Text>
+                </View>
+              ) : projects.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Ionicons name="folder-open-outline" size={64} color={colors.text.tertiary} />
+                  <Text style={styles.emptyStateText}>Aucun projet</Text>
+                  <Text style={styles.emptyStateSubtext}>
+                    Créez votre premier projet pour commencer
+                  </Text>
+                </View>
+              ) : (
+                projects.map((project) => (
+                  <View key={project.id} style={styles.projectCard}>
+                    <View style={styles.projectCardHeader}>
+                      <View style={styles.projectCardTitleContainer}>
+                        <Ionicons name="folder" size={24} color={colors.accent.gold} />
+                        <Text style={styles.projectCardTitle}>{project.name}</Text>
                       </View>
-                    );
-                  }
-                  return (
-                    <Text key={index} style={styles.previewText}>
-                      {part}
+                      <View style={styles.projectCardActions}>
+                        <TouchableOpacity
+                          style={styles.projectActionButton}
+                          onPress={async () => {
+                            // Load full project data and open editor
+                            try {
+                              const { getProject } = await import('../services/projectService');
+                              const fullProject = await getProject(project.id);
+                              setSelectedProject(fullProject);
+                              setShowProjectEditor(true);
+                            } catch (error) {
+                              Alert.alert('Erreur', 'Impossible de charger le projet');
+                            }
+                          }}
+                        >
+                          <Ionicons name="pencil-outline" size={20} color={colors.accent.gold} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.projectActionButton}
+                          onPress={() => {
+                            console.log('Trash icon clicked for project:', project.id);
+                            handleDeleteProject(project.id);
+                          }}
+                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        >
+                          <Ionicons name="trash-outline" size={20} color={colors.accent.danger} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <Text style={styles.projectCardDescription} numberOfLines={2}>
+                      {project.description}
                     </Text>
-                  );
-                })}
-              </View>
-              <Text style={styles.previewHint}>
-                Le prénom du vendeur remplacera automatiquement la variable
-              </Text>
-            </View>
-          )}
 
-          <Text style={styles.helperText}>
-            💡 Laissez vide pour utiliser le message par défaut généré automatiquement
-          </Text>
-        </GlassContainer>
-
-        {/* Points d'attention spécifiques */}
-        <GlassContainer style={styles.section} intensity="medium" shadow>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Points d'attention spécifiques</Text>
-              <Text style={styles.sectionSubtitle}>
-                Informations à collecter lors de la conversation
-              </Text>
-            </View>
-          </View>
-
-          {/* Liste des points */}
-          {config.attentionPoints.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>
-                Aucun point d'attention configuré
-              </Text>
-              <Text style={styles.emptyStateSubtext}>
-                Ajoutez des points pour guider la conversation
-              </Text>
-            </View>
-          ) : (
-            config.attentionPoints.map((point, index) => (
-              <View key={point.id} style={styles.pointCard}>
-                <View style={styles.pointCardContent}>
-                  <View style={styles.pointHeader}>
-                    <View style={styles.pointNumber}>
-                      <Text style={styles.pointNumberText}>{index + 1}</Text>
+                    <View style={styles.projectCardFooter}>
+                      <View style={styles.projectCardMeta}>
+                        <Ionicons name="calendar-outline" size={14} color={colors.text.tertiary} />
+                        <Text style={styles.projectCardMetaText}>
+                          {new Date(project.createdAt).toLocaleDateString('fr-FR')}
+                        </Text>
+                      </View>
+                      {project.industry && (
+                        <View style={styles.industryBadge}>
+                          <Text style={styles.industryBadgeText}>
+                            {project.industry === 'pharma' && 'Pharmacie'}
+                            {project.industry === 'retail' && 'Retail'}
+                            {project.industry === 'b2b' && 'B2B'}
+                            {project.industry === 'general' && 'Général'}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                    <Text style={styles.pointDescription}>{point.description}</Text>
                   </View>
-
-                  {point.naturalPrompts && point.naturalPrompts.length > 0 && (
-                    <View style={styles.promptsContainer}>
-                      <Text style={styles.promptsLabel}>Questions :</Text>
-                      <Text style={styles.promptsText} numberOfLines={2}>
-                        {point.naturalPrompts[0]}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => removePoint(point.id)}
-                >
-                  <Text style={styles.deleteButtonText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            ))
-          )}
-
-          {/* Bouton Ajouter */}
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setShowAddModal(true)}
-          >
-            <Text style={styles.addButtonText}>Ajouter un point d'attention</Text>
-          </TouchableOpacity>
+                ))
+              )}
         </GlassContainer>
-
-        {/* Bouton de sauvegarde */}
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveConfig}>
-          <Image
-            source={require('../assets/Logo/BulletYellow.png')}
-            style={styles.bulletIcon}
-            resizeMode="contain"
-          />
-          <Text style={styles.saveButtonText}>Sauvegarder la configuration</Text>
-        </TouchableOpacity>
 
         <View style={styles.spacer} />
       </ScrollView>
 
-      {/* Modal d'ajout */}
-      <Modal
-        visible={showAddModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowAddModal(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <KeyboardAvoidingView
-            style={styles.modalContent}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Nouveau point d'attention</Text>
-              <TouchableOpacity onPress={() => setShowAddModal(false)}>
-                <Text style={styles.closeButton}>×</Text>
-              </TouchableOpacity>
-            </View>
+      {/* Project Creator Modal */}
+      <ProjectCreator
+        visible={showProjectCreator}
+        onClose={() => setShowProjectCreator(false)}
+        onProjectCreated={handleProjectCreated}
+      />
 
-            <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
-              {/* Points courants */}
-              <Text style={styles.modalSectionTitle}>Points courants</Text>
-              <Text style={styles.modalSectionSubtitle}>
-                Sélectionnez un point prédéfini
-              </Text>
-
-              {COMMON_ATTENTION_POINTS.map((point) => (
-                <TouchableOpacity
-                  key={point}
-                  style={[
-                    styles.commonPointCard,
-                    selectedCommon === point && styles.commonPointCardSelected,
-                  ]}
-                  onPress={() => {
-                    setSelectedCommon(point);
-                    setCustomPoint('');
-                  }}
-                >
-                  <Text style={styles.commonPointText}>{point}</Text>
-                  {selectedCommon === point && (
-                    <Image
-                      source={require('../assets/Logo/BulletDark.png')}
-                      style={styles.selectedBulletSmall}
-                      resizeMode="contain"
-                    />
-                  )}
-                </TouchableOpacity>
-              ))}
-
-              {/* Point personnalisé */}
-              <Text style={[styles.modalSectionTitle, { marginTop: spacing.xl }]}>
-                Point personnalisé
-              </Text>
-              <Text style={styles.modalSectionSubtitle}>
-                Ou créez votre propre point d'attention
-              </Text>
-
-              <TextInput
-                style={styles.customInput}
-                placeholder="Ex: Niveau de satisfaction des visiteurs"
-                value={customPoint}
-                onChangeText={(text) => {
-                  setCustomPoint(text);
-                  setSelectedCommon(null);
-                }}
-                placeholderTextColor={colors.text.tertiary}
-                multiline
-              />
-
-              {/* Questions naturelles (optionnel) */}
-              <Text style={[styles.modalSectionTitle, { marginTop: spacing.lg }]}>
-                Questions naturelles (optionnel)
-              </Text>
-              <Text style={styles.modalSectionSubtitle}>
-                Une question par ligne pour guider la conversation
-              </Text>
-
-              <TextInput
-                style={[styles.customInput, styles.textArea]}
-                placeholder="Ex: Comment ont réagi les visiteurs ?&#10;Qu'est-ce qui leur a plu ?"
-                value={naturalPrompts}
-                onChangeText={setNaturalPrompts}
-                placeholderTextColor={colors.text.tertiary}
-                multiline
-                numberOfLines={4}
-              />
-
-              <TouchableOpacity style={styles.modalAddButton} onPress={handleAddPoint}>
-                <Image
-                  source={require('../assets/Logo/BulletYellow.png')}
-                  style={styles.bulletIcon}
-                  resizeMode="contain"
-                />
-                <Text style={styles.modalAddButtonText}>Ajouter ce point</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </Modal>
-
-      {/* Modal de confirmation de suppression */}
-      <Modal
-        visible={showDeleteModal}
-        animationType="fade"
-        transparent
-        onRequestClose={cancelDelete}
-      >
-        <View style={styles.deleteModalOverlay}>
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalTitle}>Supprimer</Text>
-            <Text style={styles.deleteModalMessage}>
-              Êtes-vous sûr de vouloir supprimer ce point d'attention ?
-            </Text>
-
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity
-                style={[styles.deleteModalButton, styles.deleteModalButtonCancel]}
-                onPress={cancelDelete}
-              >
-                <Text style={styles.deleteModalButtonTextCancel}>Annuler</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.deleteModalButton, styles.deleteModalButtonConfirm]}
-                onPress={confirmDelete}
-              >
-                <Text style={styles.deleteModalButtonTextConfirm}>Supprimer</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* Project Config Editor Modal */}
+      {selectedProject && (
+        <ProjectConfigEditor
+          visible={showProjectEditor}
+          project={selectedProject}
+          onClose={() => {
+            setShowProjectEditor(false);
+            setSelectedProject(null);
+          }}
+          onSave={(updated) => {
+            loadProjects();
+            setShowProjectEditor(false);
+            setSelectedProject(null);
+            Alert.alert('Succès', 'Configuration mise à jour');
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -899,5 +660,149 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     fontStyle: 'italic',
     marginTop: spacing.xs,
+  },
+  // Info box
+  infoBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: 'rgba(245, 197, 66, 0.1)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 197, 66, 0.3)',
+  },
+  infoText: {
+    ...typography.body,
+    color: colors.text.secondary,
+    flex: 1,
+  },
+  // Tab switcher styles (deprecated - keeping for compatibility)
+  tabSwitcher: {
+    flexDirection: 'row',
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    backgroundColor: colors.glass.background,
+    borderRadius: borderRadius.md,
+    padding: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.sm,
+  },
+  tabActive: {
+    backgroundColor: 'rgba(245, 197, 66, 0.15)',
+  },
+  tabText: {
+    ...typography.bodyMedium,
+    color: colors.text.secondary,
+  },
+  tabTextActive: {
+    color: colors.accent.gold,
+    fontWeight: '600',
+  },
+  // Project card styles
+  createProjectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.accent.gold,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+    ...shadows.gold,
+  },
+  createProjectButtonText: {
+    ...typography.bodyMedium,
+    color: colors.text.primary,
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  loadingText: {
+    ...typography.body,
+    color: colors.text.secondary,
+    marginTop: spacing.md,
+  },
+  projectCard: {
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  projectCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
+  projectCardTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  projectCardTitle: {
+    ...typography.h3,
+    color: colors.text.primary,
+    flex: 1,
+  },
+  projectCardActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  projectActionButton: {
+    padding: spacing.sm,
+    minWidth: 40,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  projectCardDescription: {
+    ...typography.body,
+    color: colors.text.secondary,
+    marginBottom: spacing.sm,
+  },
+  projectCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  projectCardMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  projectCardMetaText: {
+    ...typography.small,
+    color: colors.text.tertiary,
+  },
+  industryBadge: {
+    backgroundColor: colors.glass.medium,
+    paddingVertical: spacing.xs / 2,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+  },
+  industryBadgeText: {
+    ...typography.small,
+    color: colors.text.secondary,
+    fontWeight: '600',
   },
 });

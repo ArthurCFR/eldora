@@ -1,0 +1,818 @@
+[
+  {
+    "Nom": "Carabine-308-Browning-BAR",
+    "Nom d'affichage": "Browning BAR MK3",
+    "Catégorie": "Carabine semi-auto",
+    "Prix (€/unité)": 1850,
+    "Caractéristiques": "Calibre .308 Win, canon 51cm, bois grade 2, chasse grand gibier, cat B",
+    "id": "prod-1"
+  },
+  {
+    "Nom": "Carabine-223-Tikka-T3x",
+    "Nom d'affichage": "Tikka T3x Lite",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 1250,
+    "Caractéristiques": "Calibre .223 Rem, canon fluté, synthétique, 2,9kg, précision, cat B",
+    "id": "prod-2"
+  },
+  {
+    "Nom": "Carabine-30-06-Sauer",
+    "Nom d'affichage": "Sauer 100 Classic",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 1680,
+    "Caractéristiques": "Calibre .30-06 Springfield, bois, verrou 60°, chasse polyvalente, cat B",
+    "id": "prod-3"
+  },
+  {
+    "Nom": "Carabine-270-Remington",
+    "Nom d'affichage": "Remington 700 SPS",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 890,
+    "Caractéristiques": "Calibre .270 Win, synthétique, canon 61cm, rapport qualité/prix, cat B",
+    "id": "prod-4"
+  },
+  {
+    "Nom": "Carabine-300-Blaser",
+    "Nom d'affichage": "Blaser R8 Professional",
+    "Catégorie": "Carabine linéaire",
+    "Prix (€/unité)": 4200,
+    "Caractéristiques": "Calibre .300 Win Mag, système linéaire, canons interchangeables, cat B",
+    "id": "prod-5"
+  },
+  {
+    "Nom": "Carabine-243-Howa",
+    "Nom d'affichage": "Howa 1500",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 750,
+    "Caractéristiques": "Calibre .243 Win, garantie précision, canon 56cm, polyvalente, cat B",
+    "id": "prod-6"
+  },
+  {
+    "Nom": "Carabine-7mm-Mauser",
+    "Nom d'affichage": "Mauser M18",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 680,
+    "Caractéristiques": "Calibre 7x64, synthétique, déclencheur réglable, entrée gamme, cat B",
+    "id": "prod-7"
+  },
+  {
+    "Nom": "Carabine-338-Sako",
+    "Nom d'affichage": "Sako 85 Kodiak",
+    "Catégorie": "Carabine verrou",
+    "Prix (€/unité)": 2850,
+    "Caractéristiques": "Calibre .338 Win Mag, bande de battue, grand gibier dangereux, cat B",
+    "id": "prod-8"
+  },
+  {
+    "Nom": "Carabine-6.5-Bergara",
+    "Nom d'affichage": "Bergara B14 HMR",
+    "Catégorie": "Carabine précision",
+    "Prix (€/unité)": 1450,
+    "Caractéristiques": "Calibre 6.5 Creedmoor, crosse châssis, longue distance, cat B",
+    "id": "prod-9"
+  },
+  {
+    "Nom": "Carabine-308-Accuracy",
+    "Nom d'affichage": "Accuracy AT-X",
+    "Catégorie": "Carabine tactique",
+    "Prix (€/unité)": 5200,
+    "Caractéristiques": "Calibre .308 Win, châssis alu, quicklok, compétition PRS, cat B",
+    "id": "prod-10"
+  },
+  {
+    "Nom": "Carabine-22LR-CZ-457",
+    "Nom d'affichage": "CZ 457 Varmint",
+    "Catégorie": "Carabine 22LR",
+    "Prix (€/unité)": 680,
+    "Caractéristiques": "Calibre .22 LR, canon lourd 50cm, verrou, tir précision, cat C",
+    "id": "prod-11"
+  },
+  {
+    "Nom": "Carabine-22LR-Anschutz",
+    "Nom d'affichage": "Anschütz 1710 D HB",
+    "Catégorie": "Carabine 22LR",
+    "Prix (€/unité)": 1850,
+    "Caractéristiques": "Calibre .22 LR, canon heavy barrel, bois allemand, compétition, cat C",
+    "id": "prod-12"
+  },
+  {
+    "Nom": "Carabine-22LR-Ruger",
+    "Nom d'affichage": "Ruger 10/22 Carbine",
+    "Catégorie": "Carabine 22LR",
+    "Prix (€/unité)": 420,
+    "Caractéristiques": "Calibre .22 LR, semi-auto, chargeur rotatif 10c, modulable, cat C",
+    "id": "prod-13"
+  },
+  {
+    "Nom": "Carabine-17HMR-Savage",
+    "Nom d'affichage": "Savage Mark II FV-SR",
+    "Catégorie": "Carabine 17HMR",
+    "Prix (€/unité)": 520,
+    "Caractéristiques": "Calibre .17 HMR, filetage silencieux, verrou, nuisibles, cat C",
+    "id": "prod-14"
+  },
+  {
+    "Nom": "Carabine-22Mag-Ruger",
+    "Nom d'affichage": "Ruger American Rimfire",
+    "Catégorie": "Carabine 22Mag",
+    "Prix (€/unité)": 580,
+    "Caractéristiques": "Calibre .22 WMR, synthétique, Marksman trigger, cat C",
+    "id": "prod-15"
+  },
+  {
+    "Nom": "Fusil-Beretta-687",
+    "Nom d'affichage": "Beretta 687 Silver Pigeon",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 2950,
+    "Caractéristiques": "Calibre 12/76, canons 71cm, éjecteurs, bascule gravée, ball-trap, cat C",
+    "id": "prod-16"
+  },
+  {
+    "Nom": "Fusil-Benelli-828U",
+    "Nom d'affichage": "Benelli 828U Sport",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 3400,
+    "Caractéristiques": "Calibre 12/76, verrouillage rotatif, canons 76cm, compétition, cat C",
+    "id": "prod-17"
+  },
+  {
+    "Nom": "Fusil-Browning-525",
+    "Nom d'affichage": "Browning 525 Sporter",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 2200,
+    "Caractéristiques": "Calibre 12/76, canons 76cm, back boring, polyvalent, cat C",
+    "id": "prod-18"
+  },
+  {
+    "Nom": "Fusil-Fabarm-Elos",
+    "Nom d'affichage": "Fabarm Elos N2 Sporting",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 1850,
+    "Caractéristiques": "Calibre 12/76, Triwood stock, canons 76cm, rapport qualité/prix, cat C",
+    "id": "prod-19"
+  },
+  {
+    "Nom": "Fusil-Krieghoff-K80",
+    "Nom d'affichage": "Krieghoff K80 Parcours",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 9500,
+    "Caractéristiques": "Calibre 12/76, bascule titanium, canons 81cm, haut de gamme, cat C",
+    "id": "prod-20"
+  },
+  {
+    "Nom": "Fusil-Perazzi-MX8",
+    "Nom d'affichage": "Perazzi MX8 Trap",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 8200,
+    "Caractéristiques": "Calibre 12/70, bascule gravée, canons 81cm, compétition olympique, cat C",
+    "id": "prod-21"
+  },
+  {
+    "Nom": "Fusil-Zoli-Z-Sport",
+    "Nom d'affichage": "Zoli Z-Sport",
+    "Catégorie": "Fusil superposé",
+    "Prix (€/unité)": 1680,
+    "Caractéristiques": "Calibre 12/76, canons 76cm, extracteurs, ball-trap loisir, cat C",
+    "id": "prod-22"
+  },
+  {
+    "Nom": "Fusil-Hatsan-Escort",
+    "Nom d'affichage": "Hatsan Escort Aimguard",
+    "Catégorie": "Fusil à pompe",
+    "Prix (€/unité)": 380,
+    "Caractéristiques": "Calibre 12/76, canon 51cm, polymère, défense/stand, cat C",
+    "id": "prod-23"
+  },
+  {
+    "Nom": "Fusil-Benelli-M2",
+    "Nom d'affichage": "Benelli M2 Field",
+    "Catégorie": "Fusil semi-auto",
+    "Prix (€/unité)": 1650,
+    "Caractéristiques": "Calibre 12/76, inertie, canon 71cm, chasse polyvalent, cat C",
+    "id": "prod-24"
+  },
+  {
+    "Nom": "Fusil-Beretta-A400",
+    "Nom d'affichage": "Beretta A400 Xplor Action",
+    "Catégorie": "Fusil semi-auto",
+    "Prix (€/unité)": 1950,
+    "Caractéristiques": "Calibre 12/76, Blink system, kick-off, gibier d'eau, cat C",
+    "id": "prod-25"
+  },
+  {
+    "Nom": "Fusil-Browning-A5",
+    "Nom d'affichage": "Browning A5 Ultimate",
+    "Catégorie": "Fusil semi-auto",
+    "Prix (€/unité)": 2400,
+    "Caractéristiques": "Calibre 12/76, kinematic drive, fibre optique, haut de gamme, cat C",
+    "id": "prod-26"
+  },
+  {
+    "Nom": "Fusil-Stoeger-M3500",
+    "Nom d'affichage": "Stoeger M3500",
+    "Catégorie": "Fusil semi-auto",
+    "Prix (€/unité)": 680,
+    "Caractéristiques": "Calibre 12/89, inertie, 3.5 pouces, gibier d'eau, cat C",
+    "id": "prod-27"
+  },
+  {
+    "Nom": "Fusil-Remington-870",
+    "Nom d'affichage": "Remington 870 Express",
+    "Catégorie": "Fusil à pompe",
+    "Prix (€/unité)": 520,
+    "Caractéristiques": "Calibre 12/76, canon 76cm, fiabilité légendaire, polyvalent, cat C",
+    "id": "prod-28"
+  },
+  {
+    "Nom": "Fusil-Mossberg-500",
+    "Nom d'affichage": "Mossberg 500 Hunting",
+    "Catégorie": "Fusil à pompe",
+    "Prix (€/unité)": 480,
+    "Caractéristiques": "Calibre 12/76, canon 71cm, ambidextre, économique, cat C",
+    "id": "prod-29"
+  },
+  {
+    "Nom": "Fusil-Franchi-Affinity",
+    "Nom d'affichage": "Franchi Affinity 3.5",
+    "Catégorie": "Fusil semi-auto",
+    "Prix (€/unité)": 1250,
+    "Caractéristiques": "Calibre 12/89, inertie, TSA recoil pad, sauvagine, cat C",
+    "id": "prod-30"
+  },
+  {
+    "Nom": "Pistolet-9mm-Glock17",
+    "Nom d'affichage": "Glock 17 Gen5",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 650,
+    "Caractéristiques": "Calibre 9x19mm, 17 coups, polymère, fiabilité, tir sportif, cat B",
+    "id": "prod-31"
+  },
+  {
+    "Nom": "Pistolet-9mm-SIG-P320",
+    "Nom d'affichage": "SIG Sauer P320 X-Five",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 1250,
+    "Caractéristiques": "Calibre 9x19mm, 21 coups, compétition IPSC, modulaire, cat B",
+    "id": "prod-32"
+  },
+  {
+    "Nom": "Pistolet-9mm-CZ-Shadow2",
+    "Nom d'affichage": "CZ Shadow 2",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 1450,
+    "Caractéristiques": "Calibre 9x19mm, 19 coups, acier, compétition IPSC, cat B",
+    "id": "prod-33"
+  },
+  {
+    "Nom": "Pistolet-9mm-Beretta-92",
+    "Nom d'affichage": "Beretta 92FS",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 850,
+    "Caractéristiques": "Calibre 9x19mm, 15 coups, acier, classique fiable, cat B",
+    "id": "prod-34"
+  },
+  {
+    "Nom": "Pistolet-45ACP-Colt-1911",
+    "Nom d'affichage": "Colt 1911 Government",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 1150,
+    "Caractéristiques": "Calibre .45 ACP, 7 coups, acier, légende américaine, cat B",
+    "id": "prod-35"
+  },
+  {
+    "Nom": "Pistolet-40SW-Glock22",
+    "Nom d'affichage": "Glock 22 Gen4",
+    "Catégorie": "Pistolet semi-auto",
+    "Prix (€/unité)": 680,
+    "Caractéristiques": "Calibre .40 S&W, 15 coups, polymère, polyvalent, cat B",
+    "id": "prod-36"
+  },
+  {
+    "Nom": "Pistolet-22LR-Ruger",
+    "Nom d'affichage": "Ruger Mark IV Target",
+    "Catégorie": "Pistolet 22LR",
+    "Prix (€/unité)": 520,
+    "Caractéristiques": "Calibre .22 LR, canon 14cm, démontage facile, initiation, cat C",
+    "id": "prod-37"
+  },
+  {
+    "Nom": "Pistolet-22LR-Walther",
+    "Nom d'affichage": "Walther P22Q",
+    "Catégorie": "Pistolet 22LR",
+    "Prix (€/unité)": 380,
+    "Caractéristiques": "Calibre .22 LR, 10 coups, rail picatinny, loisir, cat C",
+    "id": "prod-38"
+  },
+  {
+    "Nom": "Pistolet-22LR-Browning",
+    "Nom d'affichage": "Browning Buck Mark Plus",
+    "Catégorie": "Pistolet 22LR",
+    "Prix (€/unité)": 580,
+    "Caractéristiques": "Calibre .22 LR, canon 14cm, précision, compétition loisir, cat C",
+    "id": "prod-39"
+  },
+  {
+    "Nom": "Revolver-357-SW686",
+    "Nom d'affichage": "Smith & Wesson 686 Target",
+    "Catégorie": "Revolver",
+    "Prix (€/unité)": 1150,
+    "Caractéristiques": "Calibre .357 Magnum, 6 coups, canon 15cm, inox, précision, cat B",
+    "id": "prod-40"
+  },
+  {
+    "Nom": "Revolver-44-Ruger",
+    "Nom d'affichage": "Ruger Super Redhawk",
+    "Catégorie": "Revolver",
+    "Prix (€/unité)": 1280,
+    "Caractéristiques": "Calibre .44 Magnum, 6 coups, canon 19cm, chasse, cat B",
+    "id": "prod-41"
+  },
+  {
+    "Nom": "Revolver-357-Manurhin",
+    "Nom d'affichage": "Manurhin MR73 Sport",
+    "Catégorie": "Revolver",
+    "Prix (€/unité)": 3200,
+    "Caractéristiques": "Calibre .357 Magnum, 6 coups, fabrication française, haut de gamme, cat B",
+    "id": "prod-42"
+  },
+  {
+    "Nom": "Revolver-38-SW642",
+    "Nom d'affichage": "S&W 642 Airweight",
+    "Catégorie": "Revolver",
+    "Prix (€/unité)": 620,
+    "Caractéristiques": "Calibre .38 Special, 5 coups, alu, ultraléger, défense, cat B",
+    "id": "prod-43"
+  },
+  {
+    "Nom": "Revolver-22LR-Ruger-SP",
+    "Nom d'affichage": "Ruger SP101 22LR",
+    "Catégorie": "Revolver",
+    "Prix (€/unité)": 680,
+    "Caractéristiques": "Calibre .22 LR, 8 coups, inox, initiation robuste, cat C",
+    "id": "prod-44"
+  },
+  {
+    "Nom": "Lunette-Schmidt-Bender",
+    "Nom d'affichage": "Schmidt & Bender Klassik",
+    "Catégorie": "Optique chasse",
+    "Prix (€/unité)": 1850,
+    "Caractéristiques": "2.5-10x56, réticule lumineux, rail 11mm, verre HD, garantie 30 ans",
+    "id": "prod-45"
+  },
+  {
+    "Nom": "Lunette-Kahles-Helia",
+    "Nom d'affichage": "Kahles Helia 5",
+    "Catégorie": "Optique tactique",
+    "Prix (€/unité)": 2200,
+    "Caractéristiques": "4-20x50, tourelles tactiques, réticule MRAD, longue distance",
+    "id": "prod-46"
+  },
+  {
+    "Nom": "Lunette-Zeiss-Victory",
+    "Nom d'affichage": "Zeiss Victory V8",
+    "Catégorie": "Optique premium",
+    "Prix (€/unité)": 3400,
+    "Caractéristiques": "2.8-20x56, optique allemande, rail ASV, chasse haut de gamme",
+    "id": "prod-47"
+  },
+  {
+    "Nom": "Lunette-Swarovski-Z8i",
+    "Nom d'affichage": "Swarovski Z8i",
+    "Catégorie": "Optique premium",
+    "Prix (€/unité)": 3800,
+    "Caractéristiques": "2.3-18x56, flexchange, verre autrichien, excellence optique",
+    "id": "prod-48"
+  },
+  {
+    "Nom": "Lunette-Leupold-VX5HD",
+    "Nom d'affichage": "Leupold VX-5HD",
+    "Catégorie": "Optique chasse",
+    "Prix (€/unité)": 1250,
+    "Caractéristiques": "3-15x44, twilight max, CDS-ZL2, américaine robuste",
+    "id": "prod-49"
+  },
+  {
+    "Nom": "Lunette-Vortex-Viper",
+    "Nom d'affichage": "Vortex Viper PST Gen II",
+    "Catégorie": "Optique tactique",
+    "Prix (€/unité)": 980,
+    "Caractéristiques": "5-25x50, EBR-2C MRAD, rapport qualité/prix, garantie à vie",
+    "id": "prod-50"
+  },
+  {
+    "Nom": "Lunette-Bushnell-Elite",
+    "Nom d'affichage": "Bushnell Elite Tactical",
+    "Catégorie": "Optique tactique",
+    "Prix (€/unité)": 1450,
+    "Caractéristiques": "6-24x50, G3 reticle, parallaxe latéral, tir longue distance",
+    "id": "prod-51"
+  },
+  {
+    "Nom": "Lunette-Meopta-Optika6",
+    "Nom d'affichage": "Meopta Optika6",
+    "Catégorie": "Optique chasse",
+    "Prix (€/unité)": 850,
+    "Caractéristiques": "3-18x50, verre tchèque, Z-Plex, excellent rapport qualité/prix",
+    "id": "prod-52"
+  },
+  {
+    "Nom": "Lunette-Burris-XTR",
+    "Nom d'affichage": "Burris XTR III",
+    "Catégorie": "Optique tactique",
+    "Prix (€/unité)": 1680,
+    "Caractéristiques": "5.5-30x56, SCR2 MOA, optique américaine, PRS",
+    "id": "prod-53"
+  },
+  {
+    "Nom": "Lunette-Nightforce-NX8",
+    "Nom d'affichage": "Nightforce NX8",
+    "Catégorie": "Optique tactique",
+    "Prix (€/unité)": 2850,
+    "Caractéristiques": "4-32x50, compacte, FC-Mil, chasse/tactique polyvalent",
+    "id": "prod-54"
+  },
+  {
+    "Nom": "Point-Rouge-Aimpoint-T2",
+    "Nom d'affichage": "Aimpoint Micro T-2",
+    "Catégorie": "Point rouge",
+    "Prix (€/unité)": 780,
+    "Caractéristiques": "LED 2 MOA, autonomie 5 ans, étanche 25m, standard militaire",
+    "id": "prod-55"
+  },
+  {
+    "Nom": "Point-Rouge-Trijicon-MRO",
+    "Nom d'affichage": "Trijicon MRO",
+    "Catégorie": "Point rouge",
+    "Prix (€/unité)": 650,
+    "Caractéristiques": "LED 2 MOA, large champ vision, robuste, américain",
+    "id": "prod-56"
+  },
+  {
+    "Nom": "Point-Rouge-Holosun-HS510C",
+    "Nom d'affichage": "Holosun HS510C",
+    "Catégorie": "Point rouge",
+    "Prix (€/unité)": 380,
+    "Caractéristiques": "Circle-dot, panneau solaire, multi-reticle, rapport qualité/prix",
+    "id": "prod-57"
+  },
+  {
+    "Nom": "Point-Rouge-EOTech-EXPS3",
+    "Nom d'affichage": "EOTech EXPS3",
+    "Catégorie": "Holographique",
+    "Prix (€/unité)": 720,
+    "Caractéristiques": "Hologramme, boutons latéraux, NV compatible, QD mount",
+    "id": "prod-58"
+  },
+  {
+    "Nom": "Point-Rouge-Sig-Romeo5",
+    "Nom d'affichage": "SIG Sauer Romeo5",
+    "Catégorie": "Point rouge",
+    "Prix (€/unité)": 180,
+    "Caractéristiques": "2 MOA, MOTAC, étanche, entrée gamme fiable",
+    "id": "prod-59"
+  },
+  {
+    "Nom": "Collimateur-Burris-FF3",
+    "Nom d'affichage": "Burris FastFire 3",
+    "Catégorie": "Collimateur",
+    "Prix (€/unité)": 280,
+    "Caractéristiques": "3 MOA ou 8 MOA, compact, montage pistolet, léger",
+    "id": "prod-60"
+  },
+  {
+    "Nom": "Collimateur-Vortex-Venom",
+    "Nom d'affichage": "Vortex Venom",
+    "Catégorie": "Collimateur",
+    "Prix (€/unité)": 350,
+    "Caractéristiques": "3 ou 6 MOA, top load battery, IPSC populaire",
+    "id": "prod-61"
+  },
+  {
+    "Nom": "Jumelles-Zeiss-Victory",
+    "Nom d'affichage": "Zeiss Victory SF 10x42",
+    "Catégorie": "Jumelles",
+    "Prix (€/unité)": 2400,
+    "Caractéristiques": "10x42, SmartFocus, légères 780g, optique premium",
+    "id": "prod-62"
+  },
+  {
+    "Nom": "Jumelles-Swarovski-EL",
+    "Nom d'affichage": "Swarovski EL 8.5x42",
+    "Catégorie": "Jumelles",
+    "Prix (€/unité)": 2800,
+    "Caractéristiques": "8.5x42, Swarovision, champ large, excellence",
+    "id": "prod-63"
+  },
+  {
+    "Nom": "Jumelles-Leica-Noctivid",
+    "Nom d'affichage": "Leica Noctivid 10x42",
+    "Catégorie": "Jumelles",
+    "Prix (€/unité)": 2600,
+    "Caractéristiques": "10x42, AquaDura, transmission lumière 91%, allemandes",
+    "id": "prod-64"
+  },
+  {
+    "Nom": "Viseur-Nuit-Pulsar-Digex",
+    "Nom d'affichage": "Pulsar Digex N455",
+    "Catégorie": "Viseur numérique",
+    "Prix (€/unité)": 1850,
+    "Caractéristiques": "Capteur CMOS, enregistrement vidéo, Wi-Fi, batterie 7h",
+    "id": "prod-65"
+  },
+  {
+    "Nom": "Viseur-Thermique-Pulsar",
+    "Nom d'affichage": "Pulsar Trail 2 LRF XP50",
+    "Catégorie": "Thermique",
+    "Prix (€/unité)": 3400,
+    "Caractéristiques": "Résolution 640x480, télémètre, Stream Vision, chasse nocturne",
+    "id": "prod-66"
+  },
+  {
+    "Nom": "Bipied-Harris-S-BRM",
+    "Nom d'affichage": "Harris S-BRM",
+    "Catégorie": "Bipied",
+    "Prix (€/unité)": 125,
+    "Caractéristiques": "Rail picatinny, 23-33cm, pivotant, ressort retour, standard",
+    "id": "prod-67"
+  },
+  {
+    "Nom": "Bipied-Atlas-BT10",
+    "Nom d'affichage": "Atlas BT10 V8",
+    "Catégorie": "Bipied",
+    "Prix (€/unité)": 280,
+    "Caractéristiques": "Pan/cant/tilt, 13-23cm, QD lever, tactique premium",
+    "id": "prod-68"
+  },
+  {
+    "Nom": "Monopode-Primos-Trigger",
+    "Nom d'affichage": "Primos Trigger Stick Gen3",
+    "Catégorie": "Monopode",
+    "Prix (€/unité)": 180,
+    "Caractéristiques": "Hauteur 61-165cm, déclencheur rapide, 23kg charge, chasse",
+    "id": "prod-69"
+  },
+  {
+    "Nom": "Chargeur-Glock-17-33rd",
+    "Nom d'affichage": "Chargeur Glock 17",
+    "Catégorie": "Chargeur pistolet",
+    "Prix (€/unité)": 38,
+    "Caractéristiques": "9mm 33 coups, polymère, OEM Glock, grande capacité",
+    "id": "prod-70"
+  },
+  {
+    "Nom": "Chargeur-AR15-PMag-30",
+    "Nom d'affichage": "Magpul PMAG Gen3",
+    "Catégorie": "Chargeur carabine",
+    "Prix (€/unité)": 18,
+    "Caractéristiques": ".223/5.56 30 coups, fenêtre, anti-basculement, fiable",
+    "id": "prod-71"
+  },
+  {
+    "Nom": "Chargeur-CZ-Shadow-20rd",
+    "Nom d'affichage": "Chargeur CZ Shadow 2",
+    "Catégorie": "Chargeur pistolet",
+    "Prix (€/unité)": 52,
+    "Caractéristiques": "9mm 20 coups, acier, compétition, base alu",
+    "id": "prod-72"
+  },
+  {
+    "Nom": "Rail-Picatinny-20MOA",
+    "Nom d'affichage": "Rail Picatinny 20 MOA",
+    "Catégorie": "Montage",
+    "Prix (€/unité)": 85,
+    "Caractéristiques": "Acier, inclinaison 20 MOA, longue distance, divers modèles",
+    "id": "prod-73"
+  },
+  {
+    "Nom": "Anneaux-Warne-30mm",
+    "Nom d'affichage": "Warne Mountain Tech",
+    "Catégorie": "Anneaux",
+    "Prix (€/unité)": 180,
+    "Caractéristiques": "30mm, hauteur medium, acier, garantie à vie",
+    "id": "prod-74"
+  },
+  {
+    "Nom": "Anneaux-Leupold-QRW2",
+    "Nom d'affichage": "Leupold QRW2",
+    "Catégorie": "Anneaux",
+    "Prix (€/unité)": 95,
+    "Caractéristiques": "30mm, détachage rapide, alu, américains",
+    "id": "prod-75"
+  },
+  {
+    "Nom": "Colliers-EAW-Pivot",
+    "Nom d'affichage": "EAW Pivot Mount",
+    "Catégorie": "Montage européen",
+    "Prix (€/unité)": 320,
+    "Caractéristiques": "Rail pivot, détachage sans outil, allemand, précision",
+    "id": "prod-76"
+  },
+  {
+    "Nom": "Silencieux-AAC-762-SDN6",
+    "Nom d'affichage": "AAC 762-SDN-6",
+    "Catégorie": "Modérateur son",
+    "Prix (€/unité)": 850,
+    "Caractéristiques": ".308 Win, -32dB, QD mount, titane, réduction recul, déclaration",
+    "id": "prod-77"
+  },
+  {
+    "Nom": "Frein-Bouche-Area419",
+    "Nom d'affichage": "Area 419 Hellfire",
+    "Catégorie": "Frein de bouche",
+    "Prix (€/unité)": 125,
+    "Caractéristiques": "Réduction recul 70%, timing ajustable, acier inox",
+    "id": "prod-78"
+  },
+  {
+    "Nom": "Munitions-308-Norma",
+    "Nom d'affichage": "Norma Bondstrike 308",
+    "Catégorie": "Munitions chasse",
+    "Prix (€/unité)": 58,
+    "Caractéristiques": ".308 Win 165gr, boîte 20, précision, expansion contrôlée",
+    "id": "prod-79"
+  },
+  {
+    "Nom": "Munitions-308-Federal",
+    "Nom d'affichage": "Federal Gold Medal 308",
+    "Catégorie": "Munitions précision",
+    "Prix (€/unité)": 65,
+    "Caractéristiques": ".308 Win 168gr SMK, boîte 20, match grade, longue distance",
+    "id": "prod-80"
+  },
+  {
+    "Nom": "Munitions-223-Hornady",
+    "Nom d'affichage": "Hornady Black 223",
+    "Catégorie": "Munitions tactique",
+    "Prix (€/unité)": 28,
+    "Caractéristiques": ".223 Rem 55gr FMJ, boîte 20, tir sportif, fiable",
+    "id": "prod-81"
+  },
+  {
+    "Nom": "Munitions-30-06-Brenneke",
+    "Nom d'affichage": "Brenneke TIG 30-06",
+    "Catégorie": "Munitions chasse",
+    "Prix (€/unité)": 52,
+    "Caractéristiques": ".30-06 Springfield 165gr, boîte 20, grand gibier européen",
+    "id": "prod-82"
+  },
+  {
+    "Nom": "Munitions-270-Winchester",
+    "Nom d'affichage": "Winchester Power Point 270",
+    "Catégorie": "Munitions chasse",
+    "Prix (€/unité)": 48,
+    "Caractéristiques": ".270 Win 150gr, boîte 20, expansion, chasse polyvalente",
+    "id": "prod-83"
+  },
+  {
+    "Nom": "Munitions-6.5CM-Hornady",
+    "Nom d'affichage": "Hornady ELD-M 6.5",
+    "Catégorie": "Munitions précision",
+    "Prix (€/unité)": 55,
+    "Caractéristiques": "6.5 Creedmoor 140gr, boîte 20, BC élevé, compétition",
+    "id": "prod-84"
+  },
+  {
+    "Nom": "Munitions-9mm-Sellier",
+    "Nom d'affichage": "Sellier & Bellot 9mm",
+    "Catégorie": "Munitions tir",
+    "Prix (€/unité)": 24,
+    "Caractéristiques": "9x19 124gr FMJ, boîte 50, rapport qualité/prix, fiable",
+    "id": "prod-85"
+  },
+  {
+    "Nom": "Munitions-9mm-Federal-HST",
+    "Nom d'affichage": "Federal HST 9mm",
+    "Catégorie": "Munitions défense",
+    "Prix (€/unité)": 42,
+    "Caractéristiques": "9x19 124gr JHP, boîte 50, expansion optimale, défense",
+    "id": "prod-86"
+  },
+  {
+    "Nom": "Munitions-45ACP-Remington",
+    "Nom d'affichage": "Remington UMC 45 ACP",
+    "Catégorie": "Munitions tir",
+    "Prix (€/unité)": 38,
+    "Caractéristiques": ".45 ACP 230gr FMJ, boîte 50, économique, standard",
+    "id": "prod-87"
+  },
+  {
+    "Nom": "Munitions-357-Magtech",
+    "Nom d'affichage": "Magtech 357 Magnum",
+    "Catégorie": "Munitions tir",
+    "Prix (€/unité)": 32,
+    "Caractéristiques": ".357 Mag 158gr FMJ, boîte 50, revolver, puissant",
+    "id": "prod-88"
+  },
+  {
+    "Nom": "Munitions-22LR-Eley",
+    "Nom d'affichage": "Eley Tenex 22LR",
+    "Catégorie": "Munitions précision",
+    "Prix (€/unité)": 18,
+    "Caractéristiques": ".22 LR match, boîte 50, compétition olympique, triée",
+    "id": "prod-89"
+  },
+  {
+    "Nom": "Munitions-22LR-CCI",
+    "Nom d'affichage": "CCI Mini-Mag 22LR",
+    "Catégorie": "Munitions tir",
+    "Prix (€/unité)": 8.5,
+    "Caractéristiques": ".22 LR 40gr, boîte 100, plinking, fiabilité",
+    "id": "prod-90"
+  },
+  {
+    "Nom": "Cartouches-12-Clever-T2",
+    "Nom d'affichage": "Clever T2 Trap",
+    "Catégorie": "Cartouches ball-trap",
+    "Prix (€/unité)": 12.5,
+    "Caractéristiques": "Cal 12, 28g plomb 7.5, vélocité 405m/s, boîte 25, compétition",
+    "id": "prod-91"
+  },
+  {
+    "Nom": "Cartouches-12-RC-Sporting",
+    "Nom d'affichage": "RC Black Sporting",
+    "Catégorie": "Cartouches ball-trap",
+    "Prix (€/unité)": 10.8,
+    "Caractéristiques": "Cal 12, 28g plomb 7.5, boîte 25, rapport qualité/prix",
+    "id": "prod-92"
+  },
+  {
+    "Nom": "Cartouches-12-Fiocchi-TT1",
+    "Nom d'affichage": "Fiocchi TT One",
+    "Catégorie": "Cartouches ball-trap",
+    "Prix (€/unité)": 11.2,
+    "Caractéristiques": "Cal 12, 24g plomb 7.5, vélocité 410m/s, boîte 25, skeet",
+    "id": "prod-93"
+  },
+  {
+    "Nom": "Cartouches-12-Mary-Arm",
+    "Nom d'affichage": "Mary Arm Acier",
+    "Catégorie": "Cartouches chasse",
+    "Prix (€/unité)": 18.5,
+    "Caractéristiques": "Cal 12, 32g acier, boîte 10, gibier d'eau, non toxique",
+    "id": "prod-94"
+  },
+  {
+    "Nom": "Coffre-Fort-Infac-C20",
+    "Nom d'affichage": "Infac C20EL",
+    "Catégorie": "Coffre-fort",
+    "Prix (€/unité)": 850,
+    "Caractéristiques": "8-10 armes, serrure électronique, 170kg, fixation sol, A2P",
+    "id": "prod-95"
+  },
+  {
+    "Nom": "Coffre-Fort-Hartmann-WT",
+    "Nom d'affichage": "Hartmann Wt6004",
+    "Catégorie": "Coffre-fort",
+    "Prix (€/unité)": 1450,
+    "Caractéristiques": "14 armes, classe 0, 360kg, double paroi, norme EN 1143-1",
+    "id": "prod-96"
+  },
+  {
+    "Nom": "Armoire-Metallique-10",
+    "Nom d'affichage": "Armoire Métallique 10",
+    "Catégorie": "Rangement",
+    "Prix (€/unité)": 420,
+    "Caractéristiques": "10 armes, serrure double, étagère, conformité légale",
+    "id": "prod-97"
+  },
+  {
+    "Nom": "Sacoche-Range-MidwayUSA",
+    "Nom d'affichage": "Midway Competition Bag",
+    "Catégorie": "Sacoche tir",
+    "Prix (€/unité)": 85,
+    "Caractéristiques": "Compartiments munitions/outils, épaulière, organiseur, résistant",
+    "id": "prod-98"
+  },
+  {
+    "Nom": "Etui-Transport-Double",
+    "Nom d'affichage": "Fourreau Double",
+    "Catégorie": "Transport",
+    "Prix (€/unité)": 95,
+    "Caractéristiques": "2 armes, mousse protection, bandoulière, 130cm, poches",
+    "id": "prod-99"
+  },
+  {
+    "Nom": "Etui-Transport-Beretta-B1",
+    "Nom d'affichage": "Beretta B1 Signature",
+    "Catégorie": "Transport",
+    "Prix (€/unité)": 180,
+    "Caractéristiques": "1 arme démontée, cuir/tissu, luxe, carabine/fusil",
+    "id": "prod-100"
+  },
+  {
+    "Nom": "Valise-Rigide-Peli-1720",
+    "Nom d'affichage": "Pelican 1720",
+    "Catégorie": "Valise transport",
+    "Prix (€/unité)": 420,
+    "Caractéristiques": "Étanche, mousse prédécoupée, carabine complète, indestructible",
+    "id": "prod-101"
+  },
+  {
+    "Nom": "Sac-Dos-Eberlestock-X2",
+    "Nom d'affichage": "Eberlestock X2 Pack",
+    "Catégorie": "Sac à dos chasse",
+    "Prix (€/unité)": 380,
+    "Caractéristiques": "Porte-carabine intégré, 45L, hydratation, MOLLE",
+    "id": "prod-102"
+  }
+]

@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { TouchableOpacity, StyleSheet, Animated, View, Text } from 'react-native';
+import { TouchableOpacity, StyleSheet, Animated, View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
@@ -14,11 +14,13 @@ import { colors } from '../constants/theme';
 
 interface LiveKitVoiceButtonProps {
   userName: string;
+  projectId?: string; // Project ID for multi-project support
   eventName?: string;
   existingReport?: any;
   onTranscription?: (text: string, isFinal: boolean) => void;
   onAgentResponse?: (text: string) => void;
   onConversationComplete?: (data: any) => void;
+  onGeneratingReport?: () => void; // Called when report generation starts
   onConnectionStateChange?: (isConnected: boolean, isAgentSpeaking: boolean) => void;
   onAudioStreamsChange?: (agentStream: MediaStream | null, userStream: MediaStream | null) => void;
   onMicrophoneControl?: (setEnabled: (enabled: boolean) => Promise<void>) => void;
@@ -28,11 +30,13 @@ interface LiveKitVoiceButtonProps {
 
 export default function LiveKitVoiceButton({
   userName,
+  projectId,
   eventName,
   existingReport,
   onTranscription,
   onAgentResponse,
   onConversationComplete,
+  onGeneratingReport,
   onConnectionStateChange,
   onAudioStreamsChange,
   onMicrophoneControl,
@@ -58,10 +62,12 @@ export default function LiveKitVoiceButton({
     sendDataMessage,
   } = useLiveKitRoom({
     userName,
+    projectId,
     eventName,
     existingReport,
     onTranscription,
     onAgentResponse,
+    onGeneratingReport, // Pass through to hook
     onConversationComplete: (data) => {
       // Report received, now we can fully disconnect
       console.log('Report received, disconnecting room...');
@@ -265,15 +271,15 @@ export default function LiveKitVoiceButton({
           activeOpacity={0.9}
         >
           <View style={styles.buttonContainer}>
-            <LinearGradient
-              colors={getButtonColor()}
-              style={styles.button}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              {/* Glass overlay */}
-              <View style={styles.glassOverlay} />
+            {/* Hexagon background image */}
+            <Image
+              source={require('../assets/Logo/BulletYellow.png')}
+              style={styles.hexagonBackground}
+              resizeMode="contain"
+            />
 
+            {/* Content overlay */}
+            <View style={styles.buttonContent}>
               {/* Lottie animation for report generation */}
               {isGeneratingReport && (
                 <LottieView
@@ -286,10 +292,7 @@ export default function LiveKitVoiceButton({
 
               {/* Icon (hidden when generating report) */}
               {!isGeneratingReport && getIcon()}
-            </LinearGradient>
-
-            {/* Border overlay */}
-            <View style={styles.borderOverlay} />
+            </View>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -344,33 +347,28 @@ const styles = StyleSheet.create({
     opacity: 0.2,
   },
   buttonContainer: {
-    width: 98,
-    height: 98,
+    width: 120,
+    height: 120,
     position: 'relative',
-  },
-  button: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 49,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.background.dark,
+  },
+  hexagonBackground: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    shadowColor: colors.accent.gold,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 12,
     elevation: 8,
   },
-  glassOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 49,
-  },
-  borderOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 49,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    pointerEvents: 'none',
+  buttonContent: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusText: {
     marginTop: 8,

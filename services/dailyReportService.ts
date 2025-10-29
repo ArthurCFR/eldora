@@ -17,6 +17,8 @@ export interface DailyReport {
   createdAt: string; // ISO timestamp
   lastModifiedAt: string; // ISO timestamp
   sales: SalesData;
+  salesAmounts?: { [productName: string]: number }; // Calculated amounts per product
+  totalAmount?: number; // Total sales amount
   customerFeedback: string;
   emotionalContext?: string;
   keyInsights: string[];
@@ -76,6 +78,8 @@ export async function createReport(
   eventName: string,
   data: {
     sales: SalesData;
+    salesAmounts?: { [productName: string]: number };
+    totalAmount?: number;
     customerFeedback: string;
     emotionalContext?: string;
     keyInsights: string[];
@@ -94,6 +98,8 @@ export async function createReport(
       createdAt: now,
       lastModifiedAt: now,
       sales: data.sales,
+      salesAmounts: data.salesAmounts,
+      totalAmount: data.totalAmount,
       customerFeedback: data.customerFeedback,
       emotionalContext: data.emotionalContext,
       keyInsights: data.keyInsights,
@@ -117,6 +123,8 @@ export async function updateReport(
   report: DailyReport,
   newData: {
     sales?: SalesData;
+    salesAmounts?: { [productName: string]: number };
+    totalAmount?: number;
     customerFeedback?: string;
     emotionalContext?: string;
     keyInsights?: string[];
@@ -132,6 +140,20 @@ export async function updateReport(
         mergedSales[product] = (mergedSales[product] || 0) + quantity;
       }
       report.sales = mergedSales;
+    }
+
+    // Fusionner les montants (additionner les montants)
+    if (newData.salesAmounts) {
+      const mergedAmounts = { ...report.salesAmounts };
+      for (const [product, amount] of Object.entries(newData.salesAmounts)) {
+        mergedAmounts[product] = (mergedAmounts[product] || 0) + amount;
+      }
+      report.salesAmounts = mergedAmounts;
+    }
+
+    // Mettre à jour le montant total
+    if (newData.totalAmount !== undefined) {
+      report.totalAmount = (report.totalAmount || 0) + newData.totalAmount;
     }
 
     // Fusionner les retours clients

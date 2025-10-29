@@ -9,11 +9,13 @@ import { loadAssistantConfig } from '../services/assistantConfig';
 
 export interface UseLiveKitRoomOptions {
   userName: string;
+  projectId?: string; // Project ID for multi-project support
   eventName?: string;
   existingReport?: any; // Pass existing report for edit mode
   onTranscription?: (text: string, isFinal: boolean) => void;
   onAgentResponse?: (text: string) => void;
   onConversationComplete?: (data: any) => void;
+  onGeneratingReport?: () => void; // Called when conversation ending signal received
 }
 
 export interface UseLiveKitRoomReturn {
@@ -33,7 +35,7 @@ export interface UseLiveKitRoomReturn {
 }
 
 export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomReturn {
-  const { userName, eventName, onTranscription, onAgentResponse, onConversationComplete } = options;
+  const { userName, projectId, eventName, onTranscription, onAgentResponse, onConversationComplete, onGeneratingReport } = options;
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -168,6 +170,11 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
           room.localParticipant.setMicrophoneEnabled(false);
           setTranscription('Enregistrement terminé, génération du rapport...');
           setIsGeneratingReport(true); // Trigger validation animation
+
+          // Notify parent to show loading modal
+          if (onGeneratingReport) {
+            onGeneratingReport();
+          }
         }
         // Handle conversation complete - show report
         else if (message.type === 'conversation_complete' && onConversationComplete) {
@@ -221,13 +228,24 @@ export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomRe
       }
 
       // Get access token with full config in metadata
-      const { token, url } = await getLiveKitToken(roomName, userName, {
+      const metadata: any = {
         userName,
         eventName: eventName || '',
         timestamp: new Date().toISOString(),
-        assistantConfig: assistantConfig, // Pass full config to agent
         existingReport: existingReport, // Pass existing report context for edit mode
-      });
+      };
+
+      // If projectId is provided, pass it to agent (agent will load config from filesystem)
+      if (projectId) {
+        metadata.projectId = projectId;
+        console.log(`📁 Using project: ${projectId}`);
+      } else {
+        // Fallback: pass assistantConfig directly (backward compatibility)
+        metadata.assistantConfig = assistantConfig;
+        console.log('📋 Using local assistant config');
+      }
+
+      const { token, url } = await getLiveKitToken(roomName, userName, metadata);
 
       // Create room instance
       const room = new Room({

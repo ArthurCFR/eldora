@@ -2,25 +2,32 @@
  * Layout de base de l'application avec navigation par onglets
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LogBox } from 'react-native';
 import { colors } from '../constants/theme';
 import SplashScreen from '../components/SplashScreen';
 import LoginScreen from '../components/LoginScreen';
 import { AppProvider, useApp } from '../contexts/AppContext';
 
+// Ignore le warning "Unexpected text node" qui pollue la console
+LogBox.ignoreLogs([
+  'Unexpected text node:',
+  'A text node cannot be a child of a <View>',
+]);
+
 function RootLayoutContent() {
   const [showSplash, setShowSplash] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { setUserName, setJustLoggedIn } = useApp();
+  const { setUserName, setJustLoggedIn, setCurrentProjectId, isLoggedIn, setIsLoggedIn } = useApp();
 
   const handleSplashComplete = () => {
     setShowSplash(false);
   };
 
-  const handleLoginSuccess = (firstName: string) => {
+  const handleLoginSuccess = (firstName: string, projectId: string) => {
     setUserName(firstName);
+    setCurrentProjectId(projectId);
     setIsLoggedIn(true);
     setJustLoggedIn(true);
     // Reset flag after animation
@@ -62,11 +69,11 @@ function RootLayoutContent() {
         }}
       />
       <Tabs.Screen
-        name="samsung"
+        name="project"
         options={{
-          title: 'Samsung',
+          title: 'Projet',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="phone-portrait" size={size} color={color} />
+            <Ionicons name="briefcase" size={size} color={color} />
           ),
         }}
       />

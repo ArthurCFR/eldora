@@ -1,105 +1,127 @@
 /**
  * ReportTable Component
- * Displays a beautiful sales table with products, sales, objectives, and ratios
+ * Displays a simple sales table with product names and sales numbers
+ * Uses modern CatalogueModal styling for consistency
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing } from '../constants/theme';
+import { colors, spacing, borderRadius, typography } from '../constants/theme';
 import productsData from '../agent/config/products.json';
 
 interface ReportTableProps {
   salesData: { [productName: string]: number };
+  salesAmounts?: { [productName: string]: number }; // Individual amounts per product
+  products?: any[];
 }
 
-export default function ReportTable({ salesData }: ReportTableProps) {
-  // Calculate totals
-  let totalSales = 0;
-  let totalObjectives = 0;
+export default function ReportTable({ salesData, salesAmounts, products }: ReportTableProps) {
+  // Use provided products or fallback to Samsung products
+  const productsList = products && products.length > 0 ? products : productsData.products;
 
-  const rows = productsData.products.map((product: any) => {
-    const sold = salesData[product.name] || 0;
-    const objective = product.target_quantity;
-    const ratio = objective > 0 ? Math.round((sold / objective) * 100) : 0;
+  // Calculate total sales and total amount
+  let totalSales = 0;
+  let totalAmount = 0;
+
+  const rows = productsList.map((product: any) => {
+    // Handle different product name fields
+    const productName = product.display_name || product["Nom d'affichage"] || product.name || product.Nom || product.nom;
+    const displayName = product.display_name || product["Nom d'affichage"] || productName;
+    const sold = salesData[productName] || 0;
+    const amount = salesAmounts && salesAmounts[productName] ? salesAmounts[productName] : 0;
 
     totalSales += sold;
-    totalObjectives += objective;
+    totalAmount += amount;
 
     return {
-      name: product.display_name,
+      name: displayName,
       sold,
-      objective,
-      ratio,
+      amount,
     };
   });
 
-  const totalRatio = totalObjectives > 0
-    ? Math.round((totalSales / totalObjectives) * 100)
-    : 0;
+  // Sort rows: products with sales first, then alphabetically
+  rows.sort((a, b) => {
+    if (a.sold !== b.sold) {
+      return b.sold - a.sold; // Higher sales first
+    }
+    return a.name.localeCompare(b.name); // Alphabetical for same sales
+  });
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.row, styles.headerRow]}>
-        <Text style={[styles.cell, styles.headerCell, styles.productCell]}>Produit</Text>
-        <Text style={[styles.cell, styles.headerCell, styles.numberCell]}>Ventes</Text>
-        <Text style={[styles.cell, styles.headerCell, styles.numberCell]}>Objectif</Text>
-        <Text style={[styles.cell, styles.headerCell, styles.numberCell, styles.lastCell]}>Ratio</Text>
+      {/* Header Row - Professional dark style */}
+      <View style={styles.headerRow}>
+        <View style={[styles.cell, styles.headerCell, styles.productCell]}>
+          <Text style={styles.headerCellText}>NOM DU PRODUIT</Text>
+        </View>
+        <View style={[styles.cell, styles.headerCell, styles.salesCell]}>
+          <Text style={styles.headerCellText}>NOMBRE VENTE</Text>
+        </View>
+        <View style={[styles.cell, styles.headerCell, styles.amountCell, styles.lastCell]}>
+          <Text style={styles.headerCellText}>MONTANT</Text>
+        </View>
       </View>
 
-      {/* Rows */}
-      {rows.map((row, index) => (
-        <View
-          key={row.name}
-          style={[
-            styles.row,
-            styles.dataRow,
-            index % 2 === 0 ? styles.evenRow : styles.oddRow
-          ]}
-        >
-          <Text style={[styles.cell, styles.productCell]} numberOfLines={2}>
-            {row.name}
-          </Text>
-          <Text style={[styles.cell, styles.numberCell, styles.numberText]}>
-            {row.sold}
-          </Text>
-          <Text style={[styles.cell, styles.numberCell, styles.numberText]}>
-            {row.objective}
-          </Text>
-          <Text
+      {/* Data Rows - Alternating colors with grayed out zero sales */}
+      {rows.map((row, index) => {
+        const hasZeroSales = row.sold === 0;
+        return (
+          <View
+            key={row.name}
             style={[
-              styles.cell,
-              styles.numberCell,
-              styles.lastCell,
-              styles.ratioText,
-              row.ratio >= 100 ? styles.successRatio : row.ratio >= 50 ? styles.warningRatio : styles.dangerRatio
+              styles.dataRow,
+              index % 2 === 0 ? styles.dataRowEven : styles.dataRowOdd,
+              hasZeroSales && styles.dataRowZero,
             ]}
           >
-            {row.ratio}%
+            <View style={[styles.cell, styles.dataCell, styles.productCell]}>
+              <Text
+                style={[
+                  styles.dataCellText,
+                  hasZeroSales && styles.zeroSalesText,
+                ]}
+                numberOfLines={2}
+              >
+                {row.name}
+              </Text>
+            </View>
+            <View style={[styles.cell, styles.dataCell, styles.salesCell]}>
+              <Text
+                style={[
+                  styles.numberText,
+                  hasZeroSales && styles.zeroSalesText,
+                ]}
+              >
+                {row.sold}
+              </Text>
+            </View>
+            <View style={[styles.cell, styles.dataCell, styles.amountCell, styles.lastCell]}>
+              <Text
+                style={[
+                  styles.amountText,
+                  hasZeroSales && styles.zeroSalesText,
+                ]}
+              >
+                {row.amount > 0 ? `${row.amount.toFixed(2)} €` : '-'}
+              </Text>
+            </View>
+          </View>
+        );
+      })}
+
+      {/* Total Row - Gold accent */}
+      <View style={styles.totalRow}>
+        <View style={[styles.cell, styles.totalCell, styles.productCell]}>
+          <Text style={styles.totalCellText}>TOTAL</Text>
+        </View>
+        <View style={[styles.cell, styles.totalCell, styles.salesCell]}>
+          <Text style={styles.totalNumberText}>{totalSales}</Text>
+        </View>
+        <View style={[styles.cell, styles.totalCell, styles.amountCell, styles.lastCell]}>
+          <Text style={styles.totalAmountText}>
+            {totalAmount > 0 ? `${totalAmount.toFixed(2)} €` : '-'}
           </Text>
         </View>
-      ))}
-
-      {/* Total Row */}
-      <View style={[styles.row, styles.totalRow]}>
-        <Text style={[styles.cell, styles.totalCell, styles.productCell]}>TOTAL</Text>
-        <Text style={[styles.cell, styles.totalCell, styles.numberCell, styles.numberText]}>
-          {totalSales}
-        </Text>
-        <Text style={[styles.cell, styles.totalCell, styles.numberCell, styles.numberText]}>
-          {totalObjectives}
-        </Text>
-        <Text
-          style={[
-            styles.cell,
-            styles.totalCell,
-            styles.numberCell,
-            styles.lastCell,
-            styles.ratioText,
-            totalRatio >= 100 ? styles.successRatio : totalRatio >= 50 ? styles.warningRatio : styles.dangerRatio
-          ]}
-        >
-          {totalRatio}%
-        </Text>
       </View>
     </View>
   );
@@ -109,56 +131,103 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderColor: colors.glass.border,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     overflow: 'hidden',
     backgroundColor: colors.background.secondary,
   },
-  row: {
+  // Base cell styling
+  cell: {
+    // Base cell styles - extended by specific cell types
+  },
+  // Header styling - dark professional look
+  headerRow: {
+    flexDirection: 'row',
+    backgroundColor: colors.background.dark,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.accent.gold,
+  },
+  headerCell: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderRightColor: colors.glass.border,
+  },
+  headerCellText: {
+    ...typography.small,
+    fontWeight: '700',
+    color: colors.text.onDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  // Data rows - alternating colors
+  dataRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: colors.glass.border,
+    minHeight: 48,
   },
-  headerRow: {
-    backgroundColor: colors.glass.light,
-  },
-  dataRow: {
-    minHeight: 44,
-  },
-  evenRow: {
+  dataRowEven: {
     backgroundColor: colors.background.secondary,
   },
-  oddRow: {
-    backgroundColor: colors.glass.light,
+  dataRowOdd: {
+    backgroundColor: 'transparent',
   },
-  totalRow: {
-    backgroundColor: colors.glass.medium,
-    borderBottomWidth: 0,
+  dataRowZero: {
+    opacity: 0.5,
   },
-  cell: {
-    padding: spacing.sm,
+  dataCell: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     justifyContent: 'center',
+    borderRightWidth: 1,
+    borderRightColor: colors.glass.border,
   },
-  headerCell: {
-    fontWeight: '700',
-    fontSize: 13,
+  dataCellText: {
+    ...typography.small,
     color: colors.text.primary,
+    lineHeight: 18,
+  },
+  // Total row - gold accent
+  totalRow: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 209, 102, 0.15)',
+    borderBottomWidth: 0,
+    minHeight: 52,
   },
   totalCell: {
-    fontWeight: '700',
-    fontSize: 14,
-    color: colors.text.primary,
-  },
-  productCell: {
-    flex: 3,
-    borderRightWidth: 1,
-    borderRightColor: colors.glass.border,
-  },
-  numberCell: {
-    flex: 1,
-    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     justifyContent: 'center',
     borderRightWidth: 1,
-    borderRightColor: colors.glass.border,
+    borderRightColor: colors.accent.gold,
+  },
+  totalCellText: {
+    ...typography.small,
+    fontWeight: '700',
+    color: colors.text.primary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  totalNumberText: {
+    fontSize: 15,
+    color: colors.text.primary,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  // Cell types - 3 columns with amount
+  productCell: {
+    flex: 3,
+  },
+  salesCell: {
+    flex: 1.5,
+    alignItems: 'center',
+  },
+  amountCell: {
+    flex: 2,
+    alignItems: 'center',
   },
   lastCell: {
     borderRightWidth: 0,
@@ -169,17 +238,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  ratioText: {
+  amountText: {
     fontSize: 14,
+    color: colors.accent.gold,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  totalAmountText: {
+    fontSize: 15,
+    color: colors.accent.gold,
     fontWeight: '700',
+    textAlign: 'center',
   },
-  successRatio: {
-    color: colors.status.excellent,
-  },
-  warningRatio: {
-    color: colors.status.warning,
-  },
-  dangerRatio: {
-    color: colors.status.poor,
+  zeroSalesText: {
+    color: colors.text.tertiary,
   },
 });
