@@ -16,7 +16,7 @@ from livekit.agents import (
     AgentSession,
 )
 from livekit.agents.voice import Agent, ConversationItemAddedEvent
-from livekit.plugins import openai, silero, elevenlabs
+from livekit.plugins import openai, silero, elevenlabs, deepgram
 
 # Import minimal modules
 from sales_analyzer import SalesAnalyzer
@@ -590,7 +590,7 @@ async def entrypoint(ctx: JobContext):
             openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
             response = await openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",  # Premium: Better context understanding
                 messages=[
                     {"role": "system", "content": current_instructions},
                     *messages
@@ -772,11 +772,12 @@ async def entrypoint(ctx: JobContext):
             min_silence_duration=2.0,     # ↑ Wait 2s of silence before ending turn
             prefix_padding_duration=0.5,  # ↑ Capture more before speech starts
         ),
-        stt=openai.STT(
-            model="whisper-1",
+        stt=deepgram.STT(
+            model="nova-2",
             language="fr",
+            smart_format=True,  # Auto punctuation for better transcription
         ),
-        llm=openai.LLM(model="gpt-4o-mini"),
+        llm=openai.LLM(model="gpt-4o"),  # Premium: Better context understanding
         tts=elevenlabs.TTS(
             model="eleven_turbo_v2_5",
             voice_id="5jCmrHdxbpU36l1wb3Ke",
